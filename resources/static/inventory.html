@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Quản lý Kho hàng - POS Shop Dược Phẩm</title>
+  <link href="css/bootstrap.css" type="text/css" rel="stylesheet">
+  <link href="css/bootstrap-icons.css" type="text/css" rel="stylesheet">
+  <link href="css/styles.css" type="text/css" rel="stylesheet">
+  <link rel="icon" href="img/favicon.ico" type="image/x-icon">
+  
+  <style>
+    .inventory-container {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+    }
+    
+    .inventory-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 2rem 0;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .inventory-card {
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+      transition: all 0.3s ease;
+      border: none;
+      margin-bottom: 1rem;
+      position: relative;
+    }
+    
+    .inventory-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+    
+    .stock-status {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 1rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    
+    .stock-high {
+      background: linear-gradient(45deg, #28a745, #20c997);
+      color: white;
+    }
+    
+    .stock-medium {
+      background: linear-gradient(45deg, #ffc107, #fd7e14);
+      color: white;
+    }
+    
+    .stock-low {
+      background: linear-gradient(45deg, #dc3545, #e74c3c);
+      color: white;
+    }
+    
+    .stock-out {
+      background: linear-gradient(45deg, #6c757d, #495057);
+      color: white;
+    }
+    
+    .expiry-warning {
+      background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+      color: white;
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      margin-top: 0.5rem;
+      font-size: 0.875rem;
+    }
+    
+    .product-image {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 0.5rem;
+      margin-right: 1rem;
+    }
+    
+    .filter-section {
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+      margin-bottom: 2rem;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      text-align: center;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+      transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+    
+    .alert-panel {
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+      margin-bottom: 2rem;
+    }
+    
+    .alert-item {
+      padding: 1rem;
+      border-radius: 0.5rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .alert-critical {
+      background: #fff5f5;
+      border-left: 4px solid #dc3545;
+    }
+    
+    .alert-warning {
+      background: #fffbf0;
+      border-left: 4px solid #ffc107;
+    }
+    
+    .quantity-input {
+      width: 80px;
+      text-align: center;
+      border: 2px solid #e9ecef;
+      border-radius: 0.5rem;
+    }
+    
+    .quantity-input:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+  </style>
+</head>
+
+<body class="inventory-container">
+  <!-- Header -->
+  <header class="inventory-header">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <div class="d-flex align-items-center">
+            <a href="home.html" class="btn btn-light btn-sm me-3">
+              <i class="bi bi-arrow-left"></i> Quay lại
+            </a>
+            <div>
+              <h2 class="mb-1">
+                <i class="bi bi-boxes"></i> Quản lý Kho hàng
+              </h2>
+              <p class="mb-0 opacity-75">Kiểm tra tồn kho và cảnh báo</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 text-end">
+          <div class="d-flex align-items-center justify-content-end">
+            <span class="me-3">
+              <i class="bi bi-person-circle"></i> Nhân viên: <strong>Nguyễn Văn A</strong>
+            </span>
+            <div class="time-display">
+              <i class="bi bi-clock me-1"></i>
+              <span id="current-time"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container py-4">
+    <!-- Statistics -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="text-primary mb-2">
+          <i class="bi bi-boxes display-6"></i>
+        </div>
+        <h4 class="text-primary" id="total-products">1,456</h4>
+        <p class="text-muted mb-0">Tổng sản phẩm</p>
+      </div>
+      
+      <div class="stat-card">
+        <div class="text-success mb-2">
+          <i class="bi bi-check-circle display-6"></i>
+        </div>
+        <h4 class="text-success" id="in-stock">1,203</h4>
+        <p class="text-muted mb-0">Còn hàng</p>
+      </div>
+      
+      <div class="stat-card">
+        <div class="text-warning mb-2">
+          <i class="bi bi-exclamation-triangle display-6"></i>
+        </div>
+        <h4 class="text-warning" id="low-stock">45</h4>
+        <p class="text-muted mb-0">Sắp hết</p>
+      </div>
+      
+      <div class="stat-card">
+        <div class="text-danger mb-2">
+          <i class="bi bi-x-circle display-6"></i>
+        </div>
+        <h4 class="text-danger" id="out-stock">8</h4>
+        <p class="text-muted mb-0">Hết hàng</p>
+      </div>
+      
+      <div class="stat-card">
+        <div class="text-info mb-2">
+          <i class="bi bi-calendar-x display-6"></i>
+        </div>
+        <h4 class="text-info" id="near-expiry">23</h4>
+        <p class="text-muted mb-0">Sắp hết hạn</p>
+      </div>
+    </div>
+
+    <!-- Alerts Panel -->
+    <div class="alert-panel">
+      <h5 class="mb-3">
+        <i class="bi bi-bell text-warning"></i> Cảnh báo quan trọng
+      </h5>
+      
+      <div id="alerts-list">
+        <div class="alert-item alert-critical">
+          <i class="bi bi-exclamation-triangle-fill text-danger fs-4"></i>
+          <div class="flex-grow-1">
+            <strong>Paracetamol 500mg</strong> đã hết hàng
+            <div class="small text-muted">Cần nhập hàng ngay</div>
+          </div>
+          <button class="btn btn-outline-danger btn-sm">
+            <i class="bi bi-plus"></i> Nhập hàng
+          </button>
+        </div>
+        
+        <div class="alert-item alert-critical">
+          <i class="bi bi-exclamation-triangle-fill text-danger fs-4"></i>
+          <div class="flex-grow-1">
+            <strong>Insulin Glargine</strong> chỉ còn 2 hộp
+            <div class="small text-muted">Dưới mức tối thiểu (5 hộp)</div>
+          </div>
+          <button class="btn btn-outline-danger btn-sm">
+            <i class="bi bi-plus"></i> Nhập hàng
+          </button>
+        </div>
+        
+        <div class="alert-item alert-warning">
+          <i class="bi bi-calendar-x text-warning fs-4"></i>
+          <div class="flex-grow-1">
+            <strong>Vitamin C 1000mg</strong> sắp hết hạn
+            <div class="small text-muted">Hết hạn: 15/02/2024 (15 ngày nữa)</div>
+          </div>
+          <button class="btn btn-outline-warning btn-sm">
+            <i class="bi bi-tag"></i> Khuyến mãi
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-9">
+        <!-- Search and Filter -->
+        <div class="filter-section">
+          <div class="row align-items-center">
+            <div class="col-md-6">
+              <div class="input-group">
+                <span class="input-group-text bg-light">
+                  <i class="bi bi-search"></i>
+                </span>
+                <input type="text" class="form-control" placeholder="Tìm kiếm sản phẩm (Tên, mã, barcode...)" id="product-search">
+                <button class="btn btn-primary" onclick="searchProducts()">
+                  <i class="bi bi-search"></i> Tìm kiếm
+                </button>
+              </div>
+            </div>
+            <div class="col-md-6 text-end">
+              <div class="btn-group" role="group">
+                <button class="btn btn-outline-primary active" onclick="filterByStock('all')">
+                  <i class="bi bi-list"></i> Tất cả
+                </button>
+                <button class="btn btn-outline-success" onclick="filterByStock('in-stock')">
+                  <i class="bi bi-check"></i> Còn hàng
+                </button>
+                <button class="btn btn-outline-warning" onclick="filterByStock('low')">
+                  <i class="bi bi-exclamation"></i> Sắp hết
+                </button>
+                <button class="btn btn-outline-danger" onclick="filterByStock('out')">
+                  <i class="bi bi-x"></i> Hết hàng
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Product List -->
+        <div id="products-list">
+          <!-- Products will be loaded here -->
+        </div>
+        
+        <!-- Pagination -->
+        <nav aria-label="Product pagination" class="mt-4">
+          <ul class="pagination justify-content-center">
+            <li class="page-item disabled">
+              <span class="page-link">Trước</span>
+            </li>
+            <li class="page-item active">
+              <span class="page-link">1</span>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="#">2</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="#">3</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="#">Sau</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+      
+      <div class="col-lg-3">
+        <!-- Advanced Filters -->
+        <div class="filter-section">
+          <h6 class="mb-3">
+            <i class="bi bi-funnel"></i> Bộ lọc nâng cao
+          </h6>
+          
+          <div class="mb-3">
+            <label class="form-label">Danh mục</label>
+            <select class="form-select" id="category-filter">
+              <option value="">Tất cả danh mục</option>
+              <option value="prescription">Thuốc kê đơn</option>
+              <option value="otc">Thuốc không kê đơn</option>
+              <option value="supplements">Thực phẩm chức năng</option>
+              <option value="devices">Thiết bị y tế</option>
+              <option value="cosmetics">Mỹ phẩm</option>
+            </select>
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label">Trạng thái tồn kho</label>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="high" id="stock-high">
+              <label class="form-check-label" for="stock-high">
+                Đủ hàng (>50)
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="medium" id="stock-medium">
+              <label class="form-check-label" for="stock-medium">
+                Vừa phải (10-50)
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="low" id="stock-low-filter">
+              <label class="form-check-label" for="stock-low-filter">
+                Sắp hết (<10)
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="out" id="stock-out">
+              <label class="form-check-label" for="stock-out">
+                Hết hàng (0)
+              </label>
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label">Hạn sử dụng</label>
+            <select class="form-select" id="expiry-filter">
+              <option value="">Tất cả</option>
+              <option value="expired">Đã hết hạn</option>
+              <option value="30-days">Hết hạn trong 30 ngày</option>
+              <option value="60-days">Hết hạn trong 60 ngày</option>
+              <option value="90-days">Hết hạn trong 90 ngày</option>
+            </select>
+          </div>
+          
+          <div class="d-grid gap-2">
+            <button class="btn btn-primary" onclick="applyFilters()">
+              <i class="bi bi-funnel"></i> Áp dụng bộ lọc
+            </button>
+            <button class="btn btn-outline-secondary" onclick="clearFilters()">
+              <i class="bi bi-arrow-clockwise"></i> Xóa bộ lọc
+            </button>
+          </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="filter-section">
+          <h6 class="mb-3">
+            <i class="bi bi-lightning"></i> Thao tác nhanh
+          </h6>
+          
+          <div class="d-grid gap-2">
+            <button class="btn btn-success" onclick="exportInventory()">
+              <i class="bi bi-download"></i> Xuất báo cáo
+            </button>
+            <button class="btn btn-warning" onclick="checkExpiry()">
+              <i class="bi bi-calendar-check"></i> Kiểm tra hạn dùng
+            </button>
+            <button class="btn btn-info" onclick="stockAlert()">
+              <i class="bi bi-bell"></i> Cài đặt cảnh báo
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stock Update Modal -->
+  <div class="modal fade" id="updateStockModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title">
+            <i class="bi bi-plus-circle"></i> Cập nhật tồn kho
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="update-stock-form">
+            <div class="mb-3">
+              <label class="form-label">Sản phẩm</label>
+              <input type="text" class="form-control" id="product-name" readonly>
+            </div>
+            
+            <div class="row">
+              <div class="col-6">
+                <div class="mb-3">
+                  <label class="form-label">Tồn kho hiện tại</label>
+                  <input type="number" class="form-control" id="current-stock" readonly>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="mb-3">
+                  <label class="form-label">Số lượng nhập</label>
+                  <input type="number" class="form-control" id="add-quantity" min="1" required>
+                </div>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Ngày hết hạn (lô mới)</label>
+              <input type="date" class="form-control" id="expiry-date" required>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Ghi chú</label>
+              <textarea class="form-control" id="stock-notes" rows="2" placeholder="Nhà cung cấp, số lô..."></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+          <button type="button" class="btn btn-primary" onclick="saveStockUpdate()">
+            <i class="bi bi-check-circle"></i> Cập nhật
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="js/bootstrap.bundle.js"></script>
+  
+  <script>
+    // Sample inventory data
+    const inventory = [
+      {
+        id: 'P001',
+        name: 'Paracetamol 500mg',
+        category: 'otc',
+        currentStock: 0,
+        minStock: 10,
+        maxStock: 100,
+        unit: 'hộp',
+        price: 15000,
+        supplier: 'Traphaco',
+        barcode: '8936001234567',
+        expiryDate: '2024-12-15',
+        location: 'Kệ A1',
+        image: 'img/200px.png'
+      },
+      {
+        id: 'P002',
+        name: 'Amoxicillin 500mg',
+        category: 'prescription',
+        currentStock: 25,
+        minStock: 15,
+        maxStock: 80,
+        unit: 'hộp',
+        price: 45000,
+        supplier: 'Stada',
+        barcode: '8936001234568',
+        expiryDate: '2024-08-20',
+        location: 'Kệ A2',
+        image: 'img/200px.png'
+      },
+      {
+        id: 'P003',
+        name: 'Vitamin C 1000mg',
+        category: 'supplements',
+        currentStock: 45,
+        minStock: 20,
+        maxStock: 120,
+        unit: 'lọ',
+        price: 85000,
+        supplier: 'DHG Pharma',
+        barcode: '8936001234569',
+        expiryDate: '2024-02-15',
+        location: 'Kệ B1',
+        image: 'img/200px.png'
+      },
+      {
+        id: 'P004',
+        name: 'Insulin Glargine 100UI/ml',
+        category: 'prescription',
+        currentStock: 2,
+        minStock: 5,
+        maxStock: 30,
+        unit: 'bút tiêm',
+        price: 1250000,
+        supplier: 'Sanofi',
+        barcode: '8936001234570',
+        expiryDate: '2024-10-30',
+        location: 'Tủ lạnh A',
+        image: 'img/200px.png'
+      },
+      {
+        id: 'P005',
+        name: 'Kem dưỡng da Eucerin',
+        category: 'cosmetics',
+        currentStock: 18,
+        minStock: 10,
+        maxStock: 50,
+        unit: 'tuýp',
+        price: 320000,
+        supplier: 'Beiersdorf',
+        barcode: '8936001234571',
+        expiryDate: '2025-06-20',
+        location: 'Kệ C2',
+        image: 'img/200px.png'
+      },
+      {
+        id: 'P006',
+        name: 'Nhiệt kế điện tử',
+        category: 'devices',
+        currentStock: 8,
+        minStock: 5,
+        maxStock: 25,
+        unit: 'cái',
+        price: 150000,
+        supplier: 'Omron',
+        barcode: '8936001234572',
+        expiryDate: '2026-01-01',
+        location: 'Kệ D1',
+        image: 'img/200px.png'
+      }
+    ];
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', function() {
+      updateClock();
+      setInterval(updateClock, 1000);
+      loadProducts();
+      updateStatistics();
+    });
+
+    function updateClock() {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString('vi-VN');
+      document.getElementById('current-time').textContent = timeString;
+    }
+
+    function loadProducts(filter = 'all') {
+      const productsList = document.getElementById('products-list');
+      let filteredProducts = inventory;
+      
+      if (filter !== 'all') {
+        filteredProducts = inventory.filter(p => {
+          switch(filter) {
+            case 'in-stock':
+              return p.currentStock > p.minStock;
+            case 'low':
+              return p.currentStock <= p.minStock && p.currentStock > 0;
+            case 'out':
+              return p.currentStock === 0;
+            default:
+              return true;
+          }
+        });
+      }
+      
+      productsList.innerHTML = filteredProducts.map(product => `
+        <div class="inventory-card">
+          ${getStockStatusBadge(product)}
+          
+          <div class="d-flex align-items-start">
+            <img src="${product.image}" alt="${product.name}" class="product-image">
+            
+            <div class="flex-grow-1">
+              <div class="row">
+                <div class="col-md-6">
+                  <h6 class="mb-1">${product.name}</h6>
+                  <div class="text-muted small mb-2">
+                    <i class="bi bi-upc me-1"></i>${product.barcode}
+                    <span class="mx-2">•</span>
+                    <i class="bi bi-geo-alt me-1"></i>${product.location}
+                  </div>
+                  <div class="text-muted small">
+                    <strong>Nhà cung cấp:</strong> ${product.supplier}
+                  </div>
+                </div>
+                
+                <div class="col-md-3">
+                  <div class="text-center">
+                    <div class="h5 mb-1 ${getStockColor(product)}">${product.currentStock}</div>
+                    <small class="text-muted">Hiện có (${product.unit})</small>
+                    <div class="small text-muted mt-1">
+                      Tối thiểu: ${product.minStock}
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="col-md-3">
+                  <div class="text-center">
+                    <div class="h6 text-primary mb-1">${formatPrice(product.price)}</div>
+                    <small class="text-muted">Giá bán</small>
+                    <div class="small ${getExpiryColor(product.expiryDate)} mt-1">
+                      HSD: ${formatDate(product.expiryDate)}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="row mt-3 align-items-center">
+                <div class="col-md-4">
+                  <div class="progress" style="height: 8px;">
+                    <div class="progress-bar ${getProgressColor(product)}" 
+                         style="width: ${(product.currentStock / product.maxStock) * 100}%"></div>
+                  </div>
+                  <small class="text-muted">${product.currentStock}/${product.maxStock}</small>
+                </div>
+                
+                <div class="col-md-4">
+                  ${getExpiryWarning(product.expiryDate)}
+                </div>
+                
+                <div class="col-md-4 text-end">
+                  <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-primary" onclick="updateStock('${product.id}')" 
+                            title="Nhập hàng">
+                      <i class="bi bi-plus-circle"></i>
+                    </button>
+                    <button class="btn btn-outline-info" onclick="viewHistory('${product.id}')" 
+                            title="Lịch sử">
+                      <i class="bi bi-clock-history"></i>
+                    </button>
+                    <button class="btn btn-outline-warning" onclick="setAlert('${product.id}')" 
+                            title="Cảnh báo">
+                      <i class="bi bi-bell"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function getStockStatusBadge(product) {
+      if (product.currentStock === 0) {
+        return '<span class="stock-status stock-out">Hết hàng</span>';
+      } else if (product.currentStock <= product.minStock) {
+        return '<span class="stock-status stock-low">Sắp hết</span>';
+      } else if (product.currentStock <= product.minStock * 2) {
+        return '<span class="stock-status stock-medium">Vừa phải</span>';
+      } else {
+        return '<span class="stock-status stock-high">Đủ hàng</span>';
+      }
+    }
+
+    function getStockColor(product) {
+      if (product.currentStock === 0) return 'text-danger';
+      if (product.currentStock <= product.minStock) return 'text-warning';
+      return 'text-success';
+    }
+
+    function getProgressColor(product) {
+      if (product.currentStock === 0) return 'bg-danger';
+      if (product.currentStock <= product.minStock) return 'bg-warning';
+      return 'bg-success';
+    }
+
+    function getExpiryColor(expiryDate) {
+      const today = new Date();
+      const expiry = new Date(expiryDate);
+      const daysUntilExpiry = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
+      
+      if (daysUntilExpiry < 0) return 'text-danger';
+      if (daysUntilExpiry <= 30) return 'text-warning';
+      return 'text-muted';
+    }
+
+    function getExpiryWarning(expiryDate) {
+      const today = new Date();
+      const expiry = new Date(expiryDate);
+      const daysUntilExpiry = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
+      
+      if (daysUntilExpiry < 0) {
+        return '<div class="expiry-warning"><i class="bi bi-exclamation-triangle"></i> Đã hết hạn</div>';
+      } else if (daysUntilExpiry <= 30) {
+        return `<div class="expiry-warning"><i class="bi bi-calendar-x"></i> ${daysUntilExpiry} ngày nữa hết hạn</div>`;
+      }
+      return '';
+    }
+
+    function updateStatistics() {
+      const totalProducts = inventory.length;
+      const inStock = inventory.filter(p => p.currentStock > p.minStock).length;
+      const lowStock = inventory.filter(p => p.currentStock <= p.minStock && p.currentStock > 0).length;
+      const outStock = inventory.filter(p => p.currentStock === 0).length;
+      const nearExpiry = inventory.filter(p => {
+        const daysUntilExpiry = Math.ceil((new Date(p.expiryDate) - new Date()) / (1000 * 60 * 60 * 24));
+        return daysUntilExpiry <= 30 && daysUntilExpiry >= 0;
+      }).length;
+      
+      document.getElementById('total-products').textContent = totalProducts.toLocaleString();
+      document.getElementById('in-stock').textContent = inStock;
+      document.getElementById('low-stock').textContent = lowStock;
+      document.getElementById('out-stock').textContent = outStock;
+      document.getElementById('near-expiry').textContent = nearExpiry;
+    }
+
+    function searchProducts() {
+      const query = document.getElementById('product-search').value.toLowerCase();
+      if (!query) {
+        loadProducts();
+        return;
+      }
+      
+      const filteredProducts = inventory.filter(p => 
+        p.name.toLowerCase().includes(query) ||
+        p.barcode.includes(query) ||
+        p.supplier.toLowerCase().includes(query)
+      );
+      
+      displaySearchResults(filteredProducts);
+    }
+
+    function displaySearchResults(products) {
+      const productsList = document.getElementById('products-list');
+      if (products.length === 0) {
+        productsList.innerHTML = `
+          <div class="text-center py-5">
+            <i class="bi bi-search display-1 text-muted"></i>
+            <h5 class="text-muted mt-3">Không tìm thấy sản phẩm</h5>
+            <p class="text-muted">Thử tìm kiếm với từ khóa khác</p>
+          </div>
+        `;
+        return;
+      }
+      
+      // Use the same display logic as loadProducts
+      productsList.innerHTML = products.map(product => `
+        <div class="inventory-card">
+          ${getStockStatusBadge(product)}
+          
+          <div class="d-flex align-items-start">
+            <img src="${product.image}" alt="${product.name}" class="product-image">
+            
+            <div class="flex-grow-1">
+              <div class="row">
+                <div class="col-md-6">
+                  <h6 class="mb-1">${product.name}</h6>
+                  <div class="text-muted small mb-2">
+                    <i class="bi bi-upc me-1"></i>${product.barcode}
+                    <span class="mx-2">•</span>
+                    <i class="bi bi-geo-alt me-1"></i>${product.location}
+                  </div>
+                  <div class="text-muted small">
+                    <strong>Nhà cung cấp:</strong> ${product.supplier}
+                  </div>
+                </div>
+                
+                <div class="col-md-3">
+                  <div class="text-center">
+                    <div class="h5 mb-1 ${getStockColor(product)}">${product.currentStock}</div>
+                    <small class="text-muted">Hiện có (${product.unit})</small>
+                    <div class="small text-muted mt-1">
+                      Tối thiểu: ${product.minStock}
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="col-md-3">
+                  <div class="text-center">
+                    <div class="h6 text-primary mb-1">${formatPrice(product.price)}</div>
+                    <small class="text-muted">Giá bán</small>
+                    <div class="small ${getExpiryColor(product.expiryDate)} mt-1">
+                      HSD: ${formatDate(product.expiryDate)}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="row mt-3 align-items-center">
+                <div class="col-md-4">
+                  <div class="progress" style="height: 8px;">
+                    <div class="progress-bar ${getProgressColor(product)}" 
+                         style="width: ${(product.currentStock / product.maxStock) * 100}%"></div>
+                  </div>
+                  <small class="text-muted">${product.currentStock}/${product.maxStock}</small>
+                </div>
+                
+                <div class="col-md-4">
+                  ${getExpiryWarning(product.expiryDate)}
+                </div>
+                
+                <div class="col-md-4 text-end">
+                  <div class="btn-group btn-group-sm">
+                    <button class="btn btn-outline-primary" onclick="updateStock('${product.id}')" 
+                            title="Nhập hàng">
+                      <i class="bi bi-plus-circle"></i>
+                    </button>
+                    <button class="btn btn-outline-info" onclick="viewHistory('${product.id}')" 
+                            title="Lịch sử">
+                      <i class="bi bi-clock-history"></i>
+                    </button>
+                    <button class="btn btn-outline-warning" onclick="setAlert('${product.id}')" 
+                            title="Cảnh báo">
+                      <i class="bi bi-bell"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function filterByStock(type) {
+      // Update active button
+      document.querySelectorAll('.btn-group .btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      event.target.classList.add('active');
+      
+      loadProducts(type);
+    }
+
+    function updateStock(productId) {
+      const product = inventory.find(p => p.id === productId);
+      if (!product) return;
+      
+      document.getElementById('product-name').value = product.name;
+      document.getElementById('current-stock').value = product.currentStock;
+      document.getElementById('add-quantity').value = '';
+      document.getElementById('expiry-date').value = '';
+      document.getElementById('stock-notes').value = '';
+      
+      // Store product ID for saving
+      document.getElementById('update-stock-form').dataset.productId = productId;
+      
+      const modal = new bootstrap.Modal(document.getElementById('updateStockModal'));
+      modal.show();
+    }
+
+    function saveStockUpdate() {
+      const form = document.getElementById('update-stock-form');
+      const productId = form.dataset.productId;
+      const addQuantity = parseInt(document.getElementById('add-quantity').value);
+      const expiryDate = document.getElementById('expiry-date').value;
+      
+      if (!addQuantity || !expiryDate) {
+        alert('Vui lòng điền đầy đủ thông tin!');
+        return;
+      }
+      
+      // Update inventory
+      const product = inventory.find(p => p.id === productId);
+      if (product) {
+        product.currentStock += addQuantity;
+        if (new Date(expiryDate) < new Date(product.expiryDate)) {
+          product.expiryDate = expiryDate; // Update to earlier expiry date
+        }
+      }
+      
+      // Reload display
+      loadProducts();
+      updateStatistics();
+      
+      // Close modal
+      bootstrap.Modal.getInstance(document.getElementById('updateStockModal')).hide();
+      
+      showToast(`Đã cập nhật ${addQuantity} ${product.unit} cho ${product.name}`, 'success');
+    }
+
+    function viewHistory(productId) {
+      // Implementation for viewing stock history
+      alert('Xem lịch sử xuất nhập kho - Chức năng sẽ được triển khai');
+    }
+
+    function setAlert(productId) {
+      // Implementation for setting stock alerts
+      alert('Cài đặt cảnh báo tồn kho - Chức năng sẽ được triển khai');
+    }
+
+    function applyFilters() {
+      // Implementation for advanced filtering
+      console.log('Applying advanced filters...');
+    }
+
+    function clearFilters() {
+      document.getElementById('category-filter').value = '';
+      document.getElementById('expiry-filter').value = '';
+      document.querySelectorAll('.form-check-input').forEach(cb => cb.checked = false);
+      loadProducts();
+    }
+
+    function exportInventory() {
+      // Simple CSV export
+      const csvContent = "data:text/csv;charset=utf-8," + 
+        "Tên sản phẩm,Barcode,Tồn kho,Tối thiểu,Tối đa,Đơn vị,Giá,Nhà cung cấp,Hạn dùng,Vị trí\n" +
+        inventory.map(p => `"${p.name}",${p.barcode},${p.currentStock},${p.minStock},${p.maxStock},${p.unit},${p.price},"${p.supplier}",${p.expiryDate},"${p.location}"`).join('\n');
+      
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "bao-cao-ton-kho.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      showToast('Xuất báo cáo thành công!', 'success');
+    }
+
+    function checkExpiry() {
+      const nearExpiryProducts = inventory.filter(p => {
+        const daysUntilExpiry = Math.ceil((new Date(p.expiryDate) - new Date()) / (1000 * 60 * 60 * 24));
+        return daysUntilExpiry <= 60 && daysUntilExpiry >= 0;
+      });
+      
+      if (nearExpiryProducts.length === 0) {
+        showToast('Không có sản phẩm nào sắp hết hạn trong 60 ngày tới', 'info');
+        return;
+      }
+      
+      const message = `Có ${nearExpiryProducts.length} sản phẩm sắp hết hạn:\n` +
+        nearExpiryProducts.map(p => `- ${p.name}: ${formatDate(p.expiryDate)}`).join('\n');
+      
+      alert(message);
+    }
+
+    function stockAlert() {
+      alert('Cài đặt cảnh báo tồn kho - Chức năng sẽ được triển khai');
+    }
+
+    function formatPrice(price) {
+      return new Intl.NumberFormat('vi-VN').format(price) + '₫';
+    }
+
+    function formatDate(dateString) {
+      return new Date(dateString).toLocaleDateString('vi-VN');
+    }
+
+    function showToast(message, type = 'info') {
+      const toast = document.createElement('div');
+      toast.className = `toast align-items-center text-white bg-${type} border-0`;
+      toast.style.position = 'fixed';
+      toast.style.top = '20px';
+      toast.style.right = '20px';
+      toast.style.zIndex = '9999';
+      toast.innerHTML = `
+        <div class="d-flex">
+          <div class="toast-body">${message}</div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="this.parentElement.parentElement.remove()"></button>
+        </div>
+      `;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        if (toast.parentElement) {
+          toast.remove();
+        }
+      }, 3000);
+    }
+
+    // Enter key search
+    document.getElementById('product-search').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        searchProducts();
+      }
+    });
+  </script>
+</body>
+
+</html> 

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <th:block th:replace="~{user/_meta}" />
+  <title>Cập nhật sản phẩm</title>
+</head>
+
+<body>
+<th:block th:replace="~{admin/_headerAdmin}" />
+
+<section class="section-content">
+  <div class="container">
+    <header class="section-heading py-4">
+      <h3 class="section-title">Cập nhật sản phẩm</h3>
+    </header>
+
+    <main class="row mb-5">
+      <form class="col-lg-6" method="POST" th:action="@{/admin/sanpham/update/{id}(id=${sanpham.idSanpham})}" autocomplete="off" enctype="multipart/form-data">
+        <div th:if="${successMessage}" class="alert alert-success mb-3" role="alert" th:text="${successMessage}"></div>
+        <div th:if="${errorMessage}" class="alert alert-danger mb-3" role="alert" th:text="${errorMessage}"></div>
+        
+        <div class="mb-3">
+          <label for="tenSanPham" class="form-label">Tên sản phẩm <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" th:value="${sanpham.tenSanpham}" name="tenSanpham" id="tenSanPham" required>
+        </div>
+        
+        <div class="mb-3">
+          <label for="soluong" class="form-label">Số lượng <span class="text-danger">*</span></label>
+          <input type="number" min="0" step="1" class="form-control" th:value="${sanpham.soluong}" name="soluong" id="soluong" required>
+        </div>
+
+		<div class="mb-3">
+          <label for="gia" class="form-label">Giá <span class="text-danger">*</span></label>
+          <input type="number" min="1" step="1" class="form-control" th:value="${sanpham.gia}" name="gia" id="gia" required>
+        </div>
+        
+        <div class="mb-3">
+          <label for="giamgia" class="form-label">Giảm giá <span class="text-danger">*</span></label>
+          <input type="number" min="0" step="1" max="100" class="form-control" th:value="${sanpham.giamgia}" name="giamgia" id="giamgia" required>
+        </div>
+
+		<div class="mb-3">
+          <label for="motangan" class="form-label">Mô tả ngắn <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" th:value="${sanpham.motangan}" name="motangan" id="motangan" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="mota" class="form-label">Mô tả <span class="text-danger">*</span></label>
+          <textarea type="text" class="form-control" th:text="${sanpham.mota}" id="mota" name="mota" required></textarea>
+        </div>
+        
+		<div class="mb-3">
+          <label for="product-imageName" class="form-label">Hình sản phẩm</label>
+          <input type="file"
+                 class="form-control mb-3"
+                 id="product-imageName"
+                 name="image"
+                 accept="image/*">
+          <img width="200" height="200"
+                   class="img-thumbnail mb-3"
+                   th:src="@{/image/{url}(url=${sanpham.hinh})}" 
+                   th:alt="${sanpham.tenSanpham}"
+                   th:title="${sanpham.tenSanpham}">
+        </div>
+        
+        <div class="mb-3">
+          <label for="loai" class="form-label">Loại hàng <span class="text-danger">*</span></label>
+          <select class="form-select" name="loai" id="loai"  required>
+            <option value="" disabled selected>Chọn loại hàng...</option>
+            <option th:each="loai : ${loais}" th:value="${loai.idLoai}" th:selected="${loai.idLoai == sanpham.loai.idLoai}" th:text="${loai.tenLoai}"></option>
+          </select>
+        </div>
+        
+        <button type="submit" class="btn btn-primary me-2 mb-3">Cập nhật</button>
+        <a class="btn btn-danger mb-3" th:href="@{/admin/sanpham}" role="button" onclick="return confirm('Bạn có muốn hủy?')">Hủy</a>
+      </form>
+    </main>
+  </div>
+</section>
+
+<th:block th:replace="~{admin/_footerAdmin}" />
+</body>
+
+</html>

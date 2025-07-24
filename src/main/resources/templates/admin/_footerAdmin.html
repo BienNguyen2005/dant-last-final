@@ -1,0 +1,64 @@
+<footer class="footer">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-12">
+        <div class="footer-content py-2 d-flex flex-wrap justify-content-between align-items-center">
+          <!-- Copyright -->
+          <div class="footer-copyright">
+            <p class="mb-0 small">
+              &copy; 2024 MEDISALE Admin Dashboard. Developed by 
+              <a href="#" class="text-primary text-decoration-none">Nhóm 3</a>
+            </p>
+          </div>
+
+          <!-- Version -->
+          <div class="footer-version text-muted">
+            <small>Version 1.0.0</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<style>
+.footer {
+  background: #fff;
+  border-top: 1px solid #e9ecef;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  z-index: 1000;
+  font-size: 0.8125rem;
+}
+
+.footer-content {
+  min-height: 40px;
+}
+
+.footer-links .nav-link {
+  padding: 0.25rem 0.75rem;
+  transition: color 0.3s ease;
+}
+
+.footer-links .nav-link:hover {
+  color: var(--bs-primary) !important;
+}
+
+@media (max-width: 768px) {
+  .footer-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+  }
+  
+  .footer-copyright, .footer-links, .footer-version {
+    width: 100%;
+  }
+  
+  .footer-links .nav {
+    justify-content: center;
+  }
+}
+</style>

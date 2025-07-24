@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <th:block th:replace="~{user/_meta}" />
+  <title>Thêm người dùng</title>
+</head>
+
+<body>
+<th:block th:replace="~{admin/_headerAdmin}" />
+
+<section class="section-content">
+  <div class="container">
+    <header class="section-heading py-4">
+      <h3 class="section-title">Thêm người dùng</h3>
+    </header>
+
+    <main class="row mb-5">
+      <form class="col-lg-6" method="POST" th:action="@{/admin/user/create}" autocomplete="off">
+        <div th:if="${successMessage}" class="alert alert-success mb-3" role="alert" th:text="${successMessage}"></div>
+        <div th:if="${errorMessage}" class="alert alert-danger mb-3" role="alert" th:text="${errorMessage}"></div>
+        
+        <div class="mb-3">
+          <label for="idUser" class="form-label">Email <span class="text-danger">*</span></label>
+          <input type="email" class="form-control" th:value="${user.idUser}" name="idUser" id="idUser" required>
+        </div>
+        
+        <div class="mb-3">
+          <label for="matkhau" class="form-label">Mật khẩu <span class="text-danger">*</span></label>
+          <input type="password" class="form-control" th:value="${user.matkhau}" name="matkhau" id="matkhau" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="hoten" class="form-label">Họ và tên <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" th:value="${user.hoten}" id="hoten" name="hoten" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="sdt" class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" th:value="${user.sdt}" id="sdt" name="sdt" required pattern="0[0-9]{9}"
+         		   title="Số điện thoại phải có 10 chữ số và bắt đầu bằng số 0">
+        </div>
+        
+        
+        <div class="mb-3">
+          <label for="vaitro" class="form-label">Quyền <span class="text-danger">*</span></label>
+          <select class="form-select" name="vaitro" id="vaitro"  required>
+            <option value="" disabled selected>Chọn một quyền...</option>
+            <option value="true" th:selected="${user.vaitro}">Quản trị viên</option>
+            <option value="false" th:selected="${!user.vaitro}">Khách hàng</option>
+          </select>
+        </div>
+        
+        <button type="submit" class="btn btn-primary me-2 mb-3">Thêm</button>
+        <a class="btn btn-danger mb-3" th:href="@{/admin/user}" role="button" onclick="return confirm('Bạn có muốn hủy?')">Hủy</a>
+      </form>
+    </main>
+  </div>
+</section>
+
+<th:block th:replace="~{admin/_footerAdmin}" />
+</body>
+
+</html>

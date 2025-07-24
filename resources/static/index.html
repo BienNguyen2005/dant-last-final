@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POS System - Shop Dược Phẩm</title>
+    <link href="/css/bootstrap.css" rel="stylesheet">
+    <link href="/css/bootstrap-icons.css" rel="stylesheet">
+    <link href="/css/styles.css" rel="stylesheet">
+    <link rel="icon" href="/img/favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <!-- Header -->
+    <nav id="header-nav" class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">POS - Shop Dược Phẩm</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" onclick="navigateTo('pos')">POS Bán hàng</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="navigateTo('customers')">Khách hàng</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="navigateTo('inventory')">Kho hàng</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="navigateTo('reports')">Báo cáo</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown" id="userDropdown" style="display: none;">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdownToggle" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i>
+                            <span id="userName"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="navigateTo('staff-dashboard')">Dashboard</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="navigateTo('profile')">Tài khoản</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" onclick="logout()">Đăng xuất</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item" id="loginButton">
+                        <a class="nav-link" href="#" onclick="navigateTo('login')">Đăng nhập</a>
+                    </li>
+                    <li class="nav-item" id="adminButton" style="display: none;">
+                        <a class="nav-link" href="#" onclick="navigateTo('admin')">
+                            <i class="bi bi-gear"></i> Admin
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main id="mainContent" style="min-height: calc(100vh - 200px);">
+        <div class="container mt-4">
+            <div id="loadingSpinner" class="text-center d-none">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+            <div id="contentArea">
+                <!-- Default POS Interface -->
+                <div class="text-center">
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <h1 class="display-4 mb-4">POS - Shop Dược Phẩm</h1>
+                            <p class="lead mb-5">Hệ thống bán hàng tại quầy cho nhân viên</p>
+                            
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <div class="card h-100 pos-card">
+                                        <div class="card-body text-center p-4">
+                                            <i class="bi bi-cart3 display-1 text-primary mb-3"></i>
+                                            <h3>Bán hàng</h3>
+                                            <p class="text-muted">Giao diện bán hàng tại quầy</p>
+                                            <a href="pos.html" class="btn btn-primary btn-lg">Bắt đầu bán hàng</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="card h-100 pos-card">
+                                        <div class="card-body text-center p-4">
+                                            <i class="bi bi-people display-1 text-success mb-3"></i>
+                                            <h3>Khách hàng</h3>
+                                            <p class="text-muted">Quản lý thông tin khách hàng</p>
+                                            <a href="customers.html" class="btn btn-success btn-lg">Quản lý KH</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="card h-100 pos-card">
+                                        <div class="card-body text-center p-4">
+                                            <i class="bi bi-boxes display-1 text-warning mb-3"></i>
+                                            <h3>Kho hàng</h3>
+                                            <p class="text-muted">Quản lý tồn kho sản phẩm</p>
+                                            <a href="inventory.html" class="btn btn-warning btn-lg">Xem kho</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="card h-100 pos-card">
+                                        <div class="card-body text-center p-4">
+                                            <i class="bi bi-graph-up display-1 text-info mb-3"></i>
+                                            <h3>Báo cáo</h3>
+                                            <p class="text-muted">Thống kê doanh thu</p>
+                                            <a href="reports.html" class="btn btn-info btn-lg">Xem báo cáo</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light mt-5 py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>POS - Shop Dược Phẩm</h5>
+                    <p>Hệ thống bán hàng tại quầy chuyên nghiệp</p>
+                </div>
+                <div class="col-md-6">
+                    <h5>Liên hệ</h5>
+                    <p>Email: support@pharmacy.com<br>
+                    Điện thoại: 0931-418-748</p>
+                </div>
+            </div>
+            <hr>
+            <div class="text-center">
+                <p>&copy; 2024 POS Shop Dược Phẩm. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="toast" class="toast" role="alert">
+            <div class="toast-header">
+                <strong class="me-auto">Thông báo</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Đóng"></button>
+            </div>
+            <div class="toast-body" id="toastMessage">
+                <!-- Toast message will be set here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/js/bootstrap.bundle.js"></script>
+    <script src="/js/app.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/components/home.js"></script>
+    <script src="/js/components/product.js"></script>
+    <script src="/js/components/cart.js"></script>
+    <script src="/js/components/admin.js"></script>
+    
+    <!-- Initialize App -->
+    <script>
+        // Initialize application when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+        
+        function navigateTo(page) {
+            switch(page) {
+                case 'pos':
+                    window.location.href = 'pos.html';
+                    break;
+                case 'customers':
+                    window.location.href = 'customers.html';
+                    break;
+                case 'inventory':
+                    window.location.href = 'inventory.html';
+                    break;
+                case 'reports':
+                    window.location.href = 'reports.html';
+                    break;
+                case 'login':
+                    window.location.href = 'signin.html';
+                    break;
+                case 'admin':
+                    window.location.href = 'admin/home.html';
+                    break;
+                case 'staff-dashboard':
+                    window.location.href = 'staff-dashboard.html';
+                    break;
+                default:
+                    console.log('Unknown page:', page);
+            }
+        }
+        
+        function initializeApp() {
+            // Check if user is logged in
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            if (user.isLoggedIn) {
+                document.getElementById('loginButton').style.display = 'none';
+                document.getElementById('userDropdown').style.display = 'block';
+                document.getElementById('userName').textContent = user.username || 'User';
+            }
+        }
+        
+        function logout() {
+            localStorage.removeItem('user');
+            localStorage.removeItem('cart');
+            window.location.reload();
+        }
+    </script>
+</body>
+</html> 

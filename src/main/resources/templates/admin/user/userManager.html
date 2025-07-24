@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <th:block th:replace="~{user/_meta}" />
+  <title>Quản lý nhân viên</title>
+</head>
+
+<body class="bg-light">
+  <th:block th:replace="~{admin/_headerAdmin}" />
+
+  <div class="container-fluid px-4">
+    <!-- Page Header -->
+    <div class="card shadow-sm border-0 mb-4 mt-4">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <h3 class="fw-bold mb-0">Quản lý nhân viên</h3>
+            <p class="text-muted mb-0">Quản lý danh sách tài khoản nhân viên</p>
+          </div>
+          <a class="btn btn-primary" th:href="@{/admin/user/create}">
+            <i class="fas fa-user-plus me-2"></i>Thêm nhân viên
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alert Messages -->
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+      <i class="fas fa-check-circle me-2"></i>
+      <span th:text="${successMessage}"></span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+      <i class="fas fa-exclamation-circle me-2"></i>
+      <span th:text="${errorMessage}"></span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Users Table -->
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="bg-light">
+              <tr>
+                <th class="border-0 rounded-start ps-4">#</th>
+                <th class="border-0">Email</th>
+                <th class="border-0">Họ tên</th>
+                <th class="border-0">Số điện thoại</th>
+                <th class="border-0">Trạng thái</th>
+                <th class="border-0">Vai trò</th>
+                <th class="border-0 rounded-end text-end pe-4" style="width: 150px;">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="user, loop : ${users}">
+                <td class="ps-4" th:text="${loop.index + 1}"></td>
+                <td th:text="${user.idUser}"></td>
+                <td th:text="${user.hoten}"></td>
+                <td th:text="${user.sdt}"></td>
+                <td>
+                  <span th:if="${user.kichhoat}" class="badge bg-success">
+                    <i class="fas fa-check-circle me-1"></i>Đã kích hoạt
+                  </span>
+                  <span th:unless="${user.kichhoat}" class="badge bg-danger">
+                    <i class="fas fa-lock me-1"></i>Đã khóa
+                  </span>
+                </td>
+                <td>
+                  <span th:if="${user.vaitro}" class="badge bg-primary">
+                    <i class="fas fa-user-shield me-1"></i>Admin
+                  </span>
+                  <span th:unless="${user.vaitro}" class="badge bg-secondary">
+                    <i class="fas fa-user me-1"></i>Nhân viên
+                  </span>
+                </td>
+                <td class="text-end pe-4">
+                  <div class="d-flex gap-2 justify-content-end">
+                    <a class="btn btn-sm btn-primary" 
+                       data-bs-toggle="tooltip"
+                       data-bs-title="Chỉnh sửa"
+                       th:href="@{/admin/user/edit/{id}(id=${user.idUser})}">
+                      <i class="fas fa-edit"></i>
+                    </a>
+                    <a class="btn btn-sm btn-danger"
+                       data-bs-toggle="tooltip"
+                       data-bs-title="Xóa"
+                       th:href="@{/admin/user/delete/{id}(id=${user.idUser})}"
+                       onclick="return confirm('Bạn có muốn xóa nhân viên này?')">
+                      <i class="fas fa-trash"></i>
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div th:if="${totalPages > 0}" class="mt-4">
+      <nav class="d-flex justify-content-center">
+        <ul class="pagination">
+          <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+            <a class="page-link" th:href="@{/admin/user(page=${currentPage - 1})}">
+              <i class="fas fa-chevron-left"></i>
+            </a>
+          </li>
+          <li th:each="i : ${#numbers.sequence(1, totalPages)}"
+              class="page-item" th:classappend="${currentPage == i - 1} ? 'active'">
+            <a class="page-link" th:href="@{/admin/user(page=${i - 1})}" th:text="${i}"></a>
+          </li>
+          <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+            <a class="page-link" th:href="@{/admin/user(page=${currentPage + 1})}">
+              <i class="fas fa-chevron-right"></i>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+
+  <!-- <th:block th:replace="~{admin/_footerAdmin}" /> -->
+
+  <script>
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+  </script>
+
+  <style>
+    .card {
+      border-radius: 0.5rem;
+    }
+
+    .table > :not(caption) > * > * {
+      padding: 1rem 0;
+    }
+
+    .badge {
+      padding: 0.5rem 0.75rem;
+      font-weight: 500;
+    }
+
+    .btn-sm {
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+    }
+
+    .page-link {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50% !important;
+      margin: 0 3px;
+    }
+
+    .alert {
+      border: none;
+      border-radius: 0.5rem;
+    }
+
+    .tooltip {
+      font-size: 0.875rem;
+    }
+  </style>
+</body>
+
+</html>

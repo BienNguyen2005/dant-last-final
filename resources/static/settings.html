@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Cài đặt Hệ thống - POS Shop Dược Phẩm</title>
+  <link href="css/bootstrap.css" type="text/css" rel="stylesheet">
+  <link href="css/bootstrap-icons.css" type="text/css" rel="stylesheet">
+  <link href="css/styles.css" type="text/css" rel="stylesheet">
+  <link rel="icon" href="img/favicon.ico" type="image/x-icon">
+  
+  <style>
+    .settings-container {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+    }
+    
+    .settings-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 2rem 0;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .settings-card {
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+      margin-bottom: 2rem;
+    }
+    
+    .settings-nav {
+      background: white;
+      border-radius: 1rem;
+      padding: 1rem;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+      margin-bottom: 2rem;
+    }
+    
+    .nav-link {
+      border-radius: 0.5rem;
+      transition: all 0.3s ease;
+    }
+    
+    .nav-link.active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    
+    .form-switch .form-check-input {
+      width: 3rem;
+      height: 1.5rem;
+    }
+    
+    .settings-section {
+      animation: fadeIn 0.3s ease-in;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .btn-gradient {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      color: white;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-gradient:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+      color: white;
+    }
+    
+    .form-control:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+  </style>
+</head>
+
+<body class="settings-container">
+  <!-- Header -->
+  <header class="settings-header">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <div class="d-flex align-items-center">
+            <a href="home.html" class="btn btn-light btn-sm me-3">
+              <i class="bi bi-arrow-left"></i> Quay lại
+            </a>
+            <div>
+              <h2 class="mb-1">
+                <i class="bi bi-gear"></i> Cài đặt Hệ thống
+              </h2>
+              <p class="mb-0 opacity-75">Tùy chỉnh và cấu hình POS</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 text-end">
+          <div class="d-flex align-items-center justify-content-end">
+            <span class="me-3">
+              <i class="bi bi-person-circle"></i> Nhân viên: <strong>Nguyễn Văn A</strong>
+            </span>
+            <button class="btn btn-gradient" onclick="saveSettings()">
+              <i class="bi bi-check-circle"></i> Lưu cài đặt
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container py-4">
+    <div class="row">
+      <div class="col-lg-3">
+        <!-- Settings Navigation -->
+        <div class="settings-nav">
+          <ul class="nav nav-pills flex-column">
+            <li class="nav-item">
+              <a class="nav-link active" href="#general" onclick="showSection('general')">
+                <i class="bi bi-gear me-2"></i> Tổng quan
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#store" onclick="showSection('store')">
+                <i class="bi bi-shop me-2"></i> Thông tin cửa hàng
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#pos" onclick="showSection('pos')">
+                <i class="bi bi-credit-card me-2"></i> Cài đặt POS
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#inventory" onclick="showSection('inventory')">
+                <i class="bi bi-boxes me-2"></i> Kho hàng
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#printing" onclick="showSection('printing')">
+                <i class="bi bi-printer me-2"></i> In ấn
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#backup" onclick="showSection('backup')">
+                <i class="bi bi-cloud-download me-2"></i> Sao lưu
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="col-lg-9">
+        <!-- General Settings -->
+        <div id="general-section" class="settings-section">
+          <div class="settings-card">
+            <h5 class="mb-4">
+              <i class="bi bi-gear text-primary"></i> Cài đặt tổng quan
+            </h5>
+            
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Ngôn ngữ hệ thống</label>
+                  <select class="form-select">
+                    <option value="vi" selected>Tiếng Việt</option>
+                    <option value="en">English</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Múi giờ</label>
+                  <select class="form-select">
+                    <option value="UTC+7" selected>UTC+7 (Việt Nam)</option>
+                    <option value="UTC+0">UTC+0 (GMT)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" id="darkMode">
+              <label class="form-check-label" for="darkMode">
+                Chế độ tối
+              </label>
+            </div>
+            
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" id="soundEffect" checked>
+              <label class="form-check-label" for="soundEffect">
+                Âm thanh thông báo
+              </label>
+            </div>
+            
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="autoLogout" checked>
+              <label class="form-check-label" for="autoLogout">
+                Tự động đăng xuất sau 30 phút
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Store Settings -->
+        <div id="store-section" class="settings-section d-none">
+          <div class="settings-card">
+            <h5 class="mb-4">
+              <i class="bi bi-shop text-primary"></i> Thông tin cửa hàng
+            </h5>
+            
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Tên cửa hàng</label>
+                  <input type="text" class="form-control" value="Shop Dược Phẩm">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Mã số thuế</label>
+                  <input type="text" class="form-control" value="0123456789">
+                </div>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Địa chỉ</label>
+              <textarea class="form-control" rows="2">123 Nguyễn Huệ, Quận 1, TP.HCM</textarea>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Số điện thoại</label>
+                  <input type="tel" class="form-control" value="0931-418-748">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Email</label>
+                  <input type="email" class="form-control" value="info@pharmacy.com">
+                </div>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Logo cửa hàng</label>
+              <input type="file" class="form-control" accept="image/*">
+              <small class="form-text text-muted">Kích thước khuyến nghị: 200x200px</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- POS Settings -->
+        <div id="pos-section" class="settings-section d-none">
+          <div class="settings-card">
+            <h5 class="mb-4">
+              <i class="bi bi-credit-card text-primary"></i> Cài đặt POS
+            </h5>
+            
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Thuế VAT (%)</label>
+                  <input type="number" class="form-control" value="0" min="0" max="100">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Giảm giá tối đa (%)</label>
+                  <input type="number" class="form-control" value="20" min="0" max="100">
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" id="allowDiscount" checked>
+              <label class="form-check-label" for="allowDiscount">
+                Cho phép giảm giá
+              </label>
+            </div>
+            
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" id="requireCustomer">
+              <label class="form-check-label" for="requireCustomer">
+                Bắt buộc thông tin khách hàng
+              </label>
+            </div>
+            
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" id="autoSave" checked>
+              <label class="form-check-label" for="autoSave">
+                Tự động lưu đơn hàng
+              </label>
+            </div>
+            
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="barcodeScanner" checked>
+              <label class="form-check-label" for="barcodeScanner">
+                Hỗ trợ máy quét mã vạch
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Inventory Settings -->
+        <div id="inventory-section" class="settings-section d-none">
+          <div class="settings-card">
+            <h5 class="mb-4">
+              <i class="bi bi-boxes text-primary"></i> Cài đặt Kho hàng
+            </h5>
+            
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Cảnh báo tồn kho thấp</label>
+                  <input type="number" class="form-control" value="10" min="1">
+                  <small class="form-text text-muted">Số lượng tối thiểu để hiển thị cảnh báo</small>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Cảnh báo hết hạn (ngày)</label>
+                  <input type="number" class="form-control" value="30" min="1">
+                  <small class="form-text text-muted">Số ngày trước khi hết hạn</small>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" id="autoUpdateStock" checked>
+              <label class="form-check-label" for="autoUpdateStock">
+                Tự động cập nhật tồn kho khi bán
+              </label>
+            </div>
+            
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" id="allowNegativeStock">
+              <label class="form-check-label" for="allowNegativeStock">
+                Cho phép bán khi hết hàng
+              </label>
+            </div>
+            
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="expiryAlert" checked>
+              <label class="form-check-label" for="expiryAlert">
+                Cảnh báo thuốc sắp hết hạn
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Printing Settings -->
+        <div id="printing-section" class="settings-section d-none">
+          <div class="settings-card">
+            <h5 class="mb-4">
+              <i class="bi bi-printer text-primary"></i> Cài đặt In ấn
+            </h5>
+            
+            <div class="mb-3">
+              <label class="form-label">Máy in mặc định</label>
+              <select class="form-select">
+                <option value="default" selected>Máy in hệ thống</option>
+                <option value="thermal">Máy in nhiệt POS</option>
+                <option value="laser">Máy in laser</option>
+              </select>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Khổ giấy hóa đơn</label>
+                  <select class="form-select">
+                    <option value="80mm" selected>80mm (thermal)</option>
+                    <option value="A4">A4</option>
+                    <option value="A5">A5</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Số bản in</label>
+                  <input type="number" class="form-control" value="2" min="1" max="5">
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" id="autoPrint" checked>
+              <label class="form-check-label" for="autoPrint">
+                Tự động in hóa đơn sau khi thanh toán
+              </label>
+            </div>
+            
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" id="printLogo" checked>
+              <label class="form-check-label" for="printLogo">
+                In logo trên hóa đơn
+              </label>
+            </div>
+            
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="printBarcode">
+              <label class="form-check-label" for="printBarcode">
+                In mã vạch trên hóa đơn
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Backup Settings -->
+        <div id="backup-section" class="settings-section d-none">
+          <div class="settings-card">
+            <h5 class="mb-4">
+              <i class="bi bi-cloud-download text-primary"></i> Sao lưu & Khôi phục
+            </h5>
+            
+            <div class="alert alert-info">
+              <i class="bi bi-info-circle me-2"></i>
+              Sao lưu dữ liệu thường xuyên để đảm bảo an toàn thông tin
+            </div>
+            
+            <div class="mb-4">
+              <h6>Sao lưu tự động</h6>
+              <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" id="autoBackup" checked>
+                <label class="form-check-label" for="autoBackup">
+                  Bật sao lưu tự động
+                </label>
+              </div>
+              
+              <div class="row">
+                <div class="col-md-6">
+                  <label class="form-label">Tần suất sao lưu</label>
+                  <select class="form-select">
+                    <option value="daily" selected>Hàng ngày</option>
+                    <option value="weekly">Hàng tuần</option>
+                    <option value="monthly">Hàng tháng</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Giờ sao lưu</label>
+                  <input type="time" class="form-control" value="02:00">
+                </div>
+              </div>
+            </div>
+            
+            <div class="mb-4">
+              <h6>Sao lưu thủ công</h6>
+              <p class="text-muted">Tạo bản sao lưu ngay bây giờ</p>
+              <div class="d-grid gap-2 d-md-flex">
+                <button class="btn btn-primary" onclick="createBackup()">
+                  <i class="bi bi-download"></i> Tạo bản sao lưu
+                </button>
+                <button class="btn btn-outline-primary" onclick="downloadBackup()">
+                  <i class="bi bi-cloud-download"></i> Tải xuống
+                </button>
+              </div>
+            </div>
+            
+            <div class="mb-4">
+              <h6>Khôi phục dữ liệu</h6>
+              <p class="text-muted">Khôi phục từ file sao lưu</p>
+              <div class="input-group">
+                <input type="file" class="form-control" accept=".json,.csv">
+                <button class="btn btn-warning" onclick="restoreBackup()">
+                  <i class="bi bi-upload"></i> Khôi phục
+                </button>
+              </div>
+            </div>
+            
+            <div class="alert alert-warning">
+              <i class="bi bi-exclamation-triangle me-2"></i>
+              <strong>Lưu ý:</strong> Việc khôi phục sẽ ghi đè toàn bộ dữ liệu hiện tại
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="js/bootstrap.bundle.js"></script>
+  
+  <script>
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', function() {
+      loadSettings();
+    });
+
+    function showSection(sectionName) {
+      // Hide all sections
+      document.querySelectorAll('.settings-section').forEach(section => {
+        section.classList.add('d-none');
+      });
+      
+      // Show selected section
+      document.getElementById(sectionName + '-section').classList.remove('d-none');
+      
+      // Update navigation
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+      });
+      event.target.classList.add('active');
+    }
+
+    function loadSettings() {
+      // Load settings from localStorage
+      const settings = JSON.parse(localStorage.getItem('posSettings') || '{}');
+      
+      // Apply saved settings
+      Object.keys(settings).forEach(key => {
+        const element = document.getElementById(key);
+        if (element) {
+          if (element.type === 'checkbox') {
+            element.checked = settings[key];
+          } else {
+            element.value = settings[key];
+          }
+        }
+      });
+    }
+
+    function saveSettings() {
+      const settings = {};
+      
+      // Collect all form inputs
+      document.querySelectorAll('input, select, textarea').forEach(element => {
+        if (element.id) {
+          if (element.type === 'checkbox') {
+            settings[element.id] = element.checked;
+          } else if (element.type !== 'file') {
+            settings[element.id] = element.value;
+          }
+        }
+      });
+      
+      // Save to localStorage
+      localStorage.setItem('posSettings', JSON.stringify(settings));
+      
+      showToast('Cài đặt đã được lưu thành công!', 'success');
+    }
+
+    function createBackup() {
+      // Create backup data
+      const backupData = {
+        timestamp: new Date().toISOString(),
+        settings: JSON.parse(localStorage.getItem('posSettings') || '{}'),
+        customers: JSON.parse(localStorage.getItem('customers') || '[]'),
+        orders: JSON.parse(localStorage.getItem('orders') || '[]'),
+        inventory: JSON.parse(localStorage.getItem('inventory') || '[]')
+      };
+      
+      // Store backup
+      localStorage.setItem('lastBackup', JSON.stringify(backupData));
+      
+      showToast('Tạo bản sao lưu thành công!', 'success');
+    }
+
+    function downloadBackup() {
+      const backupData = localStorage.getItem('lastBackup');
+      if (!backupData) {
+        showToast('Chưa có bản sao lưu nào!', 'warning');
+        return;
+      }
+      
+      const blob = new Blob([backupData], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `pos-backup-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      URL.revokeObjectURL(url);
+      showToast('Tải xuống bản sao lưu thành công!', 'success');
+    }
+
+    function restoreBackup() {
+      const fileInput = document.querySelector('input[type="file"]');
+      const file = fileInput.files[0];
+      
+      if (!file) {
+        showToast('Vui lòng chọn file sao lưu!', 'warning');
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const backupData = JSON.parse(e.target.result);
+          
+          // Confirm restore
+          if (confirm('Bạn có chắc chắn muốn khôi phục dữ liệu? Điều này sẽ ghi đè toàn bộ dữ liệu hiện tại.')) {
+            // Restore data
+            if (backupData.settings) localStorage.setItem('posSettings', JSON.stringify(backupData.settings));
+            if (backupData.customers) localStorage.setItem('customers', JSON.stringify(backupData.customers));
+            if (backupData.orders) localStorage.setItem('orders', JSON.stringify(backupData.orders));
+            if (backupData.inventory) localStorage.setItem('inventory', JSON.stringify(backupData.inventory));
+            
+            showToast('Khôi phục dữ liệu thành công!', 'success');
+            
+            // Reload page to apply changes
+            setTimeout(() => {
+              window.location.reload();
+            }, 2000);
+          }
+        } catch (error) {
+          showToast('File sao lưu không hợp lệ!', 'danger');
+        }
+      };
+      
+      reader.readAsText(file);
+    }
+
+    function showToast(message, type = 'info') {
+      const toast = document.createElement('div');
+      toast.className = `toast align-items-center text-white bg-${type} border-0`;
+      toast.style.position = 'fixed';
+      toast.style.top = '20px';
+      toast.style.right = '20px';
+      toast.style.zIndex = '9999';
+      toast.innerHTML = `
+        <div class="d-flex">
+          <div class="toast-body">${message}</div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="this.parentElement.parentElement.remove()"></button>
+        </div>
+      `;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        if (toast.parentElement) {
+          toast.remove();
+        }
+      }, 3000);
+    }
+
+    // Auto-save settings on change
+    document.addEventListener('change', function(e) {
+      if (e.target.matches('input, select, textarea')) {
+        // Auto-save after 2 seconds of no changes
+        clearTimeout(window.autoSaveTimeout);
+        window.autoSaveTimeout = setTimeout(saveSettings, 2000);
+      }
+    });
+  </script>
+</body>
+
+</html> 

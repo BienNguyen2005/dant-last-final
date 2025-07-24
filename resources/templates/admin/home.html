@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <th:block th:replace="~{user/_meta}" />
+  <title>Trang chủ Admin</title>
+  <!-- Thêm thư viện Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+  <th:block th:replace="~{admin/_headerAdmin}" />
+  <section class="section-content padding-y">
+    <div class="container">
+      <div class="card bg-light">
+        <div class="card-body p-5">
+          <h1 class="display-5 mb-5">Thống Kê Cửa Hàng</h1>
+          <!-- Thay đổi phần chứa canvas -->
+			<div style="max-width: 600px; margin: auto;">
+			  <canvas id="statsChart"></canvas>
+			</div>
+
+        </div>
+      </div> <!-- card.// -->
+    </div> <!-- container.// -->
+  </section> <!-- section-content.// -->
+
+  <th:block th:replace="~{admin/_footerAdmin}" />
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const ctx = document.getElementById('statsChart').getContext('2d');
+
+      // Dữ liệu từ Thymeleaf
+      const totalUsers = [[${totalUsers}]];
+      const totalCategories = [[${totalCategories}]];
+      const totalProducts = [[${totalProducts}]];
+      const totalOrders = [[${totalOrders}]];
+
+      // Dữ liệu biểu đồ
+      const data = {
+        labels: ["Người dùng", "Thể loại", "Sản phẩm", "Đơn hàng"],
+        datasets: [{
+          label: "Thống kê",
+          data: [totalUsers, totalCategories, totalProducts, totalOrders],
+          backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4CAF50"],
+          borderColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4CAF50"],
+          borderWidth: 1
+        }]
+      };
+
+      // Cấu hình biểu đồ
+      const config = {
+        type: 'bar',
+        data: data,
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      };
+
+      // Khởi tạo biểu đồ
+      new Chart(ctx, config);
+    });
+  </script>
+</body>
+
+</html>

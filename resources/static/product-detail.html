@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Chi tiết sản phẩm - Shop Dược Phẩm</title>
+  <link href="css/bootstrap.css" type="text/css" rel="stylesheet">
+  <link href="css/bootstrap-icons.css" type="text/css" rel="stylesheet">
+  <link href="css/styles.css" type="text/css" rel="stylesheet">
+  <link rel="icon" href="img/favicon.ico" type="image/x-icon">
+  
+  <style>
+    .product-container {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 2rem 0;
+    }
+    
+    .product-card {
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+    
+    .product-image-section {
+      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+      padding: 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 500px;
+    }
+    
+    .product-image {
+      max-width: 100%;
+      max-height: 400px;
+      border-radius: 1rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+    }
+    
+    .product-image:hover {
+      transform: scale(1.05);
+    }
+    
+    .product-info {
+      padding: 3rem;
+    }
+    
+    .price-section {
+      background: linear-gradient(135deg, #28a745, #20c997);
+      color: white;
+      padding: 1.5rem;
+      border-radius: 1rem;
+      margin: 2rem 0;
+    }
+    
+    .price-main {
+      font-size: 2.5rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+    
+    .price-original {
+      text-decoration: line-through;
+      opacity: 0.7;
+      font-size: 1.2rem;
+    }
+    
+    .discount-badge {
+      background: #dc3545;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 2rem;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+    
+    .info-item {
+      background: #f8f9fa;
+      border-left: 4px solid #667eea;
+      padding: 1rem 1.5rem;
+      margin-bottom: 1rem;
+      border-radius: 0.5rem;
+    }
+    
+    .quantity-selector {
+      background: white;
+      border: 2px solid #e9ecef;
+      border-radius: 1rem;
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .quantity-btn {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+    
+    .quantity-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+    }
+    
+    .quantity-input {
+      border: none;
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: bold;
+      width: 60px;
+      background: transparent;
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    
+    .btn-primary-gradient {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      color: white;
+      padding: 1rem 2rem;
+      border-radius: 1rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      flex: 1;
+    }
+    
+    .btn-primary-gradient:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+      color: white;
+    }
+    
+    .btn-success-gradient {
+      background: linear-gradient(135deg, #28a745, #20c997);
+      border: none;
+      color: white;
+      padding: 1rem 2rem;
+      border-radius: 1rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      flex: 1;
+    }
+    
+    .btn-success-gradient:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+      color: white;
+    }
+    
+    .description-section {
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+      margin-bottom: 2rem;
+    }
+    
+    .tab-content-custom {
+      background: white;
+      border-radius: 0 0 1rem 1rem;
+      padding: 2rem;
+    }
+    
+    .nav-tabs-custom {
+      border: none;
+      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+      border-radius: 1rem 1rem 0 0;
+      padding: 1rem;
+    }
+    
+    .nav-tabs-custom .nav-link {
+      border: none;
+      background: none;
+      color: #6c757d;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      margin-right: 0.5rem;
+      transition: all 0.3s ease;
+    }
+    
+    .nav-tabs-custom .nav-link.active {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+    }
+    
+    .related-products {
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    }
+    
+    .related-product-card {
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      text-decoration: none;
+      color: inherit;
+      height: 100%;
+    }
+    
+    .related-product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      color: inherit;
+      text-decoration: none;
+    }
+    
+    .related-product-image {
+      width: 100%;
+      height: 150px;
+      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+      border-radius: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      color: #6c757d;
+      margin-bottom: 1rem;
+    }
+    
+    .breadcrumb-modern {
+      background: rgba(255,255,255,0.9);
+      border-radius: 1rem;
+      padding: 1rem 1.5rem;
+      backdrop-filter: blur(10px);
+      margin-bottom: 2rem;
+    }
+    
+    .stock-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 2rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    
+    .stock-high {
+      background: #d4edda;
+      color: #155724;
+    }
+    
+    .stock-medium {
+      background: #fff3cd;
+      color: #856404;
+    }
+    
+    .stock-low {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    
+    .feature-badge {
+      background: linear-gradient(135deg, #ffc107, #fd7e14);
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 1rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-left: 0.5rem;
+    }
+    
+    .prescription-alert {
+      background: linear-gradient(135deg, #dc3545, #fd7e14);
+      color: white;
+      padding: 1rem;
+      border-radius: 1rem;
+      margin: 1rem 0;
+    }
+  </style>
+</head>
+
+<body class="product-container">
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="home.html">
+        <i class="bi bi-capsule me-2"></i>Shop Dược Phẩm
+      </a>
+      
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="home.html">Trang chủ</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="categories.html">Danh mục</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="medications.html">Thuốc đặc biệt</a>
+          </li>
+        </ul>
+        
+        <div class="navbar-nav">
+          <a class="nav-link" href="cart.html">
+            <i class="bi bi-cart3"></i>
+            <span id="cart-count" class="badge bg-danger ms-1">0</span>
+          </a>
+          <a class="nav-link" href="signin.html">Đăng nhập</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb breadcrumb-modern">
+        <li class="breadcrumb-item"><a href="home.html" class="text-decoration-none">Trang chủ</a></li>
+        <li class="breadcrumb-item"><a href="categories.html" class="text-decoration-none" id="category-link">Danh mục</a></li>
+        <li class="breadcrumb-item active" id="product-breadcrumb">Chi tiết sản phẩm</li>
+      </ol>
+    </nav>
+
+    <!-- Product Details -->
+    <div class="product-card">
+      <div class="row g-0">
+        <div class="col-lg-6">
+          <div class="product-image-section">
+            <img id="product-image" src="img/280px.png" alt="Product" class="product-image">
+          </div>
+        </div>
+        
+        <div class="col-lg-6">
+          <div class="product-info">
+            <div class="d-flex align-items-center mb-3">
+              <h1 class="mb-0" id="product-title">Paracetamol 500mg</h1>
+              <span class="feature-badge" id="feature-badge" style="display: none;">Bán chạy</span>
+            </div>
+            
+            <div class="d-flex align-items-center mb-3">
+              <div class="me-3">
+                <i class="bi bi-star-fill text-warning"></i>
+                <i class="bi bi-star-fill text-warning"></i>
+                <i class="bi bi-star-fill text-warning"></i>
+                <i class="bi bi-star-fill text-warning"></i>
+                <i class="bi bi-star text-muted"></i>
+                <span class="ms-2 text-muted">(4.2/5)</span>
+              </div>
+              <span class="text-success">
+                <i class="bi bi-bag-check me-1"></i>
+                <span id="purchase-count">125</span> đã mua
+              </span>
+            </div>
+
+            <div class="price-section">
+              <div class="d-flex align-items-center justify-content-between">
+                <div>
+                  <div class="price-main" id="product-price">15,000₫</div>
+                  <div id="price-compare" style="display: none;">
+                    <span class="price-original" id="original-price">20,000₫</span>
+                    <span class="discount-badge" id="discount-badge">-25%</span>
+                  </div>
+                </div>
+                <div class="text-end">
+                  <div class="stock-indicator stock-high" id="stock-indicator">
+                    <i class="bi bi-check-circle"></i>
+                    <span id="stock-text">Còn hàng</span>
+                  </div>
+                  <small class="d-block mt-1" id="stock-quantity">50 sản phẩm</small>
+                </div>
+              </div>
+            </div>
+
+            <div id="prescription-alert" class="prescription-alert" style="display: none;">
+              <div class="d-flex align-items-center">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                <div>
+                  <strong>Thuốc kê đơn</strong>
+                  <div class="small">Cần có đơn thuốc hợp lệ từ bác sĩ</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row mb-4">
+              <div class="col-sm-6">
+                <div class="info-item">
+                  <strong>Danh mục:</strong>
+                  <div id="product-category">Thuốc không kê đơn</div>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="info-item">
+                  <strong>Thương hiệu:</strong>
+                  <div id="product-brand">Teva</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="info-item mb-4">
+              <strong>Mô tả:</strong>
+              <div id="product-description">Thuốc giảm đau, hạ sốt hiệu quả và an toàn</div>
+            </div>
+
+            <div class="quantity-selector mb-4">
+              <span class="fw-bold">Số lượng:</span>
+              <button class="quantity-btn" onclick="changeQuantity(-1)">
+                <i class="bi bi-dash"></i>
+              </button>
+              <input type="number" id="quantity-input" class="quantity-input" value="1" min="1" max="50" readonly>
+              <button class="quantity-btn" onclick="changeQuantity(1)">
+                <i class="bi bi-plus"></i>
+              </button>
+              <span class="text-muted ms-3">Tối đa <span id="max-quantity">50</span></span>
+            </div>
+
+            <div class="action-buttons">
+              <button class="btn btn-success-gradient" onclick="addToCart()">
+                <i class="bi bi-cart-plus me-2"></i>
+                Thêm vào giỏ
+              </button>
+              <button class="btn btn-primary-gradient" onclick="buyNow()">
+                <i class="bi bi-lightning me-2"></i>
+                Mua ngay
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Product Details Tabs -->
+    <div class="description-section">
+      <ul class="nav nav-tabs nav-tabs-custom" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#description" type="button">
+            <i class="bi bi-info-circle me-2"></i>Mô tả chi tiết
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" data-bs-toggle="tab" data-bs-target="#usage" type="button">
+            <i class="bi bi-clipboard-check me-2"></i>Hướng dẫn sử dụng
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" data-bs-toggle="tab" data-bs-target="#ingredients" type="button">
+            <i class="bi bi-cup me-2"></i>Thành phần
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" data-bs-toggle="tab" data-bs-target="#reviews" type="button">
+            <i class="bi bi-star me-2"></i>Đánh giá
+          </button>
+        </li>
+      </ul>
+      
+      <div class="tab-content tab-content-custom">
+        <div class="tab-pane fade show active" id="description">
+          <h5>Mô tả sản phẩm</h5>
+          <div id="product-full-description">
+            <p>Paracetamol 500mg là thuốc giảm đau, hạ sốt phổ biến và an toàn. Thuốc được sử dụng để điều trị các triệu chứng đau nhẹ đến vừa và sốt.</p>
+            <p>Sản phẩm được sản xuất theo tiêu chuẩn GMP quốc tế, đảm bảo chất lượng và hiệu quả điều trị.</p>
+          </div>
+        </div>
+        
+        <div class="tab-pane fade" id="usage">
+          <h5>Hướng dẫn sử dụng</h5>
+          <div id="usage-instructions">
+            <p><strong>Liều dùng:</strong></p>
+            <ul>
+              <li>Người lớn và trẻ em trên 12 tuổi: 1-2 viên mỗi lần, 3-4 lần/ngày</li>
+              <li>Trẻ em 6-12 tuổi: 1 viên mỗi lần, 3-4 lần/ngày</li>
+              <li>Không quá 8 viên trong 24 giờ</li>
+            </ul>
+            <p><strong>Cách dùng:</strong> Uống với nước, có thể uống trước hoặc sau ăn</p>
+          </div>
+        </div>
+        
+        <div class="tab-pane fade" id="ingredients">
+          <h5>Thành phần</h5>
+          <div id="product-ingredients">
+            <p><strong>Hoạt chất:</strong> Paracetamol 500mg</p>
+            <p><strong>Tá dược:</strong> Tinh bột ngô, cellulose vi tinh thể, povidone, crospovidone, magnesium stearate</p>
+          </div>
+        </div>
+        
+        <div class="tab-pane fade" id="reviews">
+          <h5>Đánh giá khách hàng</h5>
+          <div class="reviews-section">
+            <div class="row mb-4">
+              <div class="col-md-3 text-center">
+                <div class="display-4 text-warning">4.2</div>
+                <div class="text-muted">trên 5 sao</div>
+                <div class="mt-2">
+                  <i class="bi bi-star-fill text-warning"></i>
+                  <i class="bi bi-star-fill text-warning"></i>
+                  <i class="bi bi-star-fill text-warning"></i>
+                  <i class="bi bi-star-fill text-warning"></i>
+                  <i class="bi bi-star text-muted"></i>
+                </div>
+              </div>
+              <div class="col-md-9">
+                <div class="mb-2">
+                  <span>5 sao</span>
+                  <div class="progress ms-3" style="height: 10px; flex: 1;">
+                    <div class="progress-bar bg-warning" style="width: 60%"></div>
+                  </div>
+                  <span class="ms-2">60%</span>
+                </div>
+                <div class="mb-2">
+                  <span>4 sao</span>
+                  <div class="progress ms-3" style="height: 10px; flex: 1;">
+                    <div class="progress-bar bg-warning" style="width: 25%"></div>
+                  </div>
+                  <span class="ms-2">25%</span>
+                </div>
+                <div class="mb-2">
+                  <span>3 sao</span>
+                  <div class="progress ms-3" style="height: 10px; flex: 1;">
+                    <div class="progress-bar bg-warning" style="width: 10%"></div>
+                  </div>
+                  <span class="ms-2">10%</span>
+                </div>
+                <div class="mb-2">
+                  <span>2 sao</span>
+                  <div class="progress ms-3" style="height: 10px; flex: 1;">
+                    <div class="progress-bar bg-warning" style="width: 3%"></div>
+                  </div>
+                  <span class="ms-2">3%</span>
+                </div>
+                <div class="mb-2">
+                  <span>1 sao</span>
+                  <div class="progress ms-3" style="height: 10px; flex: 1;">
+                    <div class="progress-bar bg-warning" style="width: 2%"></div>
+                  </div>
+                  <span class="ms-2">2%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Related Products -->
+    <div class="related-products">
+      <h3 class="mb-4">
+        <i class="bi bi-heart me-2 text-danger"></i>
+        Sản phẩm liên quan
+      </h3>
+      <div class="row" id="related-products">
+        <!-- Related products will be loaded here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="js/bootstrap.bundle.js"></script>
+  
+  <script>
+    // Sample product data
+    const products = {
+      1: {
+        name: "Paracetamol 500mg",
+        price: 15000,
+        originalPrice: 20000,
+        discount: 25,
+        stock: 50,
+        category: "Thuốc không kê đơn",
+        brand: "Teva",
+        description: "Thuốc giảm đau, hạ sốt hiệu quả và an toàn",
+        fullDescription: "Paracetamol 500mg là thuốc giảm đau, hạ sốt phổ biến và an toàn. Thuốc được sử dụng để điều trị các triệu chứng đau nhẹ đến vừa và sốt. Sản phẩm được sản xuất theo tiêu chuẩn GMP quốc tế, đảm bảo chất lượng và hiệu quả điều trị.",
+        ingredients: "Hoạt chất: Paracetamol 500mg. Tá dược: Tinh bột ngô, cellulose vi tinh thể, povidone, crospovidone, magnesium stearate",
+        usage: "Người lớn và trẻ em trên 12 tuổi: 1-2 viên mỗi lần, 3-4 lần/ngày. Trẻ em 6-12 tuổi: 1 viên mỗi lần, 3-4 lần/ngày. Không quá 8 viên trong 24 giờ.",
+        image: "img/280px.png",
+        purchaseCount: 125,
+        prescription: false,
+        featured: true
+      },
+      2: {
+        name: "Vitamin C 1000mg",
+        price: 85000,
+        stock: 30,
+        category: "Thực phẩm chức năng",
+        brand: "Nature Made",
+        description: "Tăng cường sức đề kháng",
+        fullDescription: "Vitamin C 1000mg giúp tăng cường hệ miễn dịch, chống oxy hóa và hỗ trợ tổng hợp collagen.",
+        image: "img/280px.png",
+        purchaseCount: 87,
+        prescription: false,
+        featured: false
+      },
+      3: {
+        name: "Amoxicillin 500mg",
+        price: 45000,
+        stock: 25,
+        category: "Thuốc kê đơn",
+        brand: "Antibiotic Corp",
+        description: "Kháng sinh điều trị nhiễm khuẩn",
+        fullDescription: "Amoxicillin 500mg là kháng sinh nhóm penicillin dùng điều trị các bệnh nhiễm khuẩn.",
+        image: "img/280px.png",
+        purchaseCount: 67,
+        prescription: true,
+        featured: false
+      }
+    };
+
+    const relatedProducts = [2, 3];
+    let currentProductId = 1;
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      currentProductId = urlParams.get('id') || '1';
+      
+      loadProduct(currentProductId);
+      loadRelatedProducts();
+      updateCartCount();
+    });
+
+    function loadProduct(productId) {
+      const product = products[productId];
+      if (!product) return;
+      
+      // Basic info
+      document.getElementById('product-title').textContent = product.name;
+      document.getElementById('product-breadcrumb').textContent = product.name;
+      document.getElementById('product-price').textContent = formatPrice(product.price);
+      document.getElementById('product-category').textContent = product.category;
+      document.getElementById('product-brand').textContent = product.brand;
+      document.getElementById('product-description').textContent = product.description;
+      document.getElementById('product-full-description').innerHTML = `<p>${product.fullDescription}</p>`;
+      document.getElementById('product-image').src = product.image;
+      document.getElementById('purchase-count').textContent = product.purchaseCount;
+      document.getElementById('max-quantity').textContent = product.stock;
+      document.getElementById('quantity-input').max = product.stock;
+      
+      // Stock indicator
+      updateStockIndicator(product.stock);
+      
+      // Price and discount
+      if (product.originalPrice && product.discount) {
+        document.getElementById('original-price').textContent = formatPrice(product.originalPrice);
+        document.getElementById('discount-badge').textContent = `-${product.discount}%`;
+        document.getElementById('price-compare').style.display = 'block';
+      }
+      
+      // Featured badge
+      if (product.featured) {
+        document.getElementById('feature-badge').style.display = 'inline-block';
+      }
+      
+      // Prescription alert
+      if (product.prescription) {
+        document.getElementById('prescription-alert').style.display = 'block';
+      }
+      
+      // Detailed tabs
+      if (product.ingredients) {
+        document.getElementById('product-ingredients').innerHTML = `<p>${product.ingredients}</p>`;
+      }
+      if (product.usage) {
+        document.getElementById('usage-instructions').innerHTML = `<p>${product.usage}</p>`;
+      }
+      
+      // Update page title
+      document.title = `${product.name} - Shop Dược Phẩm`;
+    }
+
+    function updateStockIndicator(stock) {
+      const indicator = document.getElementById('stock-indicator');
+      const stockText = document.getElementById('stock-text');
+      const stockQuantity = document.getElementById('stock-quantity');
+      
+      stockQuantity.textContent = `${stock} sản phẩm`;
+      
+      if (stock > 20) {
+        indicator.className = 'stock-indicator stock-high';
+        stockText.innerHTML = '<i class="bi bi-check-circle"></i> Còn hàng';
+      } else if (stock > 5) {
+        indicator.className = 'stock-indicator stock-medium';
+        stockText.innerHTML = '<i class="bi bi-exclamation-circle"></i> Sắp hết';
+      } else {
+        indicator.className = 'stock-indicator stock-low';
+        stockText.innerHTML = '<i class="bi bi-x-circle"></i> Ít hàng';
+      }
+    }
+
+    function loadRelatedProducts() {
+      const container = document.getElementById('related-products');
+      container.innerHTML = relatedProducts.map(productId => {
+        const product = products[productId];
+        if (!product) return '';
+        
+        return `
+          <div class="col-lg-3 col-md-6 mb-4">
+            <a href="product-detail.html?id=${productId}" class="related-product-card d-block">
+              <div class="related-product-image">
+                <i class="bi bi-capsule"></i>
+              </div>
+              <h6 class="mb-2">${product.name}</h6>
+              <div class="text-primary fw-bold">${formatPrice(product.price)}</div>
+              <small class="text-muted">${product.category}</small>
+            </a>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function changeQuantity(delta) {
+      const input = document.getElementById('quantity-input');
+      let newValue = parseInt(input.value) + delta;
+      
+      if (newValue < 1) newValue = 1;
+      if (newValue > parseInt(input.max)) newValue = parseInt(input.max);
+      
+      input.value = newValue;
+    }
+
+    function addToCart() {
+      const product = products[currentProductId];
+      if (!product) return;
+      
+      const quantity = parseInt(document.getElementById('quantity-input').value);
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      
+      const existingItem = cart.find(item => item.id == currentProductId);
+      if (existingItem) {
+        existingItem.quantity += quantity;
+      } else {
+        cart.push({
+          id: currentProductId,
+          name: product.name,
+          price: product.price,
+          quantity: quantity,
+          image: product.image
+        });
+      }
+      
+      localStorage.setItem('cart', JSON.stringify(cart));
+      updateCartCount();
+      
+      showToast('Đã thêm vào giỏ hàng!', 'success');
+    }
+
+    function buyNow() {
+      addToCart();
+      window.location.href = 'cart.html';
+    }
+
+    function updateCartCount() {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+      document.getElementById('cart-count').textContent = totalItems;
+    }
+
+    function formatPrice(price) {
+      return new Intl.NumberFormat('vi-VN').format(price) + '₫';
+    }
+
+    function showToast(message, type = 'info') {
+      const toast = document.createElement('div');
+      toast.className = 'toast-notification';
+      toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${type === 'success' ? '#28a745' : '#007bff'};
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 0.5rem;
+        z-index: 9999;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      `;
+      toast.textContent = message;
+      
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.remove();
+      }, 3000);
+    }
+  </script>
+</body>
+
+</html> 

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <th:block th:replace="~{user/_meta}" />
+  <title>Bán hàng tại quầy</title>
+</head>
+<body class="bg-light">
+<th:block th:replace="~{admin/_headerAdmin}" />
+
+<div class="container-fluid px-4">
+  <div class="row">
+    <!-- Khu sản phẩm -->
+    <div class="col-md-8 mt-3">
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show">
+	  <i class="fas fa-check-circle me-2"></i>
+	  <span th:text="${successMessage}"></span>
+	</div>
+	<div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show">
+	  <i class="fas fa-exclamation-circle me-2"></i>
+	  <span th:text="${errorMessage}"></span>
+	</div>
+      <div class="card shadow-sm mb-3">
+        <div class="card-body">
+          <form method="get" th:action="@{/banhangtaiquay}" class="d-flex align-items-center gap-2 mb-3">
+			  <input type="text" name="keyword" class="form-control" placeholder="Tìm theo tên..."
+			         th:value="${keyword}" style="max-width: 200px;">
+			  <select class="form-select" name="idLoai" style="max-width: 200px;">
+			    <option value="" th:selected="${idLoai == null}">Tất cả loại</option>
+			    <option th:each="loai : ${dsLoai}" th:value="${loai.idLoai}" th:text="${loai.tenLoai}"
+			            th:selected="${idLoai == loai.idLoai}"></option>
+			  </select>
+			  <button class="btn btn-primary"><i class="fas fa-search me-1"></i>Tìm</button>
+			</form>
+        </div>
+      </div>
+
+      <div class="row row-cols-1 row-cols-md-3 g-4">
+		  <div th:each="sp : ${dsSanPham.content}" class="col">
+		    <div class="card h-100 shadow-sm">
+		      <img th:src="@{/image/{url}(url=${sp.hinh})}" class="card-img-top" style="height: 180px; object-fit: cover;" />
+		      <div class="card-body d-flex flex-column">
+				  <h6 th:text="${sp.tenSanpham}"></h6>
+				  <p class="mb-1">
+				    Tồn kho: <strong th:text="${sp.soluong}"></strong><br/>
+				    Giá: <strong th:text="${#numbers.formatInteger(sp.gia, 0, 'COMMA')} + '₫'"></strong><br/>
+				    <span th:if="${sp.giamgia > 0}" class="price fw-bold text-primary">
+				      <span th:text="${#numbers.formatInteger(sp.gia * (100 - sp.giamgia) / 100, 0, 'COMMA')}"></span>₫
+				    </span><br/>
+				    <span th:if="${sp.giamgia > 0}" class="text-danger">Giảm: <strong th:text="${sp.giamgia + '%'}"></strong></span>
+				  </p>
+				
+				  <!-- Nút thêm hoặc thông báo hết hàng luôn nằm dưới -->
+				  <div class="mt-auto">
+				    <form th:if="${sp.soluong > 0}" th:action="@{/giohang/them}" method="post" class="d-flex">
+				      <input type="hidden" name="idSanpham" th:value="${sp.idSanpham}">
+				      <input type="number" name="soluong" value="1" min="1"
+				             class="form-control me-2" style="max-width: 80px;" />
+				      <button class="btn btn-success">
+				        <i class="fas fa-plus"></i>
+				      </button>
+				    </form>
+				
+				    <div th:if="${sp.soluong == 0}" class="text-danger fw-bold mt-2">Hết hàng</div>
+				  </div>
+				</div>
+
+		    </div>
+		  </div>
+		</div>
+		
+		<!-- PHÂN TRANG -->
+		<div class="mt-4 d-flex justify-content-center">
+		  <nav th:if="${dsSanPham.totalPages > 1}">
+		    <ul class="pagination">
+		      <li class="page-item" th:classappend="${dsSanPham.first} ? 'disabled'">
+		        <a class="page-link" th:href="@{/banhangtaiquay(page=${dsSanPham.number - 1}, keyword=${keyword}, idLoai=${idLoai})}">«</a>
+		      </li>
+		      <li class="page-item" th:each="i : ${#numbers.sequence(0, dsSanPham.totalPages - 1)}"
+		          th:classappend="${i == dsSanPham.number} ? 'active'">
+		        <a class="page-link" th:href="@{/banhangtaiquay(page=${i}, keyword=${keyword}, idLoai=${idLoai})}"
+		           th:text="${i + 1}"></a>
+		      </li>
+		      <li class="page-item" th:classappend="${dsSanPham.last} ? 'disabled'">
+		        <a class="page-link" th:href="@{/banhangtaiquay(page=${dsSanPham.number + 1}, keyword=${keyword}, idLoai=${idLoai})}">»</a>
+		      </li>
+		    </ul>
+		  </nav>
+		</div>
+
+    </div>
+
+    <!-- Khu hóa đơn -->
+    <div class="col-md-4 mt-3">
+      <div class="card shadow-sm mb-3">
+        <div class="card-header bg-primary text-white">
+          <strong>Hóa đơn tạm</strong>
+        </div>
+        <div class="card-body p-3">
+          <table class="table table-sm table-bordered">
+            <thead>
+              <tr>
+                <th>Sản phẩm</th>
+                <th>Số lượng</th>
+                <th>Giảm giá</th>
+                <th>Giá</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="ct : ${gioHang}">
+				  <td th:text="${ct.sanPham.tenSanpham}"></td>
+				  <td th:text="${ct.soluong}"></td>
+				  <td th:text="${#numbers.formatInteger(ct.sanPham.giamgia, 0, 'COMMA')} + '%'"></td>
+				  <td th:text="${#numbers.formatInteger((ct.sanPham.gia * (100 - ct.sanPham.giamgia) / 100) * ct.soluong, 0, 'COMMA')} + '₫'"></td>
+				  <td>
+				    <form th:action="@{/giohang/xoa}" method="post">
+				      <input type="hidden" name="idSanpham" th:value="${ct.sanPham.idSanpham}">
+				      <button class="btn btn-sm btn-danger">
+				        <i class="fas fa-trash"></i>
+				      </button>
+				    </form>
+				  </td>
+				</tr>
+				<tr th:if="${!#lists.isEmpty(gioHang)}">
+				  <td colspan="3" class="text-end fw-bold">Tổng cộng:</td>
+				  <td class="fw-bold text-danger" th:text="${#numbers.formatInteger(tongCong, 0, 'COMMA')} + '₫'"></td>
+				  <td></td>
+				</tr>
+              <tr th:if="${#lists.isEmpty(gioHang)}">
+                <td colspan="4" class="text-center">Chưa có sản phẩm</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="mb-3">
+            <label class="form-label">Hình thức thanh toán:</label><br/>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" id="CASH" name="phuongthuc" value="CASH" checked>
+              <label for="CASH" class="form-check-label">Tiền mặt</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" id="BANK" type="radio" name="phuongthuc" value="BANK">
+              <label for="BANK" class="form-check-label">Chuyển khoản</label>
+            </div>
+          </div>
+
+          <form th:action="@{/banhangtaiquay/thanh-toan}" method="post">
+            <input type="hidden" name="phuongthuc" value="CASH" id="selectedPayment">
+            <button type="submit" class="btn btn-primary w-100">
+              <i class="fas fa-check-circle me-1"></i> Thanh toán
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const radios = document.querySelectorAll('input[name="phuongthuc"]');
+  const hiddenInput = document.getElementById('selectedPayment');
+  radios.forEach(radio => {
+    radio.addEventListener('change', () => {
+      hiddenInput.value = radio.value;
+    });
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Dashboard Nhân viên - Shop Dược Phẩm</title>
+  <link href="css/bootstrap.css" type="text/css" rel="stylesheet">
+  <link href="css/bootstrap-icons.css" type="text/css" rel="stylesheet">
+  <link href="css/styles.css" type="text/css" rel="stylesheet">
+  <link rel="icon" href="img/favicon.ico" type="image/x-icon">
+  
+  <style>
+    .dashboard-card {
+      border: none;
+      border-radius: 1rem;
+      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .dashboard-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.2);
+    }
+    
+    .stat-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      margin-bottom: 1rem;
+    }
+    
+    .quick-action-card {
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      transition: all 0.3s ease;
+    }
+    
+    .quick-action-card:hover {
+      color: inherit;
+      transform: translateY(-2px);
+    }
+    
+    .activity-item {
+      padding: 1rem;
+      border-bottom: 1px solid #e9ecef;
+      transition: background-color 0.3s ease;
+    }
+    
+    .activity-item:hover {
+      background-color: #f8f9fa;
+    }
+    
+    .activity-item:last-child {
+      border-bottom: none;
+    }
+    
+    .page-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 3rem 0;
+      margin-bottom: 2rem;
+    }
+    
+    .metrics-row {
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header -->
+  <header class="page-header">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <h1 class="display-5 mb-2">Dashboard Nhân viên</h1>
+          <p class="lead mb-0">Xin chào, <strong id="staff-name">Nguyễn Văn A</strong>!</p>
+          <small>Hôm nay là <span id="current-date"></span></small>
+        </div>
+        <div class="col-md-4 text-end">
+          <div class="d-flex align-items-center justify-content-end gap-3">
+            <div class="text-center">
+              <i class="bi bi-clock display-6"></i>
+              <div id="current-time" class="fs-6"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">
+        <i class="bi bi-house"></i> Trang chủ
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="pos.html">
+              <i class="bi bi-cart3"></i> POS Bán hàng
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="customers.html">
+              <i class="bi bi-people"></i> Khách hàng
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="inventory.html">
+              <i class="bi bi-boxes"></i> Kho hàng
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="orders.html">
+              <i class="bi bi-receipt"></i> Đơn hàng
+            </a>
+          </li>
+        </ul>
+        <ul class="navbar-nav">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+              <i class="bi bi-person-circle"></i> Tài khoản
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="profile.html">Thông tin cá nhân</a></li>
+              <li><a class="dropdown-item" href="settings.html">Cài đặt</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="signin.html">Đăng xuất</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container my-4">
+    <!-- Statistics Cards -->
+    <div class="row metrics-row">
+      <div class="col-lg-3 col-md-6 mb-4">
+        <div class="stat-card text-center">
+          <i class="bi bi-receipt display-4 mb-3"></i>
+          <h3 id="today-orders">15</h3>
+          <p class="mb-0">Đơn hàng hôm nay</p>
+        </div>
+      </div>
+      
+      <div class="col-lg-3 col-md-6 mb-4">
+        <div class="stat-card text-center">
+          <i class="bi bi-currency-dollar display-4 mb-3"></i>
+          <h3 id="today-revenue">2,350,000₫</h3>
+          <p class="mb-0">Doanh thu hôm nay</p>
+        </div>
+      </div>
+      
+      <div class="col-lg-3 col-md-6 mb-4">
+        <div class="stat-card text-center">
+          <i class="bi bi-people display-4 mb-3"></i>
+          <h3 id="today-customers">12</h3>
+          <p class="mb-0">Khách hàng hôm nay</p>
+        </div>
+      </div>
+      
+      <div class="col-lg-3 col-md-6 mb-4">
+        <div class="stat-card text-center">
+          <i class="bi bi-graph-up display-4 mb-3"></i>
+          <h3 id="avg-order">156,667₫</h3>
+          <p class="mb-0">Giá trị TB/đơn</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <h3 class="mb-4">Thao tác nhanh</h3>
+      </div>
+      
+      <div class="col-lg-3 col-md-6 mb-3">
+        <a href="pos.html" class="quick-action-card dashboard-card">
+          <div class="text-center">
+            <i class="bi bi-cart-plus display-4 text-primary mb-3"></i>
+            <h5>Bán hàng mới</h5>
+            <p class="text-muted mb-0">Tạo đơn hàng mới</p>
+          </div>
+        </a>
+      </div>
+      
+      <div class="col-lg-3 col-md-6 mb-3">
+        <a href="customers.html" class="quick-action-card dashboard-card">
+          <div class="text-center">
+            <i class="bi bi-person-plus display-4 text-success mb-3"></i>
+            <h5>Thêm khách hàng</h5>
+            <p class="text-muted mb-0">Đăng ký KH mới</p>
+          </div>
+        </a>
+      </div>
+      
+      <div class="col-lg-3 col-md-6 mb-3">
+        <a href="inventory.html" class="quick-action-card dashboard-card">
+          <div class="text-center">
+            <i class="bi bi-search display-4 text-warning mb-3"></i>
+            <h5>Kiểm tra tồn kho</h5>
+            <p class="text-muted mb-0">Xem tình trạng kho</p>
+          </div>
+        </a>
+      </div>
+      
+      <div class="col-lg-3 col-md-6 mb-3">
+        <a href="reports.html" class="quick-action-card dashboard-card">
+          <div class="text-center">
+            <i class="bi bi-file-earmark-text display-4 text-info mb-3"></i>
+            <h5>Báo cáo</h5>
+            <p class="text-muted mb-0">Xem báo cáo chi tiết</p>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Recent Activities and Alerts -->
+    <div class="row">
+      <div class="col-lg-8 mb-4">
+        <div class="dashboard-card">
+          <div class="card-header bg-transparent border-bottom-0">
+            <h5 class="mb-0">
+              <i class="bi bi-clock-history"></i> Hoạt động gần đây
+            </h5>
+          </div>
+          <div class="card-body p-0">
+            <div class="activity-item">
+              <div class="d-flex align-items-center">
+                <i class="bi bi-receipt text-success me-3 fs-4"></i>
+                <div class="flex-grow-1">
+                  <h6 class="mb-1">Đơn hàng #HD240001 - 156,000₫</h6>
+                  <small class="text-muted">Khách hàng: Nguyễn Văn B - 10:30 AM</small>
+                </div>
+                <span class="badge bg-success">Hoàn thành</span>
+              </div>
+            </div>
+            
+            <div class="activity-item">
+              <div class="d-flex align-items-center">
+                <i class="bi bi-person-plus text-primary me-3 fs-4"></i>
+                <div class="flex-grow-1">
+                  <h6 class="mb-1">Khách hàng mới: Trần Thị C</h6>
+                  <small class="text-muted">SĐT: 0907654321 - 10:15 AM</small>
+                </div>
+                <span class="badge bg-primary">Mới</span>
+              </div>
+            </div>
+            
+            <div class="activity-item">
+              <div class="d-flex align-items-center">
+                <i class="bi bi-receipt text-success me-3 fs-4"></i>
+                <div class="flex-grow-1">
+                  <h6 class="mb-1">Đơn hàng #HD240002 - 285,000₫</h6>
+                  <small class="text-muted">Khách hàng: Lê Văn D - 09:45 AM</small>
+                </div>
+                <span class="badge bg-success">Hoàn thành</span>
+              </div>
+            </div>
+            
+            <div class="activity-item">
+              <div class="d-flex align-items-center">
+                <i class="bi bi-exclamation-triangle text-warning me-3 fs-4"></i>
+                <div class="flex-grow-1">
+                  <h6 class="mb-1">Cảnh báo tồn kho thấp</h6>
+                  <small class="text-muted">Paracetamol 500mg còn 5 hộp - 09:30 AM</small>
+                </div>
+                <span class="badge bg-warning">Cảnh báo</span>
+              </div>
+            </div>
+            
+            <div class="activity-item">
+              <div class="d-flex align-items-center">
+                <i class="bi bi-receipt text-success me-3 fs-4"></i>
+                <div class="flex-grow-1">
+                  <h6 class="mb-1">Đơn hàng #HD240003 - 125,000₫</h6>
+                  <small class="text-muted">Khách hàng: Phạm Thị E - 09:15 AM</small>
+                </div>
+                <span class="badge bg-success">Hoàn thành</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-lg-4 mb-4">
+        <div class="dashboard-card">
+          <div class="card-header bg-transparent border-bottom-0">
+            <h5 class="mb-0">
+              <i class="bi bi-exclamation-circle"></i> Cảnh báo & Thông báo
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="alert alert-warning">
+              <div class="d-flex align-items-center">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                <div>
+                  <strong>5 sản phẩm</strong> sắp hết hàng
+                </div>
+              </div>
+            </div>
+            
+            <div class="alert alert-info">
+              <div class="d-flex align-items-center">
+                <i class="bi bi-calendar me-2"></i>
+                <div>
+                  <strong>3 thuốc</strong> sắp hết hạn (trong 30 ngày)
+                </div>
+              </div>
+            </div>
+            
+            <div class="alert alert-success">
+              <div class="d-flex align-items-center">
+                <i class="bi bi-graph-up me-2"></i>
+                <div>
+                  Doanh thu tháng này <strong>+15%</strong> so với tháng trước
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Popular Products -->
+        <div class="dashboard-card mt-4">
+          <div class="card-header bg-transparent border-bottom-0">
+            <h5 class="mb-0">
+              <i class="bi bi-star"></i> Sản phẩm bán chạy
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div>
+                <h6 class="mb-1">Paracetamol 500mg</h6>
+                <small class="text-muted">25 hộp bán</small>
+              </div>
+              <span class="badge bg-success">Số 1</span>
+            </div>
+            
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div>
+                <h6 class="mb-1">Vitamin C 1000mg</h6>
+                <small class="text-muted">18 hộp bán</small>
+              </div>
+              <span class="badge bg-info">Số 2</span>
+            </div>
+            
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="mb-1">Kem dưỡng da Eucerin</h6>
+                <small class="text-muted">12 tuýp bán</small>
+              </div>
+              <span class="badge bg-warning">Số 3</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-light py-4 mt-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <h6>POS - Shop Dược Phẩm</h6>
+          <p class="text-muted mb-0">Hệ thống quản lý bán hàng chuyên nghiệp</p>
+        </div>
+        <div class="col-md-6 text-end">
+          <p class="text-muted mb-0">© 2024 Shop Dược Phẩm. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="js/bootstrap.bundle.js"></script>
+  
+  <script>
+    // Initialize dashboard
+    document.addEventListener('DOMContentLoaded', function() {
+      updateDateTime();
+      setInterval(updateDateTime, 1000);
+      loadDashboardData();
+    });
+
+    function updateDateTime() {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString('vi-VN');
+      const dateString = now.toLocaleDateString('vi-VN', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+      
+      document.getElementById('current-time').textContent = timeString;
+      document.getElementById('current-date').textContent = dateString;
+    }
+
+    function loadDashboardData() {
+      // Mock data - in real app, this would come from an API
+      const todayStats = {
+        orders: Math.floor(Math.random() * 20) + 10,
+        revenue: Math.floor(Math.random() * 5000000) + 1000000,
+        customers: Math.floor(Math.random() * 15) + 8,
+        avgOrder: 0
+      };
+      
+      todayStats.avgOrder = Math.floor(todayStats.revenue / todayStats.orders);
+      
+      document.getElementById('today-orders').textContent = todayStats.orders;
+      document.getElementById('today-revenue').textContent = formatPrice(todayStats.revenue);
+      document.getElementById('today-customers').textContent = todayStats.customers;
+      document.getElementById('avg-order').textContent = formatPrice(todayStats.avgOrder);
+    }
+
+    function formatPrice(price) {
+      return new Intl.NumberFormat('vi-VN').format(price) + '₫';
+    }
+
+    // Auto-refresh data every 5 minutes
+    setInterval(loadDashboardData, 300000);
+  </script>
+</body>
+
+</html> 

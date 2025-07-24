@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <th:block th:replace="~{user/_meta}" />
+  <title>Dashboard Admin - MEDISALE</title>
+  <!-- Thêm thư viện Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="bg-light">
+  <th:block th:replace="~{admin/_headerAdmin}" />
+  
+    <!-- Dashboard Stats -->
+
+    <!-- Main Content -->
+    <div class="row g-4">
+      <!-- Revenue Chart -->
+      <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-white border-0 py-3">
+            <div class="d-flex justify-content-between align-items-center">
+              <h5 class="card-title mb-0">Thống kê doanh thu</h5>
+            </div>
+          </div>
+          <div class="card-body">
+            <form id="statsForm" class="mb-4">
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <select id="categorySelect" name="idLoai" class="form-select" onchange="submitForm()">
+                    <option disabled selected>Chọn loại hàng</option>
+                    <option th:each="item : ${loais}" 
+                            th:selected="${idLoai == item.idLoai}" 
+                            th:value="${item.idLoai}" 
+                            th:text="${item.tenLoai}">
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </form>
+            <canvas id="revenueChart" height="300"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Customers -->
+      <!-- <div class="col-lg-4">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-white border-0 py-3">
+            <h5 class="card-title mb-0">Top khách hàng VIP</h5>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Khách hàng</th>
+                    <th>Tổng chi tiêu</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <th:block th:if="${reportKhachHangVip != null}">
+                    <tr th:each="item : ${reportKhachHangVip}">
+                      <td>
+                        <div class="d-flex align-items-center">
+                          <img th:if="${item.hinh == null}" th:src="@{img/280px.png}" alt="Avatar" id="avatarPreview" class="rounded-circle me-2" width="32" height="32" th:alt="${item.tenKhachHang}">
+				    	  <img th:if="${item.hinh != null}" th:src="@{/image/{url}(url=${item.hinh})}" id="avatarPreview" class="rounded-circle me-2" width="32" height="32" th:alt="${item.tenKhachHang}">
+                          <div>
+                            <h6 class="mb-0" th:text="${item.tenKhachHang}"></h6>
+                            <small class="text-muted" th:text="${#dates.format(item.ngayMuaDauTien, 'dd/MM/yyyy')}"></small>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <span class="fw-bold" th:text="${#numbers.formatInteger(item.tongTienDaMua, 3, 'POINT')}">₫</span>
+                      </td>
+                    </tr>
+                  </th:block>
+                  <tr th:if="${reportKhachHangVip == null}">
+                    <td colspan="2" class="text-center py-4">Không có dữ liệu</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div> -->
+    </div>
+  </div>
+
+<!--   <th:block th:replace="~{admin/_footerAdmin}" /> -->
+
+  <script th:inline="javascript">
+    /*<![CDATA[*/
+    var reportData = {
+      tongDoanhThu: [[${reportRevenueStatistics?.tongDoanhThu}]] || 0,
+      tongSoLuong: [[${reportRevenueStatistics?.tongSoLuong}]] || 0,
+      giaCaoNhat: [[${reportRevenueStatistics?.giaCaoNhat}]] || 0,
+      giaThapNhat: [[${reportRevenueStatistics?.giaThapNhat}]] || 0,
+      giaTrungBinh: [[${reportRevenueStatistics?.giaTrungBinh}]] || 0
+    };
+
+    var ctx = document.getElementById('revenueChart').getContext('2d');
+    var revenueChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Giá thấp nhất', 'Giá trung bình', 'Giá cao nhất', 'Tổng doanh thu', 'Tổng số lượng'],
+        datasets: [{
+          label: 'Thống kê giá & doanh thu',
+          data: [
+            reportData.giaThapNhat,
+            reportData.giaTrungBinh,
+            reportData.giaCaoNhat,
+            reportData.tongDoanhThu,
+            null
+          ],
+          backgroundColor: [
+            'rgba(255, 206, 86, 0.6)',  // Vàng
+            'rgba(153, 102, 255, 0.6)',  // Tím
+            'rgba(255, 99, 132, 0.6)',   // Đỏ
+            'rgba(54, 162, 235, 0.6)'    // Xanh dương
+          ],
+          borderColor: [
+            'rgba(255, 206, 86, 1)',
+            'rgba(153, 102, 255, 1)',
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)'
+          ],
+          borderWidth: 1,
+          yAxisID: 'y-axis-1'
+        },
+        {
+          label: 'Tổng số lượng',
+          data: [
+            null,
+            null,
+            null,
+            null,
+            reportData.tongSoLuong
+          ],
+          backgroundColor: 'rgba(75, 192, 192, 0.6)',  // Xanh lá
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1,
+          yAxisID: 'y-axis-2'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        aspectRatio: 2,
+        interaction: {
+          intersect: false,
+          mode: 'index'
+        },
+        scales: {
+          'y-axis-1': {
+            type: 'linear',
+            display: true,
+            position: 'left',
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Giá & Doanh thu (VNĐ)'
+            },
+            ticks: {
+              callback: function(value) {
+                return new Intl.NumberFormat('vi-VN', {
+                  style: 'currency',
+                  currency: 'VND'
+                }).format(value);
+              }
+            }
+          },
+          'y-axis-2': {
+            type: 'linear',
+            display: true,
+            position: 'right',
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Số lượng (sản phẩm)'
+            },
+            grid: {
+              drawOnChartArea: false
+            }
+          },
+          x: {
+            grid: {
+              display: false
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top'
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                let value = context.raw;
+                if (!value) return '';
+                
+                if (context.datasetIndex === 0) {
+                  return 'Giá trị: ' + new Intl.NumberFormat('vi-VN', {
+                    style: 'currency',
+                    currency: 'VND'
+                  }).format(value);
+                } else {
+                  return 'Số lượng: ' + value + ' sản phẩm';
+                }
+              }
+            }
+          }
+        }
+      }
+    });
+
+    function submitForm() {
+      document.getElementById("statsForm").submit();
+    }
+    /*]]>*/
+  </script>
+
+  <style>
+    .card {
+      transition: transform 0.2s ease-in-out;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+    }
+    .table > :not(caption) > * > * {
+      padding: 1rem;
+    }
+    .dropdown-menu {
+      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+      border: none;
+    }
+  </style>
+</body>
+
+</html>

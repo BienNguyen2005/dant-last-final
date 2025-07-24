@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <th:block th:replace="~{user/_meta}" />
+  <title>Giỏ hàng</title>
+
+  <!-- Custom Scripts -->
+  <script th:src="@{/js/toast.js}" type="module"></script>
+  <script th:src="@{/js/cart.js}" type="module"></script>
+  <script th:src="@{/js/home.js}" type="module"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+
+<body class="bg-light">
+  <th:block th:replace="~{user/_header}" />
+
+  <!-- Page Header -->
+  <section class="section-pagetop bg-white border-bottom">
+    <div class="container">
+      <div class="d-flex align-items-center py-4">
+        <i class="fas fa-shopping-cart fa-2x text-primary me-3"></i>
+        <h2 class="title-page fw-bold mb-0">Giỏ hàng của tôi</h2>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cart Content -->
+  <section class="section-content py-5">
+    <div class="container">
+      <!-- Not Logged In -->
+      <div th:if="${session.currentUser == null}" class="col-12 text-center py-5">
+        <div class="card shadow-sm border-0">
+          <div class="card-body p-5">
+            <i class="fas fa-user-lock fa-4x text-muted mb-4"></i>
+            <h4 class="mb-3">Vui lòng đăng nhập để sử dụng giỏ hàng</h4>
+            <a th:href="@{/signin}" class="btn btn-primary">
+              <i class="fas fa-sign-in-alt me-2"></i>Đăng nhập ngay
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cart Content -->
+      <th:block th:if="${session.currentUser != null}">
+        <div class="row">
+          <main class="col-lg-9 mb-lg-0 mb-4">
+            <div class="card shadow-sm border-0 mb-4">
+              <div class="card-body p-4">
+                <!-- Shipping Address -->
+                <div class="mb-4">
+                  <label for="diachi" class="form-label fw-medium">
+                    <i class="fas fa-map-marker-alt me-2"></i>Địa chỉ giao hàng
+                  </label>
+                  <textarea rows="2" id="diachi" class="form-control" 
+                            placeholder="Nhập địa chỉ giao hàng của bạn"></textarea>
+                </div>
+
+                <!-- Cart Table -->
+                <div id="cart-table"></div>
+
+                <!-- Cart Actions -->
+                <div class="card-body border-top pt-4 pb-0 px-0">
+                  <div class="d-flex gap-2">
+                    <a href="/" class="btn btn-light">
+                      <i class="fas fa-arrow-left me-2"></i>Tiếp tục mua sắm
+                    </a>
+                    <button type="button" class="btn btn-primary ms-auto" id="checkoutBtn" disabled>
+                      <i class="fas fa-shopping-cart me-2"></i>Đặt hàng
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </main>
+
+          <!-- Cart Summary -->
+          <aside class="col-lg-3">
+            <!-- Delivery Method -->
+            <div class="card shadow-sm border-0 mb-4">
+              <div class="card-body p-4">
+                <h5 class="card-title mb-4">
+                  <i class="fas fa-truck me-2"></i>Hình thức giao hàng
+                </h5>
+                <form>
+                  <div class="form-check mb-3">
+                    <input class="form-check-input" type="radio" name="delivery-method"
+                           id="delivery-method-1" value="1" disabled>
+                    <label class="form-check-label" for="delivery-method-1">
+                      <i class="fas fa-truck me-2 text-muted"></i>Giao tiêu chuẩn
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="delivery-method"
+                           id="delivery-method-2" value="2" disabled>
+                    <label class="form-check-label" for="delivery-method-2">
+                      <i class="fas fa-shipping-fast me-2 text-muted"></i>Giao nhanh
+                    </label>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="card shadow-sm border-0">
+              <div class="card-body p-4">
+                <h5 class="card-title mb-4">
+                  <i class="fas fa-receipt me-2"></i>Tổng tiền
+                </h5>
+                <dl class="row mb-0">
+                  <dt class="col-6">
+                    <i class="fas fa-shopping-basket me-2"></i>Tạm tính:
+                  </dt>
+                  <dd class="col-6 text-end mb-3">
+                    <span id="temp-price">0</span>₫
+                  </dd>
+                  <dt class="col-6">
+                    <i class="fas fa-truck me-2"></i>Phí:
+                  </dt>
+                  <dd class="col-6 text-end mb-3">
+                    <span id="delivery-price">0</span>₫
+                  </dd>
+                  <dt class="col-6 fw-bold">
+                    <i class="fas fa-money-bill-wave me-2"></i>Tổng cộng:
+                  </dt>
+                  <dd class="col-6 text-end mb-0">
+                    <strong class="h5 mb-0 text-primary">
+                      <span id="total-price">0</span>₫
+                    </strong>
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </th:block>
+    </div>
+  </section>
+
+  <th:block th:replace="~{user/_footer}" />
+
+  <div class="toast-container position-fixed bottom-0 start-0 p-3"></div>
+
+  <style>
+    .card {
+      border-radius: 0.5rem;
+    }
+
+    .form-control {
+      padding: 0.75rem 1rem;
+      border-radius: 0.375rem;
+    }
+
+    .form-control:focus {
+      border-color: #86b7fe;
+      box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      font-weight: 500;
+    }
+
+    .form-check-input:checked {
+      background-color: #0d6efd;
+      border-color: #0d6efd;
+    }
+
+    @media (max-width: 991.98px) {
+      .col-lg-9 {
+        order: 2;
+      }
+      .col-lg-3 {
+        order: 1;
+        margin-bottom: 1.5rem;
+      }
+    }
+  </style>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Cập nhật số lượng giỏ hàng khi thay đổi số lượng sản phẩm
+    document.querySelectorAll('.cart-quantity').forEach(input => {
+      input.addEventListener('change', function() {
+        const productId = this.dataset.id;
+        const quantity = this.value;
+        
+        fetch(`/cart/update?id=${productId}&quantity=${quantity}`, {
+          method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+          if(data.success) {
+            // Cập nhật số lượng trong giỏ hàng
+            const cartCount = document.querySelector('.cart-count');
+            if(cartCount) {
+              cartCount.textContent = data.cartCount;
+            }
+            
+            // Cập nhật tổng tiền
+            updateTotalPrice();
+          }
+        });
+      });
+    });
+  });
+  </script>
+</body>
+
+</html>

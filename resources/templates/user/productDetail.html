@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <th:block th:replace="~{user/_meta}" />
+  <title th:text="${sanpham.tenSanpham}"></title>
+
+  <!-- Custom Scripts -->
+  <script th:src="@{/js/toast.js}" type="module"></script>
+  <script th:src="@{/js/product.js}" type="module"></script>
+</head>
+
+<body>
+<th:block th:replace="~{user/_header}" />
+
+<section class="section-pagetop-2 bg-light">
+  <div class="container">
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item" aria-current="page">
+          <a href="${pageContext.request.contextPath}/">Trang chủ</a>
+        </li>
+        <li class="breadcrumb-item" aria-current="page">
+          <a th:href="@{/loai(id=${sanpham.loai.idLoai})}" th:text="${sanpham.loai.tenLoai}"></a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page" th:text="${sanpham.tenSanpham}"></li>
+      </ol>
+    </nav>
+  </div> <!-- container.// -->
+</section> <!-- section-pagetop-2.// -->
+
+<section class="section-content padding-y">
+  <div class="container">
+    <div class="row">
+      <aside class="col-md-5 mb-md-0 mb-4 d-flex justify-content-center align-items-center">
+	      <img width="280"
+	           height="280"
+	           class="img-fluid"
+	           th:src="@{/image/{url}(url=${sanpham.hinh})}" alt="${sanpham.tenSanpham}">
+      </aside>
+
+      <main class="col-md-7">
+
+        <h2 class="title" th:text="${sanpham.tenSanpham}"></h2>
+
+        <div class="rating-wrap my-3">
+          <small class="label-rating text-success">
+            <i class="bi bi-bag-check-fill"></i> <span th:text="${luotMua}"></span> đã mua
+          </small>
+        </div>
+
+        <div class="mb-4">
+            <div th:if="${sanpham.giamgia == 0}">
+              <span class="price h4">
+                <span th:text="${#numbers.formatInteger(sanpham.gia, 0, 'COMMA')}"></span>₫
+              </span>
+            </div>
+            <div th:if="${sanpham.giamgia > 0}">
+              <span class="price h4">
+                <span th:text="${#numbers.formatInteger(sanpham.gia * (100 - sanpham.giamgia) / 100, 0, 'COMMA')}"></span>₫
+              </span>
+              <span class="ms-2 text-muted text-decoration-line-through">
+                <span th:text="${#numbers.formatInteger(sanpham.gia, 0, 'COMMA')}"></span>₫
+              </span>
+              <span class="ms-2 badge bg-info">
+                -<span th:text="${sanpham.giamgia}"></span>%
+              </span>
+            </div>
+        </div>
+
+        <dl class="row mb-4">
+          <dt class="col-xl-4 col-sm-5 col-6">Số lượng tồn kho</dt>
+          <dd class="col-xl-8 col-sm-7 col-6" th:text="${sanpham.soluong == 0 ? 'Hết Hàng': sanpham.soluong}"></dd>
+
+          <dt class="col-xl-4 col-sm-5 col-6">Danh mục</dt>
+          <dd class="col-xl-8 col-sm-7 col-6"><a th:href="@{/loai(id=${sanpham.loai.idLoai})}" th:text="${sanpham.loai.tenLoai}"></a></dd>
+
+          <dt class="col-xl-4 col-sm-5 col-6">Mô tả ngắn</dt>
+          <dd class="col-xl-8 col-sm-7 col-6"  th:text="${sanpham.motangan}"></dd>
+
+          <dt class="col-xl-4 col-sm-5 col-6">Số lượng</dt>
+          <dd class="col-xl-8 col-sm-7 col-6">
+            <input type="number" id="cart-item-quantity" class="form-control w-50" value="1" min="1"
+                   max="${requestScope.product.quantity}" step="1"/>
+          </dd>
+        </dl>
+
+        <div>
+          <button th:disabled="${sanpham.soluong==0}" type="button" class="btn btn-primary ms-2" id="buy-now">Mua ngay</button>
+          <button th:disabled="${sanpham.soluong==0}" type="button" class="btn btn-danger ms-2" id="add-cart-item">Thêm vào giỏ hàng</button>
+        </div>
+
+      </main>
+
+    </div>
+  </div> <!-- container.// -->
+</section> <!-- section-content.// -->
+
+<section class="section-content mb-4">
+  <div class="container">
+    <div class="row">
+      <div class="col">
+        <h3 class="pb-2">Mô tả sản phẩm</h3>
+        <div th:text="${sanpham.mota}"></div>
+      </div>
+    </div>
+  </div> <!-- container.// -->
+</section> <!-- section-content.// -->
+
+<section class="section-content mb-5">
+  <div class="container">
+    <h3 class="pb-2">Sản phẩm liên quan</h3>
+    <div class="row item-grid">
+       <div th:each="sanpham : ${sanphams}" class="col-xl-3 col-lg-4 col-md-6">
+         <div class="card p-3 mb-4">
+           <a th:href="@{/sanpham(id=${sanpham.idSanpham})}" class="img-wrap text-center">
+              <img width="200" height="200" class="img-fluid" th:src="@{/image/{url}(url=${sanpham.hinh})}" th:alt="${sanpham.tenSanpham}" />
+           </a>
+           <figcaption class="info-wrap mt-2">
+              <a th:href="@{/sanpham(id=${sanpham.idSanpham})}" class="title td-text" th:text="${sanpham.tenSanpham}"></a>
+              <div>
+                <div th:if="${sanpham.giamgia == 0}">
+                  <span class="price mt-1 fw-bold">
+                    <span th:text="${#numbers.formatInteger(sanpham.gia, 0, 'COMMA')}"></span>₫
+                  </span>
+                </div>
+                <div th:if="${sanpham.giamgia > 0}">
+                  <span class="price mt-1 fw-bold">
+                    <span th:text="${#numbers.formatInteger(sanpham.gia * (100 - sanpham.giamgia) / 100, 0, 'COMMA')}"></span>₫
+                  </span>
+                  <span class="ms-2 text-muted text-decoration-line-through">
+                    <span th:text="${#numbers.formatInteger(sanpham.gia, 0, 'COMMA')}"></span>₫
+                  </span>
+                  <span class="ms-2 badge bg-info">
+                    -<span th:text="${sanpham.giamgia}"></span>%
+                  </span>
+                </div>
+              </div>
+            </figcaption>
+         </div>
+       </div> <!-- col.// -->
+    </div> <!-- row.// -->
+  </div> <!-- container.// -->
+</section> <!-- section-content.// -->
+
+<th:block th:replace="~{user/_footer}" />
+
+<div class="toast-container position-fixed bottom-0 start-0 p-3"></div> <!-- toast-container.// -->
+
+</body>
+
+</html>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <th:block th:replace="~{user/_meta}" />
+  <title>Thêm sản phẩm</title>
+  <!-- Thêm Dropzone CSS -->
+  <link href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body class="bg-light">
+  <th:block th:replace="~{admin/_headerAdmin}" />
+
+  <div class="container-fluid px-4">
+    <!-- Page Header -->
+    <div class="card shadow-sm border-0 mb-4 mt-4">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <h3 class="fw-bold mb-0">Thêm sản phẩm mới</h3>
+            <p class="text-muted mb-0">Điền thông tin chi tiết sản phẩm bên dưới</p>
+          </div>
+          <a th:href="@{/admin/sanpham}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Quay lại
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alert Messages -->
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+      <i class="fas fa-check-circle me-2"></i>
+      <span th:text="${successMessage}"></span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+      <i class="fas fa-exclamation-circle me-2"></i>
+      <span th:text="${errorMessage}"></span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Product Form -->
+    <div class="card shadow-sm border-0 mb-5">
+      <div class="card-body p-4">
+        <form method="POST" th:action="@{/admin/sanpham/create}" enctype="multipart/form-data" class="row g-4">
+          
+          <!-- Cột trái - Thông tin cơ bản -->
+          <div class="col-lg-8">
+            <div class="card border-0 bg-light">
+              <div class="card-body p-4">
+                <h5 class="card-title mb-4">Thông tin cơ bản</h5>
+                
+                <div class="mb-4">
+                  <label for="tenSanPham" class="form-label">Tên sản phẩm <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" th:value="${sanpham.tenSanpham}" name="tenSanpham" id="tenSanPham" required>
+                </div>
+
+                <div class="row mb-4">
+                  <div class="col-md-6">
+                    <label for="gia" class="form-label">Giá bán <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                      <input type="number" min="1" step="1" class="form-control" th:value="${sanpham.gia}" name="gia" id="gia" required>
+                      <span class="input-group-text">VNĐ</span>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="giamgia" class="form-label">Giảm giá</label>
+                    <div class="input-group">
+                      <input type="number" min="0" max="100" step="1" class="form-control" th:value="${sanpham.giamgia}" name="giamgia" id="giamgia" required>
+                      <span class="input-group-text">%</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mb-4">
+                  <label for="motangan" class="form-label">Mô tả ngắn <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" th:value="${sanpham.motangan}" name="motangan" id="motangan" required>
+                </div>
+
+                <div class="mb-4">
+                  <label for="mota" class="form-label">Mô tả chi tiết <span class="text-danger">*</span></label>
+                  <textarea class="form-control" rows="5" th:text="${sanpham.mota}" name="mota" id="mota" required></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cột phải - Hình ảnh và thông tin phụ -->
+          <div class="col-lg-4">
+            <!-- Hình ảnh sản phẩm -->
+            <div class="card border-0 bg-light mb-4">
+              <div class="card-body p-4">
+                <h5 class="card-title mb-4">Hình ảnh sản phẩm</h5>
+                <div class="dropzone-container border rounded p-3 text-center">
+                  <input type="file" class="form-control d-none" id="product-imageName" name="image" accept="image/*" required>
+                  <div class="dropzone-preview mb-3" onclick="document.getElementById('product-imageName').click()">
+                    <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-2"></i>
+                    <p class="mb-0 text-muted">Kéo thả hoặc click để tải ảnh lên</p>
+                    <small class="text-muted d-block">PNG, JPG (Tối đa 2MB)</small>
+                  </div>
+                  <div id="preview-container" class="d-none">
+                    <img id="preview-image" class="img-fluid rounded mb-2" src="#" alt="Preview">
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeImage()">
+                      <i class="fas fa-times me-1"></i>Xóa ảnh
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Thông tin phụ -->
+            <div class="card border-0 bg-light">
+              <div class="card-body p-4">
+                <h5 class="card-title mb-4">Thông tin phụ</h5>
+                
+                <div class="mb-4">
+                  <label for="soluong" class="form-label">Số lượng tồn kho <span class="text-danger">*</span></label>
+                  <input type="number" min="0" step="1" class="form-control" th:value="${sanpham.soluong}" name="soluong" id="soluong" required>
+                </div>
+
+                <div class="mb-4">
+                  <label for="loai" class="form-label">Loại sản phẩm <span class="text-danger">*</span></label>
+                  <select class="form-select" name="loai" id="loai" required>
+                    <option value="" disabled selected>Chọn loại sản phẩm...</option>
+                    <option th:each="loai : ${loais}" th:value="${loai.idLoai}" th:text="${loai.tenLoai}"></option>
+                  </select>
+                </div>
+
+                <div class="d-grid gap-2">
+                  <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-2"></i>Lưu sản phẩm
+                  </button>
+                  <a class="btn btn-outline-secondary" th:href="@{/admin/sanpham}" role="button">
+                    <i class="fas fa-times me-2"></i>Hủy
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- <th:block th:replace="~{admin/_footerAdmin}" /> -->
+
+  <script>
+    // Image preview functionality
+    document.getElementById('product-imageName').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById('preview-image').src = e.target.result;
+          document.querySelector('.dropzone-preview').classList.add('d-none');
+          document.getElementById('preview-container').classList.remove('d-none');
+        }
+        reader.readAsDataURL(file);
+      }
+    });
+
+    function removeImage() {
+      document.getElementById('product-imageName').value = '';
+      document.querySelector('.dropzone-preview').classList.remove('d-none');
+      document.getElementById('preview-container').classList.add('d-none');
+    }
+  </script>
+
+  <style>
+    .form-label {
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+
+    .dropzone-container {
+      background: #fff;
+      border: 2px dashed #dee2e6 !important;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .dropzone-container:hover {
+      border-color: var(--bs-primary) !important;
+    }
+
+    .card {
+      border-radius: 0.5rem;
+    }
+
+    .form-control, .form-select {
+      padding: 0.75rem 1rem;
+      border-radius: 0.375rem;
+    }
+
+    .form-control:focus, .form-select:focus {
+      border-color: #86b7fe;
+      box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    .input-group-text {
+      background-color: #f8f9fa;
+      border-color: #dee2e6;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      font-weight: 500;
+    }
+
+    .alert {
+      border: none;
+      border-radius: 0.5rem;
+    }
+
+    @media (max-width: 991.98px) {
+      .col-lg-8, .col-lg-4 {
+        margin-bottom: 1.5rem;
+      }
+    }
+  </style>
+</body>
+</html>

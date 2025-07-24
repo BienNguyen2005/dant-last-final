@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Cài đặt Hệ thống - Admin</title>
+  <link href="../css/bootstrap.css" type="text/css" rel="stylesheet">
+  <link href="../css/bootstrap-icons.css" type="text/css" rel="stylesheet">
+  <link href="../css/styles.css" type="text/css" rel="stylesheet">
+  <link rel="icon" href="../img/favicon.ico" type="image/x-icon">
+  
+  <style>
+    .admin-container {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    
+    .admin-sidebar {
+      background: white;
+      border-radius: 0 1rem 1rem 0;
+      box-shadow: 5px 0 15px rgba(0,0,0,0.1);
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 280px;
+      z-index: 1000;
+      padding: 2rem 0;
+    }
+    
+    .admin-main {
+      margin-left: 280px;
+      padding: 2rem;
+    }
+    
+    .admin-header {
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+      margin-bottom: 2rem;
+    }
+    
+    .admin-card {
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+      transition: all 0.3s ease;
+      border: none;
+      margin-bottom: 2rem;
+    }
+    
+    .btn-custom {
+      border-radius: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    
+    .form-control, .form-select {
+      border-radius: 0.5rem;
+      border: 1px solid #e0e6ed;
+      padding: 0.75rem 1rem;
+    }
+    
+    .nav-tabs .nav-link {
+      border-radius: 0.5rem 0.5rem 0 0;
+      border: none;
+      background: #f8f9fa;
+      color: #495057;
+      margin-right: 0.5rem;
+      font-weight: 500;
+    }
+    
+    .nav-tabs .nav-link.active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+    }
+    
+    .tab-content {
+      background: white;
+      border-radius: 0 1rem 1rem 1rem;
+      padding: 2rem;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    }
+    
+    .setting-item {
+      padding: 1.5rem;
+      border: 1px solid #e0e6ed;
+      border-radius: 0.5rem;
+      margin-bottom: 1rem;
+      transition: all 0.3s ease;
+    }
+    
+    .setting-item:hover {
+      border-color: #667eea;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
+    }
+    
+    .sidebar-item {
+      padding: 1rem 2rem;
+      color: #4a5568;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      border-radius: 0 2rem 2rem 0;
+      margin: 0.25rem 0;
+      margin-right: 2rem;
+      display: flex;
+      align-items: center;
+      font-weight: 500;
+    }
+    
+    .sidebar-item:hover,
+    .sidebar-item.active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      transform: translateX(10px);
+      text-decoration: none;
+    }
+    
+    .sidebar-item i {
+      margin-right: 1rem;
+      font-size: 1.1rem;
+    }
+    
+    .admin-logo {
+      text-align: center;
+      padding: 2rem;
+      border-bottom: 1px solid #e2e8f0;
+      margin-bottom: 2rem;
+    }
+    
+    .admin-logo h4 {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: bold;
+    }
+    
+    @media (max-width: 768px) {
+      .admin-sidebar {
+        display: none;
+      }
+      
+      .admin-main {
+        margin-left: 0;
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+
+<body class="admin-container">
+  <!-- Sidebar -->
+  <div class="admin-sidebar">
+    <div class="admin-logo">
+      <i class="bi bi-shield-check display-4 text-primary"></i>
+      <h4 class="mt-2">Admin Panel</h4>
+      <small class="text-muted">Shop Dược Phẩm</small>
+    </div>
+    
+    <nav>
+      <a href="home.html" class="sidebar-item">
+        <i class="bi bi-house"></i>
+        Dashboard
+      </a>
+      <a href="users.html" class="sidebar-item">
+        <i class="bi bi-people"></i>
+        Quản lý Người dùng
+      </a>
+      <a href="staff.html" class="sidebar-item">
+        <i class="bi bi-person-badge"></i>
+        Quản lý Nhân viên
+      </a>
+      <a href="categories.html" class="sidebar-item">
+        <i class="bi bi-tags"></i>
+        Quản lý Danh mục
+      </a>
+      <a href="products.html" class="sidebar-item">
+        <i class="bi bi-boxes"></i>
+        Quản lý Sản phẩm
+      </a>
+      <a href="orders.html" class="sidebar-item">
+        <i class="bi bi-receipt"></i>
+        Quản lý Đơn hàng
+      </a>
+      <a href="inventory.html" class="sidebar-item">
+        <i class="bi bi-archive"></i>
+        Quản lý Kho
+      </a>
+      <a href="settings.html" class="sidebar-item active">
+        <i class="bi bi-gear"></i>
+        Cài đặt
+      </a>
+      
+      <div style="position: absolute; bottom: 2rem; left: 2rem; right: 2rem;">
+        <a href="../home.html" class="sidebar-item">
+          <i class="bi bi-box-arrow-left"></i>
+          Về POS
+        </a>
+        <a href="../signin.html" class="sidebar-item">
+          <i class="bi bi-box-arrow-right"></i>
+          Đăng xuất
+        </a>
+      </div>
+    </nav>
+  </div>
+
+  <!-- Main Content -->
+  <div class="admin-main">
+    <!-- Header -->
+    <div class="admin-header">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <h2 class="mb-1 text-primary">Cài đặt Hệ thống</h2>
+          <p class="text-muted mb-0">Quản lý cấu hình và thiết lập</p>
+        </div>
+        <div class="col-md-6 text-end">
+          <div class="d-flex align-items-center justify-content-end">
+            <span class="me-3">
+              <i class="bi bi-person-circle"></i> Admin: <strong>Administrator</strong>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="admin-card">
+      <!-- Settings Tabs -->
+      <ul class="nav nav-tabs" id="settingsTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" type="button" role="tab">
+            <i class="bi bi-gear me-2"></i>Chung
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="store-tab" data-bs-toggle="tab" data-bs-target="#store" type="button" role="tab">
+            <i class="bi bi-shop me-2"></i>Cửa hàng
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="pos-tab" data-bs-toggle="tab" data-bs-target="#pos" type="button" role="tab">
+            <i class="bi bi-cash-register me-2"></i>POS
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="backup-tab" data-bs-toggle="tab" data-bs-target="#backup" type="button" role="tab">
+            <i class="bi bi-shield-check me-2"></i>Sao lưu
+          </button>
+        </li>
+      </ul>
+
+      <div class="tab-content" id="settingsTabContent">
+        <!-- General Settings -->
+        <div class="tab-pane fade show active" id="general" role="tabpanel">
+          <h5 class="mb-4">Cài đặt chung</h5>
+          
+          <div class="setting-item">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="mb-1">Múi giờ hệ thống</h6>
+                <small class="text-muted">Thiết lập múi giờ cho toàn bộ hệ thống</small>
+              </div>
+              <select class="form-select" style="width: auto;">
+                <option>GMT+7 (Asia/Ho_Chi_Minh)</option>
+                <option>GMT+0 (UTC)</option>
+                <option>GMT+8 (Asia/Singapore)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="mb-1">Ngôn ngữ hệ thống</h6>
+                <small class="text-muted">Chọn ngôn ngữ hiển thị</small>
+              </div>
+              <select class="form-select" style="width: auto;">
+                <option selected>Tiếng Việt</option>
+                <option>English</option>
+                <option>简体中文</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="mb-1">Tự động sao lưu</h6>
+                <small class="text-muted">Sao lưu dữ liệu tự động hàng ngày</small>
+              </div>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="autoBackup" checked>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-custom" onclick="saveGeneralSettings()">
+            <i class="bi bi-check-lg"></i> Lưu cài đặt
+          </button>
+        </div>
+
+        <!-- Store Settings -->
+        <div class="tab-pane fade" id="store" role="tabpanel">
+          <h5 class="mb-4">Thông tin cửa hàng</h5>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Tên cửa hàng</label>
+              <input type="text" class="form-control" value="Shop Dược Phẩm ABC">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Số điện thoại</label>
+              <input type="tel" class="form-control" value="0901234567">
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Địa chỉ</label>
+            <textarea class="form-control" rows="2">123 Nguyễn Du, Phường Bến Nghé, Quận 1, TP.HCM</textarea>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-control" value="contact@pharmacy.com">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Website</label>
+              <input type="url" class="form-control" value="https://pharmacy.com">
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Giờ mở cửa</label>
+            <div class="row">
+              <div class="col-md-6">
+                <input type="time" class="form-control" value="08:00">
+              </div>
+              <div class="col-md-6">
+                <input type="time" class="form-control" value="22:00">
+              </div>
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-custom" onclick="saveStoreSettings()">
+            <i class="bi bi-check-lg"></i> Lưu thông tin
+          </button>
+        </div>
+
+        <!-- POS Settings -->
+        <div class="tab-pane fade" id="pos" role="tabpanel">
+          <h5 class="mb-4">Cài đặt POS</h5>
+          
+          <div class="setting-item">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="mb-1">Tự động in hóa đơn</h6>
+                <small class="text-muted">In hóa đơn ngay sau khi thanh toán</small>
+              </div>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="autoPrint" checked>
+              </div>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="mb-1">Âm thanh khi quét mã</h6>
+                <small class="text-muted">Phát âm thanh khi quét barcode thành công</small>
+              </div>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="scanSound" checked>
+              </div>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="mb-1">Thuế mặc định</h6>
+                <small class="text-muted">Tỷ lệ thuế áp dụng cho sản phẩm</small>
+              </div>
+              <input type="number" class="form-control" style="width: 100px;" value="10" min="0" max="100">
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="mb-1">Giảm giá tối đa</h6>
+                <small class="text-muted">Phần trăm giảm giá tối đa cho nhân viên</small>
+              </div>
+              <input type="number" class="form-control" style="width: 100px;" value="20" min="0" max="100">
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-custom" onclick="savePOSSettings()">
+            <i class="bi bi-check-lg"></i> Lưu cài đặt POS
+          </button>
+        </div>
+
+        <!-- Backup Settings -->
+        <div class="tab-pane fade" id="backup" role="tabpanel">
+          <h5 class="mb-4">Sao lưu và khôi phục</h5>
+          
+          <div class="setting-item">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="mb-1">Sao lưu thủ công</h6>
+                <small class="text-muted">Tạo bản sao lưu ngay bây giờ</small>
+              </div>
+              <button class="btn btn-outline-primary btn-custom" onclick="createBackup()">
+                <i class="bi bi-download"></i> Tạo backup
+              </button>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="mb-1">Khôi phục dữ liệu</h6>
+                <small class="text-muted">Khôi phục từ file backup</small>
+              </div>
+              <input type="file" class="form-control" style="width: auto;" accept=".sql,.zip">
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <h6 class="mb-3">Lịch sử backup</h6>
+            <div class="list-group">
+              <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="mb-1">backup_2024_01_20.sql</h6>
+                  <small class="text-muted">20/01/2024 - 14:30 - 2.5MB</small>
+                </div>
+                <button class="btn btn-sm btn-outline-success btn-custom">
+                  <i class="bi bi-download"></i> Tải xuống
+                </button>
+              </div>
+              <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="mb-1">backup_2024_01_19.sql</h6>
+                  <small class="text-muted">19/01/2024 - 23:59 - 2.4MB</small>
+                </div>
+                <button class="btn btn-sm btn-outline-success btn-custom">
+                  <i class="bi bi-download"></i> Tải xuống
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="../js/bootstrap.bundle.js"></script>
+  <script src="../js/toast.js"></script>
+  
+  <script>
+    function saveGeneralSettings() {
+      showToast('Đang lưu cài đặt chung...', 'info');
+      setTimeout(() => {
+        showToast('Lưu cài đặt thành công!', 'success');
+      }, 1000);
+    }
+
+    function saveStoreSettings() {
+      showToast('Đang lưu thông tin cửa hàng...', 'info');
+      setTimeout(() => {
+        showToast('Lưu thông tin cửa hàng thành công!', 'success');
+      }, 1000);
+    }
+
+    function savePOSSettings() {
+      showToast('Đang lưu cài đặt POS...', 'info');
+      setTimeout(() => {
+        showToast('Lưu cài đặt POS thành công!', 'success');
+      }, 1000);
+    }
+
+    function createBackup() {
+      showToast('Đang tạo backup...', 'info');
+      setTimeout(() => {
+        showToast('Tạo backup thành công!', 'success');
+      }, 2000);
+    }
+  </script>
+</body>
+
+</html> 

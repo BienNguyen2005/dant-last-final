@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Danh mục sản phẩm - Shop Dược Phẩm</title>
+  <link href="css/bootstrap.css" type="text/css" rel="stylesheet">
+  <link href="css/bootstrap-icons.css" type="text/css" rel="stylesheet">
+  <link href="css/styles.css" type="text/css" rel="stylesheet">
+  <link rel="icon" href="img/favicon.ico" type="image/x-icon">
+  
+  <style>
+    .categories-container {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 2rem 0;
+    }
+    
+    .category-card {
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+      transition: all 0.3s ease;
+      height: 100%;
+      border: none;
+    }
+    
+    .category-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+    }
+    
+    .category-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      margin: 0 auto 1.5rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    
+    .header-section {
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+      margin-bottom: 3rem;
+    }
+    
+    .search-section {
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+      margin-bottom: 2rem;
+    }
+    
+    .product-card {
+      background: white;
+      border-radius: 1rem;
+      overflow: hidden;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+      transition: all 0.3s ease;
+      height: 100%;
+      border: none;
+    }
+    
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+    }
+    
+    .product-image {
+      height: 200px;
+      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      color: #6c757d;
+    }
+    
+    .price-tag {
+      background: linear-gradient(135deg, #28a745, #20c997);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 2rem;
+      font-weight: bold;
+      display: inline-block;
+    }
+    
+    .btn-primary-gradient {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      color: white;
+      border-radius: 0.5rem;
+      padding: 0.5rem 1rem;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-primary-gradient:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+      color: white;
+    }
+    
+    .breadcrumb-modern {
+      background: rgba(255,255,255,0.9);
+      border-radius: 1rem;
+      padding: 1rem 1.5rem;
+      backdrop-filter: blur(10px);
+    }
+    
+    .filter-section {
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+      margin-bottom: 2rem;
+    }
+  </style>
+</head>
+
+<body class="categories-container">
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="home.html">
+        <i class="bi bi-capsule me-2"></i>Shop Dược Phẩm
+      </a>
+      
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="home.html">Trang chủ</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="categories.html">Danh mục</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="medications.html">Thuốc đặc biệt</a>
+          </li>
+        </ul>
+        
+        <div class="navbar-nav">
+          <a class="nav-link" href="cart.html">
+            <i class="bi bi-cart3"></i>
+            <span id="cart-count" class="badge bg-danger ms-1">0</span>
+          </a>
+          <a class="nav-link" href="signin.html">Đăng nhập</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+      <ol class="breadcrumb breadcrumb-modern">
+        <li class="breadcrumb-item"><a href="home.html" class="text-decoration-none">Trang chủ</a></li>
+        <li class="breadcrumb-item active" id="breadcrumb-category">Danh mục sản phẩm</li>
+      </ol>
+    </nav>
+
+    <!-- Categories Section -->
+    <div id="categoriesSection">
+      <!-- Header -->
+      <div class="header-section text-center">
+        <h1 class="gradient-text mb-3">Danh mục sản phẩm</h1>
+        <p class="text-muted mb-0">Khám phá các danh mục sản phẩm dược phẩm chất lượng cao</p>
+      </div>
+
+      <!-- Categories Grid -->
+      <div class="row" id="categoriesGrid">
+        <!-- Categories will be loaded here -->
+      </div>
+    </div>
+
+    <!-- Products Section -->
+    <div id="productsSection" style="display: none;">
+      <!-- Header -->
+      <div class="header-section">
+        <div class="row align-items-center">
+          <div class="col-md-8">
+            <button class="btn btn-outline-primary mb-3" onclick="showCategories()">
+              <i class="bi bi-arrow-left me-2"></i>Về danh mục
+            </button>
+            <h1 class="gradient-text mb-2" id="categoryTitle">Danh mục sản phẩm</h1>
+            <p class="text-muted mb-0" id="categoryDescription">Mô tả danh mục</p>
+          </div>
+          <div class="col-md-4 text-end">
+            <div class="d-flex align-items-center justify-content-end">
+              <span class="me-3">
+                <strong id="productCount">0</strong> sản phẩm
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search and Filter -->
+      <div class="search-section">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="input-group">
+              <span class="input-group-text bg-white">
+                <i class="bi bi-search"></i>
+              </span>
+              <input type="text" id="productSearch" class="form-control" placeholder="Tìm kiếm sản phẩm...">
+            </div>
+          </div>
+          <div class="col-md-3">
+            <select id="priceFilter" class="form-select">
+              <option value="">Tất cả giá</option>
+              <option value="0-100000">Dưới 100,000đ</option>
+              <option value="100000-500000">100,000đ - 500,000đ</option>
+              <option value="500000-1000000">500,000đ - 1,000,000đ</option>
+              <option value="1000000-999999999">Trên 1,000,000đ</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <select id="sortFilter" class="form-select">
+              <option value="name">Tên A-Z</option>
+              <option value="price-asc">Giá thấp đến cao</option>
+              <option value="price-desc">Giá cao đến thấp</option>
+              <option value="popular">Phổ biến nhất</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Products Grid -->
+      <div class="row" id="productsGrid">
+        <!-- Products will be loaded here -->
+      </div>
+
+      <!-- Pagination -->
+      <div class="d-flex justify-content-center mt-4">
+        <nav>
+          <ul class="pagination" id="productPagination">
+            <!-- Pagination will be loaded here -->
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="js/bootstrap.bundle.js"></script>
+  
+  <script>
+    // Mock data
+    const categories = [
+      {
+        id: 1,
+        name: "Thuốc theo toa",
+        icon: "bi-capsule",
+        color: "danger",
+        description: "Thuốc cần có đơn thuốc của bác sĩ chuyên khoa",
+        productCount: 234
+      },
+      {
+        id: 2,
+        name: "Thuốc không kê đơn",
+        icon: "bi-heart-pulse",
+        color: "success", 
+        description: "Thuốc có thể mua không cần đơn thuốc",
+        productCount: 156
+      },
+      {
+        id: 3,
+        name: "Vitamin & bổ sung",
+        icon: "bi-plus-circle",
+        color: "warning",
+        description: "Thực phẩm bảo vệ sức khỏe và vitamin tổng hợp",
+        productCount: 89
+      },
+      {
+        id: 4,
+        name: "Dụng cụ y tế",
+        icon: "bi-thermometer",
+        color: "info",
+        description: "Các dụng cụ và thiết bị y tế chất lượng cao",
+        productCount: 67
+      },
+      {
+        id: 5,
+        name: "Mỹ phẩm dược",
+        icon: "bi-droplet",
+        color: "purple",
+        description: "Mỹ phẩm chăm sóc da và sức khỏe làm đẹp",
+        productCount: 45
+      },
+      {
+        id: 6,
+        name: "Thuốc mắt",
+        icon: "bi-eye",
+        color: "primary",
+        description: "Thuốc và dung dịch chăm sóc mắt chuyên dụng",
+        productCount: 23
+      }
+    ];
+
+    const products = {
+      1: [ // Thuốc theo toa
+        {
+          id: 1,
+          name: "Insulin Glargine 100IU",
+          price: 850000,
+          description: "Thuốc tiểu đường tác dụng kéo dài",
+          prescription: true,
+          category: 1
+        },
+        {
+          id: 2,
+          name: "Metformin 500mg",
+          price: 45000,
+          description: "Thuốc điều trị tiểu đường type 2",
+          prescription: true,
+          category: 1
+        },
+        {
+          id: 3,
+          name: "Lisinopril 10mg",
+          price: 120000,
+          description: "Thuốc điều trị cao huyết áp",
+          prescription: true,
+          category: 1
+        }
+      ],
+      2: [ // Thuốc không kê đơn
+        {
+          id: 4,
+          name: "Paracetamol 500mg",
+          price: 25000,
+          description: "Thuốc giảm đau, hạ sốt",
+          prescription: false,
+          category: 2
+        },
+        {
+          id: 5,
+          name: "Ibuprofen 400mg",
+          price: 35000,
+          description: "Thuốc giảm đau, chống viêm",
+          prescription: false,
+          category: 2
+        },
+        {
+          id: 6,
+          name: "Omeprazole 20mg",
+          price: 65000,
+          description: "Thuốc điều trị viêm loét dạ dày",
+          prescription: false,
+          category: 2
+        }
+      ],
+      3: [ // Vitamin & bổ sung
+        {
+          id: 7,
+          name: "Vitamin C 1000mg",
+          price: 180000,
+          description: "Tăng cường sức đề kháng",
+          prescription: false,
+          category: 3
+        },
+        {
+          id: 8,
+          name: "Omega-3 Fish Oil",
+          price: 320000,
+          description: "Bổ sung dầu cá omega-3",
+          prescription: false,
+          category: 3
+        },
+        {
+          id: 9,
+          name: "Vitamin D3 2000IU",
+          price: 250000,
+          description: "Tăng cường hấp thu canxi",
+          prescription: false,
+          category: 3
+        }
+      ]
+    };
+
+    let currentCategory = null;
+    let currentProducts = [];
+    let filteredProducts = [];
+    let currentPage = 1;
+    const itemsPerPage = 9;
+
+    document.addEventListener('DOMContentLoaded', function() {
+      loadCategories();
+      setupSearch();
+      updateCartCount();
+    });
+
+    function loadCategories() {
+      const grid = document.getElementById('categoriesGrid');
+      grid.innerHTML = categories.map(category => `
+        <div class="col-lg-4 col-md-6 mb-4">
+          <div class="category-card" onclick="showProducts(${category.id})">
+            <div class="category-icon bg-${category.color}">
+              <i class="${category.icon}"></i>
+            </div>
+            <h4 class="text-center mb-3">${category.name}</h4>
+            <p class="text-muted text-center mb-3">${category.description}</p>
+            <div class="text-center">
+              <span class="badge bg-light text-dark fs-6">${category.productCount} sản phẩm</span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function showProducts(categoryId) {
+      currentCategory = categories.find(c => c.id === categoryId);
+      if (!currentCategory) return;
+
+      // Update breadcrumb
+      document.getElementById('breadcrumb-category').textContent = currentCategory.name;
+      
+      // Update header
+      document.getElementById('categoryTitle').textContent = currentCategory.name;
+      document.getElementById('categoryDescription').textContent = currentCategory.description;
+      
+      // Load products
+      currentProducts = products[categoryId] || [];
+      filteredProducts = [...currentProducts];
+      document.getElementById('productCount').textContent = currentProducts.length;
+      
+      // Show/hide sections
+      document.getElementById('categoriesSection').style.display = 'none';
+      document.getElementById('productsSection').style.display = 'block';
+      
+      renderProducts();
+    }
+
+    function showCategories() {
+      document.getElementById('categoriesSection').style.display = 'block';
+      document.getElementById('productsSection').style.display = 'none';
+      document.getElementById('breadcrumb-category').textContent = 'Danh mục sản phẩm';
+    }
+
+    function renderProducts() {
+      const grid = document.getElementById('productsGrid');
+      const start = (currentPage - 1) * itemsPerPage;
+      const end = start + itemsPerPage;
+      const pageProducts = filteredProducts.slice(start, end);
+
+      grid.innerHTML = pageProducts.map(product => `
+        <div class="col-lg-4 col-md-6 mb-4">
+          <div class="product-card">
+            <div class="product-image">
+              <i class="bi bi-capsule"></i>
+            </div>
+            <div class="card-body p-3">
+              <h5 class="card-title">${product.name}</h5>
+              <p class="card-text text-muted small">${product.description}</p>
+              
+              ${product.prescription ? 
+                '<div class="alert alert-warning py-2 mb-3"><small><i class="bi bi-exclamation-triangle me-1"></i>Cần đơn thuốc</small></div>' : 
+                ''
+              }
+              
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="price-tag">
+                  ${formatPrice(product.price)}
+                </div>
+                <button class="btn btn-primary-gradient btn-sm" onclick="addToCart(${product.id})">
+                  <i class="bi bi-cart-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      renderPagination();
+    }
+
+    function renderPagination() {
+      const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+      const pagination = document.getElementById('productPagination');
+      
+      if (totalPages <= 1) {
+        pagination.innerHTML = '';
+        return;
+      }
+
+      let paginationHTML = '';
+      
+      // Previous button
+      paginationHTML += `
+        <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+          <a class="page-link" href="#" onclick="changePage(${currentPage - 1})">Trước</a>
+        </li>
+      `;
+      
+      // Page numbers
+      for (let i = 1; i <= totalPages; i++) {
+        paginationHTML += `
+          <li class="page-item ${currentPage === i ? 'active' : ''}">
+            <a class="page-link" href="#" onclick="changePage(${i})">${i}</a>
+          </li>
+        `;
+      }
+      
+      // Next button
+      paginationHTML += `
+        <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+          <a class="page-link" href="#" onclick="changePage(${currentPage + 1})">Sau</a>
+        </li>
+      `;
+      
+      pagination.innerHTML = paginationHTML;
+    }
+
+    function changePage(page) {
+      const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+      if (page >= 1 && page <= totalPages) {
+        currentPage = page;
+        renderProducts();
+        window.scrollTo(0, 0);
+      }
+    }
+
+    function setupSearch() {
+      document.getElementById('productSearch').addEventListener('input', filterProducts);
+      document.getElementById('priceFilter').addEventListener('change', filterProducts);
+      document.getElementById('sortFilter').addEventListener('change', filterProducts);
+    }
+
+    function filterProducts() {
+      const searchTerm = document.getElementById('productSearch').value.toLowerCase();
+      const priceRange = document.getElementById('priceFilter').value;
+      const sortBy = document.getElementById('sortFilter').value;
+
+      // Filter by search term
+      filteredProducts = currentProducts.filter(product => 
+        product.name.toLowerCase().includes(searchTerm) ||
+        product.description.toLowerCase().includes(searchTerm)
+      );
+
+      // Filter by price range
+      if (priceRange) {
+        const [min, max] = priceRange.split('-').map(Number);
+        filteredProducts = filteredProducts.filter(product => 
+          product.price >= min && product.price <= max
+        );
+      }
+
+      // Sort products
+      switch (sortBy) {
+        case 'name':
+          filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
+          break;
+        case 'price-asc':
+          filteredProducts.sort((a, b) => a.price - b.price);
+          break;
+        case 'price-desc':
+          filteredProducts.sort((a, b) => b.price - a.price);
+          break;
+        case 'popular':
+          // Mock popularity sort
+          filteredProducts.sort((a, b) => b.id - a.id);
+          break;
+      }
+
+      currentPage = 1;
+      renderProducts();
+    }
+
+    function formatPrice(price) {
+      return new Intl.NumberFormat('vi-VN').format(price) + '₫';
+    }
+
+    function addToCart(productId) {
+      let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const existingItem = cart.find(item => item.id === productId);
+      
+      if (existingItem) {
+        existingItem.quantity += 1;
+      } else {
+        // Find product in all categories
+        let product = null;
+        for (const categoryProducts of Object.values(products)) {
+          product = categoryProducts.find(p => p.id === productId);
+          if (product) break;
+        }
+        
+        if (product) {
+          cart.push({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            quantity: 1
+          });
+        }
+      }
+      
+      localStorage.setItem('cart', JSON.stringify(cart));
+      updateCartCount();
+      showToast('Đã thêm vào giỏ hàng!');
+    }
+
+    function updateCartCount() {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+      document.getElementById('cart-count').textContent = totalItems;
+    }
+
+    function showToast(message) {
+      const toast = document.createElement('div');
+      toast.className = 'toast-notification';
+      toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #28a745;
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 0.5rem;
+        z-index: 9999;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      `;
+      toast.textContent = message;
+      
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.remove();
+      }, 3000);
+    }
+  </script>
+</body>
+
+</html> 

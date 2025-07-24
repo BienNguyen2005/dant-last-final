@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Quản lý Danh mục - Admin POS Shop Dược Phẩm</title>
+  <link href="../css/bootstrap.css" type="text/css" rel="stylesheet">
+  <link href="../css/bootstrap-icons.css" type="text/css" rel="stylesheet">
+  <link href="../css/styles.css" type="text/css" rel="stylesheet">
+  <link rel="icon" href="../img/favicon.ico" type="image/x-icon">
+  
+  <style>
+    .admin-container {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    
+    .admin-sidebar {
+      background: white;
+      border-radius: 0 1rem 1rem 0;
+      box-shadow: 5px 0 15px rgba(0,0,0,0.1);
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 280px;
+      z-index: 1000;
+      padding: 2rem 0;
+    }
+    
+    .admin-main {
+      margin-left: 280px;
+      padding: 2rem;
+    }
+    
+    .admin-header {
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+      margin-bottom: 2rem;
+    }
+    
+    .category-card {
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+      transition: all 0.3s ease;
+      margin-bottom: 1.5rem;
+    }
+    
+    .category-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+    }
+    
+    .search-box {
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+      margin-bottom: 2rem;
+    }
+    
+    .sidebar-item {
+      padding: 1rem 2rem;
+      color: #4a5568;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      border-radius: 0 2rem 2rem 0;
+      margin: 0.25rem 0;
+      margin-right: 2rem;
+      display: flex;
+      align-items: center;
+      font-weight: 500;
+    }
+    
+    .sidebar-item:hover,
+    .sidebar-item.active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      transform: translateX(10px);
+      text-decoration: none;
+    }
+    
+    .sidebar-item i {
+      margin-right: 1rem;
+      font-size: 1.1rem;
+    }
+    
+    .admin-logo {
+      text-align: center;
+      padding: 2rem;
+      border-bottom: 1px solid #e2e8f0;
+      margin-bottom: 2rem;
+    }
+    
+    .admin-logo h4 {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: bold;
+    }
+    
+    .category-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    
+    .action-btn {
+      border: none;
+      border-radius: 0.5rem;
+      padding: 0.5rem 1rem;
+      transition: all 0.3s ease;
+      margin: 0 0.25rem;
+    }
+    
+    .btn-edit {
+      background: linear-gradient(135deg, #28a745, #20c997);
+      color: white;
+    }
+    
+    .btn-delete {
+      background: linear-gradient(135deg, #dc3545, #fd7e14);
+      color: white;
+    }
+    
+    .btn-primary-gradient {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      color: white;
+      border-radius: 1rem;
+      padding: 0.75rem 2rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-primary-gradient:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+      color: white;
+    }
+    
+    .form-control-modern {
+      border: 2px solid #e2e8f0;
+      border-radius: 1rem;
+      padding: 1rem;
+      transition: all 0.3s ease;
+      background: rgba(255,255,255,0.9);
+    }
+    
+    .form-control-modern:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+      background: white;
+    }
+    
+    @media (max-width: 768px) {
+      .admin-sidebar {
+        display: none;
+      }
+      
+      .admin-main {
+        margin-left: 0;
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+
+<body class="admin-container">
+  <!-- Sidebar -->
+  <div class="admin-sidebar">
+    <div class="admin-logo">
+      <i class="bi bi-shield-check display-4 text-primary"></i>
+      <h4 class="mt-2">Admin Panel</h4>
+      <small class="text-muted">Shop Dược Phẩm</small>
+    </div>
+    
+    <nav>
+      <a href="home.html" class="sidebar-item">
+        <i class="bi bi-house"></i>
+        Dashboard
+      </a>
+      <a href="users.html" class="sidebar-item">
+        <i class="bi bi-people"></i>
+        Quản lý Người dùng
+      </a>
+      <a href="staff.html" class="sidebar-item">
+        <i class="bi bi-person-badge"></i>
+        Quản lý Nhân viên
+      </a>
+      <a href="categories.html" class="sidebar-item active">
+        <i class="bi bi-tags"></i>
+        Quản lý Danh mục
+      </a>
+      <a href="products.html" class="sidebar-item">
+        <i class="bi bi-boxes"></i>
+        Quản lý Sản phẩm
+      </a>
+      <a href="orders.html" class="sidebar-item">
+        <i class="bi bi-receipt"></i>
+        Quản lý Đơn hàng
+      </a>
+      <a href="inventory.html" class="sidebar-item">
+        <i class="bi bi-archive"></i>
+        Quản lý Kho
+      </a>
+      <a href="reports.html" class="sidebar-item">
+        <i class="bi bi-graph-up"></i>
+        Báo cáo
+      </a>
+      <a href="settings.html" class="sidebar-item">
+        <i class="bi bi-gear"></i>
+        Cài đặt
+      </a>
+      
+      <div style="position: absolute; bottom: 2rem; left: 2rem; right: 2rem;">
+        <a href="../home.html" class="sidebar-item">
+          <i class="bi bi-box-arrow-left"></i>
+          Về POS
+        </a>
+        <a href="../signin.html" class="sidebar-item">
+          <i class="bi bi-box-arrow-right"></i>
+          Đăng xuất
+        </a>
+      </div>
+    </nav>
+  </div>
+
+  <!-- Main Content -->
+  <div class="admin-main">
+    <!-- Header -->
+    <div class="admin-header">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <h2 class="mb-1 gradient-text">Quản lý Danh mục</h2>
+          <p class="text-muted mb-0">Danh sách các danh mục sản phẩm dược phẩm</p>
+        </div>
+        <div class="col-md-6 text-end">
+          <button class="btn btn-primary-gradient" onclick="showAddCategoryModal()">
+            <i class="bi bi-plus-circle me-2"></i>
+            Thêm danh mục mới
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="search-box">
+      <div class="row">
+        <div class="col-md-8">
+          <div class="input-group">
+            <span class="input-group-text bg-white border-end-0" style="border-radius: 1rem 0 0 1rem; border: 2px solid #e2e8f0;">
+              <i class="bi bi-search text-muted"></i>
+            </span>
+            <input type="text" id="searchInput" class="form-control border-start-0" 
+                   placeholder="Tìm kiếm danh mục..." style="border-radius: 0 1rem 1rem 0; border: 2px solid #e2e8f0; border-left: none;">
+          </div>
+        </div>
+        <div class="col-md-4">
+          <select id="statusFilter" class="form-control-modern">
+            <option value="">Tất cả trạng thái</option>
+            <option value="active">Đang hoạt động</option>
+            <option value="inactive">Không hoạt động</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Categories Grid -->
+    <div class="row" id="categoriesGrid">
+      <!-- Category cards will be loaded here -->
+    </div>
+
+    <!-- Pagination -->
+    <div class="d-flex justify-content-center mt-4">
+      <nav>
+        <ul class="pagination" id="pagination">
+          <!-- Pagination will be loaded here -->
+        </ul>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Add/Edit Category Modal -->
+  <div class="modal fade" id="categoryModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content" style="border-radius: 1rem;">
+        <div class="modal-header" style="border-bottom: 1px solid #e9ecef;">
+          <h5 class="modal-title" id="modalTitle">Thêm danh mục mới</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="categoryForm">
+            <input type="hidden" id="categoryId">
+            
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Tên danh mục</label>
+                <input type="text" id="categoryName" class="form-control-modern" required>
+              </div>
+              
+              <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Mã danh mục</label>
+                <input type="text" id="categoryCode" class="form-control-modern" required>
+              </div>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Icon</label>
+                <select id="categoryIcon" class="form-control-modern">
+                  <option value="bi-capsule">Thuốc viên</option>
+                  <option value="bi-heart-pulse">Tim mạch</option>
+                  <option value="bi-lungs">Hô hấp</option>
+                  <option value="bi-eye">Mắt</option>
+                  <option value="bi-bandaid">Chăm sóc vết thương</option>
+                  <option value="bi-thermometer">Dụng cụ y tế</option>
+                  <option value="bi-plus-circle">Vitamin & bổ sung</option>
+                  <option value="bi-droplet">Dung dịch</option>
+                </select>
+              </div>
+              
+              <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Màu sắc</label>
+                <select id="categoryColor" class="form-control-modern">
+                  <option value="primary">Xanh dương</option>
+                  <option value="success">Xanh lá</option>
+                  <option value="warning">Vàng</option>
+                  <option value="danger">Đỏ</option>
+                  <option value="info">Xanh nhạt</option>
+                  <option value="purple">Tím</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label fw-bold">Mô tả</label>
+              <textarea id="categoryDescription" class="form-control-modern" rows="3"></textarea>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Thứ tự hiển thị</label>
+                <input type="number" id="categoryOrder" class="form-control-modern" min="1" value="1">
+              </div>
+              
+              <div class="col-md-6 mb-3">
+                <label class="form-label fw-bold">Trạng thái</label>
+                <select id="categoryStatus" class="form-control-modern">
+                  <option value="active">Đang hoạt động</option>
+                  <option value="inactive">Không hoạt động</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="categoryFeatured">
+                <label class="form-check-label fw-bold" for="categoryFeatured">
+                  Danh mục nổi bật
+                </label>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer" style="border-top: 1px solid #e9ecef;">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+          <button type="button" class="btn btn-primary-gradient" onclick="saveCategory()">
+            <i class="bi bi-check-circle me-2"></i>
+            Lưu danh mục
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="../js/bootstrap.bundle.js"></script>
+  
+  <script>
+    // Mock data
+    let categories = [
+      {
+        id: 1,
+        name: "Thuốc theo toa",
+        code: "PRESCRIPTION",
+        icon: "bi-capsule",
+        color: "danger",
+        description: "Thuốc cần có đơn thuốc của bác sĩ",
+        order: 1,
+        status: "active",
+        featured: true,
+        productCount: 234,
+        createdAt: "2024-01-15"
+      },
+      {
+        id: 2,
+        name: "Thuốc không kê đơn",
+        code: "OTC",
+        icon: "bi-heart-pulse",
+        color: "success",
+        description: "Thuốc có thể mua không cần đơn thuốc",
+        order: 2,
+        status: "active",
+        featured: true,
+        productCount: 156,
+        createdAt: "2024-01-15"
+      },
+      {
+        id: 3,
+        name: "Vitamin & bổ sung",
+        code: "SUPPLEMENT",
+        icon: "bi-plus-circle",
+        color: "warning",
+        description: "Thực phẩm bảo vệ sức khỏe và vitamin",
+        order: 3,
+        status: "active",
+        featured: false,
+        productCount: 89,
+        createdAt: "2024-01-16"
+      },
+      {
+        id: 4,
+        name: "Dụng cụ y tế",
+        code: "MEDICAL_DEVICE",
+        icon: "bi-thermometer",
+        color: "info",
+        description: "Các dụng cụ và thiết bị y tế",
+        order: 4,
+        status: "active",
+        featured: true,
+        productCount: 67,
+        createdAt: "2024-01-16"
+      },
+      {
+        id: 5,
+        name: "Mỹ phẩm dược",
+        code: "COSMETICS",
+        icon: "bi-droplet",
+        color: "purple",
+        description: "Mỹ phẩm chăm sóc da và sức khỏe",
+        order: 5,
+        status: "active",
+        featured: false,
+        productCount: 45,
+        createdAt: "2024-01-17"
+      },
+      {
+        id: 6,
+        name: "Thuốc mắt",
+        code: "EYE_MEDICINE",
+        icon: "bi-eye",
+        color: "primary",
+        description: "Thuốc và dung dịch chăm sóc mắt",
+        order: 6,
+        status: "inactive",
+        featured: false,
+        productCount: 23,
+        createdAt: "2024-01-18"
+      }
+    ];
+
+    let currentPage = 1;
+    const itemsPerPage = 6;
+    let filteredCategories = [...categories];
+
+    document.addEventListener('DOMContentLoaded', function() {
+      loadCategories();
+      setupSearch();
+    });
+
+    function loadCategories() {
+      renderCategories();
+      renderPagination();
+    }
+
+    function renderCategories() {
+      const grid = document.getElementById('categoriesGrid');
+      const start = (currentPage - 1) * itemsPerPage;
+      const end = start + itemsPerPage;
+      const pageCategories = filteredCategories.slice(start, end);
+
+      grid.innerHTML = pageCategories.map(category => `
+        <div class="col-lg-4 col-md-6 mb-4">
+          <div class="category-card">
+            <div class="d-flex align-items-center mb-3">
+              <div class="category-icon bg-${category.color} text-white me-3">
+                <i class="${category.icon}"></i>
+              </div>
+              <div class="flex-grow-1">
+                <h5 class="mb-1">${category.name}</h5>
+                <small class="text-muted">${category.code}</small>
+                ${category.featured ? '<span class="badge bg-warning ms-2">Nổi bật</span>' : ''}
+              </div>
+              <div class="dropdown">
+                <button class="btn btn-link text-muted" data-bs-toggle="dropdown">
+                  <i class="bi bi-three-dots-vertical"></i>
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#" onclick="editCategory(${category.id})">
+                    <i class="bi bi-pencil me-2"></i>Chỉnh sửa
+                  </a></li>
+                  <li><a class="dropdown-item text-danger" href="#" onclick="deleteCategory(${category.id})">
+                    <i class="bi bi-trash me-2"></i>Xóa
+                  </a></li>
+                </ul>
+              </div>
+            </div>
+            
+            <p class="text-muted mb-3">${category.description}</p>
+            
+            <div class="row text-center">
+              <div class="col-6">
+                <div class="fw-bold text-primary">${category.productCount}</div>
+                <small class="text-muted">Sản phẩm</small>
+              </div>
+              <div class="col-6">
+                <div class="fw-bold ${category.status === 'active' ? 'text-success' : 'text-danger'}">
+                  ${category.status === 'active' ? 'Hoạt động' : 'Tạm dừng'}
+                </div>
+                <small class="text-muted">Trạng thái</small>
+              </div>
+            </div>
+            
+            <div class="d-flex justify-content-between align-items-center mt-3 pt-3" style="border-top: 1px solid #e9ecef;">
+              <small class="text-muted">
+                <i class="bi bi-calendar me-1"></i>
+                ${new Date(category.createdAt).toLocaleDateString('vi-VN')}
+              </small>
+              <div>
+                <button class="action-btn btn-edit" onclick="editCategory(${category.id})" title="Chỉnh sửa">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button class="action-btn btn-delete" onclick="deleteCategory(${category.id})" title="Xóa">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderPagination() {
+      const totalPages = Math.ceil(filteredCategories.length / itemsPerPage);
+      const pagination = document.getElementById('pagination');
+      
+      if (totalPages <= 1) {
+        pagination.innerHTML = '';
+        return;
+      }
+
+      let paginationHTML = '';
+      
+      // Previous button
+      paginationHTML += `
+        <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+          <a class="page-link" href="#" onclick="changePage(${currentPage - 1})">Trước</a>
+        </li>
+      `;
+      
+      // Page numbers
+      for (let i = 1; i <= totalPages; i++) {
+        paginationHTML += `
+          <li class="page-item ${currentPage === i ? 'active' : ''}">
+            <a class="page-link" href="#" onclick="changePage(${i})">${i}</a>
+          </li>
+        `;
+      }
+      
+      // Next button
+      paginationHTML += `
+        <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+          <a class="page-link" href="#" onclick="changePage(${currentPage + 1})">Sau</a>
+        </li>
+      `;
+      
+      pagination.innerHTML = paginationHTML;
+    }
+
+    function changePage(page) {
+      const totalPages = Math.ceil(filteredCategories.length / itemsPerPage);
+      if (page >= 1 && page <= totalPages) {
+        currentPage = page;
+        renderCategories();
+        renderPagination();
+      }
+    }
+
+    function setupSearch() {
+      document.getElementById('searchInput').addEventListener('input', filterCategories);
+      document.getElementById('statusFilter').addEventListener('change', filterCategories);
+    }
+
+    function filterCategories() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const statusFilter = document.getElementById('statusFilter').value;
+
+      filteredCategories = categories.filter(category => {
+        const matchesSearch = category.name.toLowerCase().includes(searchTerm) ||
+                            category.code.toLowerCase().includes(searchTerm) ||
+                            category.description.toLowerCase().includes(searchTerm);
+        
+        const matchesStatus = !statusFilter || category.status === statusFilter;
+        
+        return matchesSearch && matchesStatus;
+      });
+
+      currentPage = 1;
+      loadCategories();
+    }
+
+    function showAddCategoryModal() {
+      document.getElementById('modalTitle').textContent = 'Thêm danh mục mới';
+      document.getElementById('categoryForm').reset();
+      document.getElementById('categoryId').value = '';
+      const modal = new bootstrap.Modal(document.getElementById('categoryModal'));
+      modal.show();
+    }
+
+    function editCategory(id) {
+      const category = categories.find(c => c.id === id);
+      if (!category) return;
+
+      document.getElementById('modalTitle').textContent = 'Chỉnh sửa danh mục';
+      document.getElementById('categoryId').value = category.id;
+      document.getElementById('categoryName').value = category.name;
+      document.getElementById('categoryCode').value = category.code;
+      document.getElementById('categoryIcon').value = category.icon;
+      document.getElementById('categoryColor').value = category.color;
+      document.getElementById('categoryDescription').value = category.description;
+      document.getElementById('categoryOrder').value = category.order;
+      document.getElementById('categoryStatus').value = category.status;
+      document.getElementById('categoryFeatured').checked = category.featured;
+
+      const modal = new bootstrap.Modal(document.getElementById('categoryModal'));
+      modal.show();
+    }
+
+    function saveCategory() {
+      const id = document.getElementById('categoryId').value;
+      const categoryData = {
+        name: document.getElementById('categoryName').value,
+        code: document.getElementById('categoryCode').value,
+        icon: document.getElementById('categoryIcon').value,
+        color: document.getElementById('categoryColor').value,
+        description: document.getElementById('categoryDescription').value,
+        order: parseInt(document.getElementById('categoryOrder').value),
+        status: document.getElementById('categoryStatus').value,
+        featured: document.getElementById('categoryFeatured').checked
+      };
+
+      if (!categoryData.name || !categoryData.code) {
+        alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
+        return;
+      }
+
+      if (id) {
+        // Update existing category
+        const index = categories.findIndex(c => c.id == id);
+        if (index !== -1) {
+          categories[index] = { ...categories[index], ...categoryData };
+        }
+      } else {
+        // Add new category
+        const newCategory = {
+          id: Math.max(...categories.map(c => c.id)) + 1,
+          ...categoryData,
+          productCount: 0,
+          createdAt: new Date().toISOString().split('T')[0]
+        };
+        categories.unshift(newCategory);
+      }
+
+      filterCategories();
+      bootstrap.Modal.getInstance(document.getElementById('categoryModal')).hide();
+      
+      // Show success message
+      showToast(id ? 'Danh mục đã được cập nhật!' : 'Danh mục mới đã được thêm!');
+    }
+
+    function deleteCategory(id) {
+      const category = categories.find(c => c.id === id);
+      if (!category) return;
+
+      if (confirm(`Bạn có chắc chắn muốn xóa danh mục "${category.name}"?`)) {
+        categories = categories.filter(c => c.id !== id);
+        filterCategories();
+        showToast('Danh mục đã được xóa!');
+      }
+    }
+
+    function showToast(message) {
+      // Simple toast notification
+      const toast = document.createElement('div');
+      toast.className = 'toast-notification';
+      toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #28a745;
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 0.5rem;
+        z-index: 9999;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      `;
+      toast.textContent = message;
+      
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.remove();
+      }, 3000);
+    }
+  </script>
+</body>
+
+</html> 

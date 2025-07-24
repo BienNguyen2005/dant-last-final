@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <th:block th:replace="~{user/_meta}" />
+  <title>Cập nhật loại sản phẩm</title>
+</head>
+
+<body class="bg-light">
+  <th:block th:replace="~{admin/_headerAdmin}" />
+
+  <div class="container-fluid px-4">
+    <!-- Page Header -->
+    <div class="card shadow-sm border-0 mb-4 mt-4">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <h3 class="fw-bold mb-0">Cập nhật loại sản phẩm</h3>
+            <p class="text-muted mb-0">Chỉnh sửa thông tin loại sản phẩm</p>
+          </div>
+          <a th:href="@{/admin/loai}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Quay lại
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alert Messages -->
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+      <i class="fas fa-check-circle me-2"></i>
+      <span th:text="${successMessage}"></span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+      <i class="fas fa-exclamation-circle me-2"></i>
+      <span th:text="${errorMessage}"></span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Category Form -->
+    <div class="row justify-content-center mb-5">
+      <div class="col-lg-6">
+        <div class="card shadow-sm border-0">
+          <div class="card-body p-4">
+            <form method="POST" th:action="@{/admin/loai/update/{id}(id=${loai.idLoai})}" autocomplete="off">
+              <input type="hidden" th:value="${loai.idLoai}" name="idLoai" id="idLoai">
+              
+              <div class="mb-4">
+                <label for="tenLoai" class="form-label">
+                  Tên loại sản phẩm <span class="text-danger">*</span>
+                </label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-end-0">
+                    <i class="fas fa-tag text-muted"></i>
+                  </span>
+                  <input type="text" 
+                         class="form-control border-start-0 ps-0" 
+                         th:value="${loai.tenLoai}" 
+                         id="tenLoai" 
+                         name="tenLoai" 
+                         placeholder="Nhập tên loại sản phẩm"
+                         required>
+                </div>
+                <div class="form-text">Tên loại sản phẩm nên ngắn gọn và dễ hiểu</div>
+              </div>
+
+              <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary flex-grow-1">
+                  <i class="fas fa-save me-2"></i>Lưu thay đổi
+                </button>
+                <button type="button" 
+                        class="btn btn-outline-danger"
+                        onclick="confirmDelete()">
+                  <i class="fas fa-trash me-2"></i>Xóa
+                </button>
+                <a class="btn btn-outline-secondary" 
+                   th:href="@{/admin/loai}" 
+                   role="button">
+                  <i class="fas fa-times me-2"></i>Hủy
+                </a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0">
+          <h5 class="modal-title">Xác nhận xóa</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          Bạn có chắc chắn muốn xóa loại "<span th:text="${loai.tenLoai}"></span>"?
+        </div>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+          <a th:href="@{/admin/loai/delete/{id}(id=${loai.idLoai})}" class="btn btn-danger">Xóa</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- <th:block th:replace="~{admin/_footerAdmin}" /> -->
+
+  <script>
+    function confirmDelete() {
+      var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+      deleteModal.show();
+    }
+  </script>
+
+  <style>
+    .card {
+      border-radius: 0.5rem;
+    }
+
+    .form-label {
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+      padding: 0.75rem 1rem;
+      border-radius: 0.375rem;
+    }
+
+    .form-control:focus {
+      border-color: #86b7fe;
+      box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    .input-group-text {
+      padding-left: 1rem;
+      padding-right: 0;
+      border-radius: 0.375rem;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      font-weight: 500;
+    }
+
+    .alert {
+      border: none;
+      border-radius: 0.5rem;
+    }
+
+    .form-text {
+      margin-top: 0.5rem;
+      font-size: 0.875rem;
+    }
+
+    .modal-content {
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+
+    @media (max-width: 991.98px) {
+      .col-lg-6 {
+        padding: 0 1rem;
+      }
+    }
+  </style>
+</body>
+</html>

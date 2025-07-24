@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <th:block th:replace="~{user/_meta}" />
+  <title>Quản lý loại hàng</title>
+</head>
+
+<body>
+  <th:block th:replace="~{admin/_headerAdmin}" />
+
+  <section class="section-content">
+    <div class="container">
+      
+      <!-- Hiển thị thông báo thành công -->
+      <div th:if="${successMessage}" class="alert alert-success mb-0 mt-4" role="alert">
+        <span th:text="${successMessage}"></span>
+      </div>
+
+      <div th:if="${errorMessage}" class="alert alert-danger mb-0 mt-4" role="alert">
+        <span th:text="${errorMessage}"></span>
+      </div>
+
+
+      <header class="section-heading py-4 d-flex justify-content-between">
+        <h3 class="section-title">Quản lý loại hàng</h3>
+        <a class="btn btn-primary" th:href="@{/admin/loai/create}" role="button" style="height: fit-content;">
+          Thêm loại hàng
+        </a>
+      </header>
+
+      <main class="table-responsive-xl mb-5">
+        <table class="table table-bordered table-striped table-hover align-middle">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+	            <th>Tên loại</th>
+              <th scope="col" style="width: 225px;">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="loai, loop : ${loais}">
+              <th scope="row" th:text="${loop.index + 1}"></th>
+              <td th:text="${loai.tenLoai}"></td>
+              <td class="text-center text-nowrap">
+                <a class="btn btn-success me-2"
+                   th:href="@{/admin/loai/edit/{id}(id=${loai.idLoai})}"
+                   role="button">
+                  Sửa
+                </a>
+                <a class="btn btn-danger"
+                   th:href="@{/admin/loai/delete/{id}(id=${loai.idLoai})}"
+                   role="button"
+                   onclick="return confirm('Bạn có muốn xóa?')">
+                  Xóa
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </main>
+
+      <!-- Phân trang -->
+      <nav th:if="${totalPages != 0}" class="mt-3 mb-5">
+        <ul class="pagination justify-content-center">
+          <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+            <a class="page-link" th:href="@{/admin/loai(page=${currentPage - 1})}">
+              Trang trước
+            </a>
+          </li>
+
+          <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}"
+              th:classappend="${currentPage == i - 1} ? 'active'">
+            <a class="page-link" th:href="@{/admin/loai(page=${i - 1})}" th:text="${i}"></a>
+          </li>
+
+          <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+            <a class="page-link" th:href="@{/admin/loai(page=${currentPage + 1})}">
+              Trang sau
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </section>
+
+  <th:block th:replace="~{admin/_footerAdmin}" />
+</body>
+
+</html>

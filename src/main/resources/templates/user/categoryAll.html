@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <th:block th:replace="~{user/_meta}" />
+  <title>Danh mục sản phẩm</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+
+<body>
+  <th:block th:replace="~{user/_header}" />
+
+  <!-- Page Header -->
+  <section class="section-pagetop bg-light py-4">
+    <div class="container">
+      <h2 class="title-page fw-bold mb-0">Danh mục sản phẩm</h2>
+    </div>
+  </section>
+
+  <!-- Categories Section -->
+  <section class="section-content py-5">
+    <div class="container">
+      <div class="row g-4">
+        <th:block th:each="loai : ${loais}">
+          <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="card category-card h-100 border-0 shadow-sm">
+              <div class="card-body p-4">
+                <a th:href="@{/loai(id=${loai.idLoai})}" class="text-decoration-none">
+                  <div class="text-center">
+                    <div class="category-icon mb-3">
+                      <i class="fas fa-pills fa-2x text-primary"></i>
+                    </div>
+                    <h5 class="category-title text-dark mb-2" th:text="${loai.tenLoai}"></h5>
+                    <p class="text-muted mb-0 small">Xem tất cả sản phẩm</p>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+        </th:block>
+      </div>
+    </div>
+  </section>
+
+  <th:block th:replace="~{user/_footer}" />
+
+  <style>
+    .section-pagetop {
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    .category-card {
+      border-radius: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .category-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+    }
+
+    .category-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: rgba(13, 110, 253, 0.1);
+      border-radius: 50%;
+      transition: all 0.3s ease;
+    }
+
+    .category-card:hover .category-icon {
+      background-color: var(--bs-primary);
+    }
+
+    .category-card:hover .category-icon i {
+      color: white !important;
+    }
+
+    .category-title {
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .category-card:hover .category-title {
+      color: var(--bs-primary) !important;
+    }
+
+    @media (max-width: 767.98px) {
+      .category-icon {
+        width: 60px;
+        height: 60px;
+      }
+      
+      .category-icon i {
+        font-size: 1.5rem !important;
+      }
+    }
+  </style>
+</body>
+</html>

@@ -1,0 +1,17 @@
+<aside class="col-md-3 mb-md-0 mb-3" th:fragment="nav(active)">
+  <nav class="list-group">
+    <a class="list-group-item" th:classappend="${active == 'ORDER'} ? 'active' : ''"
+       href="/order" role="button">
+      Đơn hàng của tôi
+    </a>
+    <a class="list-group-item" th:classappend="${active == 'CHANGE_PASSWORD'} ? 'active' : ''"
+       href="/changePassword" role="button">
+      Đổi mật khẩu
+    </a>
+    <a class="list-group-item" th:classappend="${active == 'SETTING'} ? 'active' : ''"
+       href="/setting" role="button">
+      Thiết đặt
+    </a>
+    <a class="list-group-item" href="/signout" role="button">Đăng xuất</a>
+  </nav>
+</aside> 

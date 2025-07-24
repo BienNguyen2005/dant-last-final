@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <th:block th:replace="~{user/_meta}" />
+  <title>Quản lý đơn hàng</title>
+</head>
+
+<body>
+<th:block th:replace="~{admin/_headerAdmin}" />
+
+<section class="section-content">
+  <div class="container">
+    <div th:if="${successMessage}" class="alert alert-success mb-0 mt-4" role="alert" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert alert-danger mb-0 mt-4" role="alert" th:text="${errorMessage}"></div>
+        
+    <header class="section-heading py-4">
+      <h3 class="section-title">Quản lý đơn hàng</h3>
+    </header> <!-- section-heading.// -->
+
+    <main class="table-responsive-xl mb-5">
+      <table class="table table-bordered table-striped table-hover align-middle">
+        <thead>
+        <tr>
+          <th scope="col" style="min-width: 125px;">Mã đơn hàng</th>
+          <th scope="col" style="min-width: 100px;">Ngày mua</th>
+          <th scope="col" style="min-width: 100px;">Giao hàng</th>
+          <th scope="col" style="min-width: 175px;">Trạng thái đơn hàng</th>
+          <th scope="col" style="width: 250px;">Thao tác</th>
+        </tr>
+        </thead>
+        <tbody>
+         <th:block th:each="order:${hoadons}">
+          <tr>
+            <th scope="row" th:text="${order.idHoadon}"></th>
+            <td th:text="${#dates.format(order.ngaytao, 'dd/MM/yyyy')}"></td>
+            <td th:text="${order.giaohang == 'Giao hàng nhanh'?'Giao hàng nhanh (+50.000₫)':'Giao hàng tiêu chuẩn (+20.000₫)'}"></td>
+            <td>
+                <th:block th:if="${order.trangthai == 'ondelivery'}">
+                  <span class="badge bg-warning text-dark">Đang giao hàng</span>
+                </th:block>
+                <th:block th:if="${order.trangthai == 'received'}">
+                  <span class="badge bg-success">Giao hàng thành công</span>
+                </th:block>
+                <th:block th:if="${order.trangthai == 'cancel'}">
+                  <span class="badge bg-danger">Hủy đơn hàng</span>
+                </th:block>
+             </td>
+            <td class="text-center text-nowrap">
+              <a class="btn btn-primary me-2"
+                 th:href="@{/admin/hoadon/{id}(id=${order.idHoadon})}"
+                 role="button">
+                Xem
+              </a>
+              <button type="submit"
+              		  class="btn me-2"
+                      th:classappend="${order.trangthai == 'received' || order.trangthai == 'cancel'? 'btn-secondary' : 'btn-success'}"
+                      th:form="'update-confirm-'+${order.idHoadon}" th:disabled="${order.trangthai == 'received' || order.trangthai == 'cancel'}"
+                      onclick="return confirm('Bạn có muốn xác nhận đã giao đơn hàng này?')"
+                      title="Xác nhận đã giao">
+                <i class="bi bi-check-circle"></i>
+              </button>
+              <button type="submit"
+              		  class="btn me-2"
+                      th:classappend="${order.trangthai == 'received' || order.trangthai == 'cancel' ? 'btn-secondary' : 'btn-danger'}"
+                      th:form="'update-cancel-'+${order.idHoadon}" th:disabled="${order.trangthai == 'received' || order.trangthai == 'cancel'}"
+                      onclick="return confirm('Bạn có muốn hủy đơn hàng này?')"
+                      title="Hủy đơn hàng">
+                <i class="bi bi-x-circle"></i>
+              </button>
+              <button type="submit"
+              		  class="btn"
+                      th:classappend="${order.trangthai == 'ondelivery' ? 'btn-secondary' : 'btn-warning'}"
+                      th:form="'update-reset-'+${order.idHoadon}" th:disabled="${order.trangthai == 'ondelivery'}"
+                      onclick="return confirm('Bạn có muốn đặt lại trạng thái là đang giao hàng cho đơn hàng này?')"
+                      title="Đặt lại trạng thái là đang giao hàng">
+                <i class="bi bi-arrow-clockwise"></i>
+              </button>
+              <form th:action="@{/admin/hoadon/update}" method="post"
+                    th:id="'update-confirm-'+${order.idHoadon}">
+                <input type="hidden" name="id" th:value="${order.idHoadon}">
+                <input type="hidden" name="action" value="CONFIRM">
+              </form>
+              <form th:action="@{/admin/hoadon/update}" method="post"
+                    th:id="'update-cancel-'+${order.idHoadon}">
+                <input type="hidden" name="id" th:value="${order.idHoadon}">
+                <input type="hidden" name="action" value="CANCEL">
+              </form>
+              <form th:action="@{/admin/hoadon/update}" method="post"
+                    th:id="'update-reset-'+${order.idHoadon}">
+                <input type="hidden" name="id" th:value="${order.idHoadon}">
+                <input type="hidden" name="action" value="RESET">
+              </form>
+            </td>
+          </tr>
+        </th:block>
+        </tbody>
+      </table>
+    </main>
+
+    <div th:if="${totalPages > 0}">
+	        <nav class="mt-4 d-flex justify-content-center">
+	          <ul class="pagination">
+	            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+	              <a class="page-link" th:href="@{/admin/hoadon(page=${currentPage - 1})}">Trang trước</a>
+	            </li>
+	
+	            <li th:each="i : ${#numbers.sequence(1, totalPages)}"
+	                class="page-item"  th:classappend="${currentPage == i - 1} ? 'active'">
+	              <a class="page-link" th:href="@{/admin/hoadon(page=${i - 1})}" th:text="${i}"></a>
+	            </li>
+	
+	            <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+	              <a class="page-link" th:href="@{/admin/hoadon(page=${currentPage + 1})}">Trang sau</a>
+	            </li>
+	          </ul>
+	        </nav>
+	      </div>
+  </div> <!-- container.// -->
+</section> <!-- section-content.// -->
+
+  <th:block th:replace="~{admin/_footerAdmin}" />
+</body>
+
+</html>

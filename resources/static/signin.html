@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Đăng nhập - POS Shop Dược Phẩm</title>
+  <link href="css/bootstrap.css" type="text/css" rel="stylesheet">
+  <link href="css/bootstrap-icons.css" type="text/css" rel="stylesheet">
+  <link href="css/styles.css" type="text/css" rel="stylesheet">
+  <link rel="icon" href="img/favicon.ico" type="image/x-icon">
+  
+  <style>
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    
+    .login-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .login-card {
+      background: white;
+      border-radius: 2rem;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      border: none;
+      overflow: hidden;
+      max-width: 400px;
+      width: 100%;
+    }
+    
+    .login-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+    }
+    
+    .login-form {
+      padding: 2rem;
+    }
+    
+    .form-control {
+      border-radius: 0.75rem;
+      border: 2px solid #e9ecef;
+      padding: 0.75rem 1rem;
+      transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+    
+    .btn-login {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      border-radius: 0.75rem;
+      padding: 0.75rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="login-container">
+    <div class="login-card">
+      <div class="login-header">
+        <i class="bi bi-shop display-4 mb-3"></i>
+        <h3 class="mb-1">POS System</h3>
+        <p class="mb-0 opacity-75">Shop Dược Phẩm</p>
+      </div>
+      
+      <div class="login-form">
+        <div id="error-message" class="alert alert-danger" role="alert" style="display: none;"></div>
+        
+        <h4 class="text-center mb-4 gradient-text">Đăng nhập hệ thống</h4>
+        
+        <form id="signin-form">
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Tên đăng nhập</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light border-end-0">
+                <i class="bi bi-person"></i>
+              </span>
+              <input class="form-control border-start-0" placeholder="Nhập tên đăng nhập" type="text" autocomplete="off" name="username" required>
+            </div>
+          </div>
+          
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Mật khẩu</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light border-end-0">
+                <i class="bi bi-lock"></i>
+              </span>
+              <input name="password" class="form-control border-start-0" placeholder="Nhập mật khẩu" type="password" autocomplete="off" required>
+            </div>
+          </div>
+          
+          <div class="mb-4 form-check">
+            <input type="checkbox" class="form-check-input" id="remember">
+            <label class="form-check-label" for="remember">
+              Ghi nhớ đăng nhập
+            </label>
+          </div>
+          
+          <button type="submit" class="btn btn-login w-100 text-white">
+            <i class="bi bi-box-arrow-in-right me-2"></i>
+            Đăng nhập
+          </button>
+        </form>
+        
+        <div class="text-center mt-4">
+          <p class="text-muted mb-0">
+            Quên mật khẩu? <a href="#" class="text-decoration-none">Khôi phục</a>
+          </p>
+        </div>
+        
+        <div class="text-center mt-3">
+          <small class="text-muted">
+            <i class="bi bi-shield-check me-1"></i>
+            Hệ thống bảo mật cao
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Support Info -->
+  <div class="position-fixed bottom-0 start-0 p-3">
+    <div class="glassmorphism text-white p-2 rounded">
+      <small>
+        <i class="bi bi-headset me-1"></i>
+        Hỗ trợ: 0931-418-748
+      </small>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="js/bootstrap.bundle.js"></script>
+  <script src="js/auth.js"></script>
+  
+  <script>
+    document.getElementById('signin-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(this);
+      const username = formData.get('username');
+      const password = formData.get('password');
+      
+      // Simple validation
+      if (username && password) {
+        // Show loading state
+        const submitBtn = document.querySelector('button[type="submit"]');
+        submitBtn.innerHTML = '<i class="bi bi-hourglass me-2"></i>Đang đăng nhập...';
+        submitBtn.disabled = true;
+        
+        // Simulate login process
+        setTimeout(() => {
+          // Store user info in localStorage
+          localStorage.setItem('user', JSON.stringify({
+            username: username,
+            isLoggedIn: true,
+            role: username === 'admin' ? 'admin' : 'staff',
+            loginTime: new Date().toISOString()
+          }));
+          
+          // Redirect to POS dashboard
+          window.location.href = 'home.html';
+        }, 1500);
+      } else {
+        document.getElementById('error-message').style.display = 'block';
+        document.getElementById('error-message').textContent = 'Vui lòng nhập đầy đủ thông tin!';
+      }
+    });
+  </script>
+</body>
+
+</html> 

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Giỏ hàng - Shop Dược Phẩm</title>
+  <link href="css/bootstrap.css" type="text/css" rel="stylesheet">
+  <link href="css/bootstrap-icons.css" type="text/css" rel="stylesheet">
+  <link href="css/styles.css" type="text/css" rel="stylesheet">
+  <link rel="icon" href="img/favicon.ico" type="image/x-icon">
+</head>
+
+<body>
+  <!-- Header -->
+  <header class="section-header">
+    <section class="header-main border-bottom">
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col-lg-3 py-3">
+            <a class="text-body" href="home.html">
+              <h3>Shop Dược Phẩm</h3>
+            </a>
+          </div>
+          <div class="col-lg-4 col-xl-5">
+            <form action="search.html" method="get" class="search" autocomplete="off">
+              <div class="input-group w-100">
+                <input type="text" class="form-control" placeholder="Nhập từ khóa cần tìm ..." name="q">
+                <button class="btn btn-primary" type="submit" aria-label="Tìm kiếm">
+                  <i class="bi bi-search"></i>
+                </button>
+              </div>
+            </form>
+          </div>
+          <div class="col-lg-5 col-xl-4">
+            <ul class="nav col-12 col-lg-auto my-2 my-lg-0 justify-content-center justify-content-lg-end text-small">
+              <li>
+                <a href="admin/home.html" class="nav-link text-body">
+                  <i class="bi bi-gear d-block text-center fs-3"></i>
+                  Admin
+                </a>
+              </li>
+              <li>
+                <a href="setting.html" class="nav-link text-body">
+                  <i class="bi bi-person d-block text-center fs-3"></i>
+                  Tài khoản
+                </a>
+              </li>
+              <li>
+                <a href="orders.html" class="nav-link text-body">
+                  <i class="bi bi-list-check d-block text-center fs-3"></i>
+                  Đơn hàng
+                </a>
+              </li>
+              <li>
+                <a href="cart.html" class="nav-link text-body position-relative">
+                  <span id="total-cart-items-quantity" class="position-absolute top-0 end-0 mt-2 badge rounded-pill bg-primary">
+                    0
+                  </span>
+                  <i class="bi bi-cart d-block text-center fs-3 position-relative"></i>
+                  Giỏ hàng
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </header>
+
+  <!-- Navigation -->
+  <nav class="navbar navbar-main navbar-expand-lg navbar-light border-bottom">
+    <div class="container">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <strong><i class="bi bi-list"></i> Danh mục sản phẩm</strong>
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <li><a class="dropdown-item" href="category.html?type=prescription">Thuốc kê đơn</a></li>
+              <li><a class="dropdown-item" href="category.html?type=otc">Thuốc không kê đơn</a></li>
+              <li><a class="dropdown-item" href="category.html?type=supplements">Thực phẩm chức năng</a></li>
+              <li><a class="dropdown-item" href="category.html?type=medical-devices">Thiết bị y tế</a></li>
+              <li><a class="dropdown-item" href="category.html?type=cosmetics">Mỹ phẩm làm đẹp</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="medications.html">Thuốc đặc biệt</a></li>
+            </ul>
+          </li>
+        </ul>
+        <div id="user-auth">
+          <span id="user-greeting" style="display: none;">Xin chào <strong id="user-name"></strong>!</span>
+          <a class="btn btn-light ms-2" href="signin.html" id="signout-btn" style="display: none;">Đăng xuất</a>
+          <div id="auth-buttons">
+            <a class="btn btn-light me-2" href="signup.html">Đăng ký</a>
+            <a class="btn btn-primary" href="signin.html">Đăng nhập</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Breadcrumb -->
+  <section class="section-pagetop-2 bg-light">
+    <div class="container">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="home.html">Trang chủ</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Giỏ hàng</li>
+        </ol>
+      </nav>
+    </div>
+  </section>
+
+  <!-- Cart Content -->
+  <section class="section-content padding-y">
+    <div class="container">
+      <div class="row">
+        <main class="col-lg-9">
+          <div class="card">
+            <div class="card-header">
+              <h4 class="card-title">Giỏ hàng của bạn</h4>
+            </div>
+            <div class="card-body">
+              <div id="cart-items">
+                <!-- Cart items will be loaded here -->
+              </div>
+              
+              <div id="empty-cart" class="text-center py-5" style="display: none;">
+                <i class="bi bi-cart-x display-1 text-muted"></i>
+                <h5 class="mt-3">Giỏ hàng trống</h5>
+                <p class="text-muted">Hãy thêm một số sản phẩm vào giỏ hàng của bạn!</p>
+                <a href="home.html" class="btn btn-primary">Tiếp tục mua sắm</a>
+              </div>
+            </div>
+          </div>
+        </main>
+        
+        <aside class="col-lg-3">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="card-title">Tổng đơn hàng</h5>
+            </div>
+            <div class="card-body">
+              <dl class="row">
+                <dt class="col-6">Tạm tính:</dt>
+                <dd class="col-6 text-end" id="subtotal">0₫</dd>
+                
+                <dt class="col-6">Phí vận chuyển:</dt>
+                <dd class="col-6 text-end" id="shipping">30,000₫</dd>
+                
+                <dt class="col-6">Giảm giá:</dt>
+                <dd class="col-6 text-end text-success" id="discount">0₫</dd>
+              </dl>
+              
+              <hr>
+              
+              <dl class="row">
+                <dt class="col-6">Tổng cộng:</dt>
+                <dd class="col-6 text-end"><strong id="total">0₫</strong></dd>
+              </dl>
+              
+              <div class="d-grid gap-2 mt-3">
+                <button class="btn btn-primary" id="checkout-btn" disabled>Thanh toán</button>
+                <a href="home.html" class="btn btn-outline-secondary">Tiếp tục mua sắm</a>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Pharmacy Information -->
+          <div class="card mt-3">
+            <div class="card-body">
+              <h6 class="card-title">
+                <i class="bi bi-shield-check text-success"></i> Cam kết chất lượng
+              </h6>
+              <ul class="list-unstyled small">
+                <li><i class="bi bi-check text-success"></i> Thuốc chính hãng 100%</li>
+                <li><i class="bi bi-check text-success"></i> Tư vấn miễn phí</li>
+                <li><i class="bi bi-check text-success"></i> Giao hàng nhanh chóng</li>
+                <li><i class="bi bi-check text-success"></i> Hỗ trợ 24/7</li>
+              </ul>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="section-footer">
+    <section class="footer-top py-5 bg-light">
+      <div class="container">
+        <div class="row">
+          <aside class="col-sm-6 col-lg-3">
+            <h6 class="pb-2">Giới thiệu</h6>
+            <ul class="list-unstyled">
+              <li><a href="#">Về Shop</a></li>
+              <li><a href="#">Tuyển dụng</a></li>
+              <li><a href="#">Chính sách thanh toán</a></li>
+              <li><a href="#">Chính sách bảo mật</a></li>
+              <li><a href="#">Giải quyết khiếu nại</a></li>
+              <li><a href="#">Hợp tác</a></li>
+            </ul>
+          </aside>
+          <aside class="col-sm-6 col-lg-3">
+            <h6 class="pb-2">Hỗ trợ khách hàng</h6>
+            <ul class="list-unstyled">
+              <li>Hotline: 0931418748</li>
+              <li><a href="#">Câu hỏi thường gặp</a></li>
+              <li><a href="#">Hướng dẫn đặt hàng</a></li>
+              <li><a href="#">Phương thức vận chuyển</a></li>
+              <li><a href="#">Chính sách đổi trả</a></li>
+            </ul>
+          </aside>
+          <aside class="col-lg-5">
+            <h6 class="pb-2">Đăng ký nhận tin</h6>
+            <form>
+              <div class="input-group w-100">
+                <input type="email" class="form-control" placeholder="Email của bạn ...">
+                <button class="btn btn-primary" type="submit" aria-label="Đăng ký nhận tin">Đăng ký</button>
+              </div>
+            </form>
+          </aside>
+        </div>
+      </div>
+    </section>
+    
+    <section class="footer-bottom text-center bg-light border-top py-3">
+      <div class="container-fluid">© 2024 — Shop Dược Phẩm</div>
+    </section>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="js/bootstrap.bundle.js"></script>
+  <script src="js/header.js"></script>
+  <script src="js/auth.js"></script>
+  
+  <script>
+    // Cart functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      loadCart();
+      updateCartSummary();
+    });
+
+    function loadCart() {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const cartItemsContainer = document.getElementById('cart-items');
+      const emptyCartDiv = document.getElementById('empty-cart');
+      
+      if (cart.length === 0) {
+        cartItemsContainer.style.display = 'none';
+        emptyCartDiv.style.display = 'block';
+        return;
+      }
+      
+      cartItemsContainer.style.display = 'block';
+      emptyCartDiv.style.display = 'none';
+      
+      let cartHTML = '';
+      cart.forEach((item, index) => {
+        cartHTML += `
+          <div class="card mb-3">
+            <div class="card-body">
+              <div class="row align-items-center">
+                <div class="col-md-2">
+                  <img src="${item.image || 'img/200px.png'}" alt="${item.name}" class="img-fluid rounded">
+                </div>
+                <div class="col-md-4">
+                  <h6 class="card-title">${item.name}</h6>
+                  <p class="text-muted small">Mã SP: ${item.id}</p>
+                </div>
+                <div class="col-md-2">
+                  <div class="input-group">
+                    <button class="btn btn-outline-secondary" onclick="updateQuantity(${index}, -1)">-</button>
+                    <input type="number" class="form-control text-center" value="${item.quantity}" min="1" onchange="updateQuantity(${index}, this.value - ${item.quantity})">
+                    <button class="btn btn-outline-secondary" onclick="updateQuantity(${index}, 1)">+</button>
+                  </div>
+                </div>
+                <div class="col-md-2 text-end">
+                  <div class="fw-bold">${formatPrice(item.price * item.quantity)}</div>
+                  <div class="text-muted small">${formatPrice(item.price)}/sp</div>
+                </div>
+                <div class="col-md-2 text-end">
+                  <button class="btn btn-outline-danger btn-sm" onclick="removeFromCart(${index})">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      
+      cartItemsContainer.innerHTML = cartHTML;
+      updateCartCounter();
+    }
+
+    function updateQuantity(index, change) {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      if (typeof change === 'string') {
+        change = parseInt(change);
+      }
+      
+      cart[index].quantity += change;
+      
+      if (cart[index].quantity <= 0) {
+        cart.splice(index, 1);
+      }
+      
+      localStorage.setItem('cart', JSON.stringify(cart));
+      loadCart();
+      updateCartSummary();
+    }
+
+    function removeFromCart(index) {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      cart.splice(index, 1);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      loadCart();
+      updateCartSummary();
+    }
+
+    function updateCartSummary() {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      const shipping = cart.length > 0 ? 30000 : 0;
+      const discount = 0;
+      const total = subtotal + shipping - discount;
+      
+      document.getElementById('subtotal').textContent = formatPrice(subtotal);
+      document.getElementById('shipping').textContent = formatPrice(shipping);
+      document.getElementById('discount').textContent = formatPrice(discount);
+      document.getElementById('total').textContent = formatPrice(total);
+      
+      const checkoutBtn = document.getElementById('checkout-btn');
+      checkoutBtn.disabled = cart.length === 0;
+      
+      if (cart.length > 0) {
+        checkoutBtn.onclick = function() {
+          alert('Chức năng thanh toán đang được phát triển!');
+        };
+      }
+    }
+
+    function updateCartCounter() {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const counter = document.getElementById('total-cart-items-quantity');
+      if (counter) {
+        counter.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
+      }
+    }
+
+    function formatPrice(price) {
+      return new Intl.NumberFormat('vi-VN').format(price) + '₫';
+    }
+  </script>
+</body>
+
+</html> 

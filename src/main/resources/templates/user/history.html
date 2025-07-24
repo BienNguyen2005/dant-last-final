@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <th:block th:replace="~{user/_meta}" />
+  <title>Thiết đặt</title>
+  <!-- Add Font Awesome and Scripts -->
+  <script th:src="@{/js/toast.js}" type="module"></script>
+  <script th:src="@{/js/home.js}" type="module"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+
+<body>
+<th:block th:replace="~{user/_header}" />
+
+<section class="section-pagetop bg-light">
+  <div class="container">
+    <h2 class="title-page">Các sản phẩm từng mua</h2>
+  </div> <!-- container.// -->
+</section> <!-- section-pagetop.// -->
+
+<section class="section-content padding-y">
+  <div class="container">
+    <div class="row">
+		 <th:block th:insert="~{user/navPanel :: nav(active='HISTORY')}"></th:block>
+         <main class="col-md-9">
+           <article class="card">
+             <div class="card-body row">
+               <div class="col-lg-4 col-md-6" th:each="sanpham : ${sanphams}">
+		          <div class="card p-3 mb-4">
+		            <a th:href="@{/sanpham(id=${sanpham.idSanpham})}" class="img-wrap text-center">
+		            	<img width="200" height="200" class="img-fluid" th:src="@{/image/{url}(url=${sanpham.hinh})}" th:alt="${sanpham.tenSanpham}" />
+		            </a>
+		            <figcaption class="info-wrap mt-2">
+		              <a th:href="@{/sanpham(id=${sanpham.idSanpham})}" class="title td-text" th:text="${sanpham.tenSanpham}"></a>
+		              <div>
+		                <div th:if="${sanpham.giamgia == 0}">
+		                  <span class="price mt-1 fw-bold">
+		                    <span th:text="${#numbers.formatInteger(sanpham.gia, 0, 'COMMA')}"></span>₫
+		                  </span>
+		                </div>
+		                <div th:if="${sanpham.giamgia > 0}">
+		                  <span class="price mt-1 fw-bold">
+		                    <span th:text="${#numbers.formatInteger(sanpham.gia * (100 - sanpham.giamgia) / 100, 0, 'COMMA')}"></span>₫
+		                  </span>
+		                  <span class="ms-2 text-muted text-decoration-line-through">
+		                    <span th:text="${#numbers.formatInteger(sanpham.gia, 0, 'COMMA')}"></span>₫
+		                  </span>
+		                  <span class="ms-2 badge bg-info">
+		                    -<span th:text="${sanpham.giamgia}"></span>%
+		                  </span>
+		                </div>
+		              </div>
+		            </figcaption>
+		          </div>
+               </div>
+               
+                <div th:if="${totalPages > 0}">
+			        <nav class="mt-4 d-flex justify-content-center">
+			          <ul class="pagination">
+			            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+			              <a class="page-link" th:href="@{/history(page=${currentPage - 1})}">Trang trước</a>
+			            </li>
+			
+			            <li th:each="i : ${#numbers.sequence(1, totalPages)}"
+			                class="page-item"  th:classappend="${currentPage == i - 1} ? 'active'">
+			              <a class="page-link" th:href="@{/history(page=${i - 1})}" th:text="${i}"></a>
+			            </li>
+			
+			            <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+			              <a class="page-link" th:href="@{/history(page=${currentPage + 1})}">Trang sau</a>
+			            </li>
+			          </ul>
+			        </nav>
+			      </div>
+			    </div>
+             </div> <!-- card-body.// -->
+           </article>
+         </main> <!-- col.// -->
+    </div> <!-- row.// -->
+  </div> <!-- container.// -->
+</section> <!-- section-content.// -->
+
+
+<th:block th:replace="~{user/_footer}" />
+</body>
+</html>

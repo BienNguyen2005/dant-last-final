@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <th:block th:replace="~{user/_meta}" />
+  <title th:text="${sanpham.tenSanpham}"></title>
+
+  <!-- Custom Scripts -->
+  <script th:src="@{/js/toast.js}" type="module"></script>
+  <script th:src="@{/js/product.js}" type="module"></script>
+  <script th:src="@{/js/home.js}" type="module"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+
+<body class="bg-light">
+  <th:block th:replace="~{user/_header}" />
+
+  <!-- Breadcrumb -->
+  <section class="section-pagetop bg-white border-bottom">
+    <div class="container">
+      <nav class="py-3">
+        <ol class="breadcrumb mb-0">
+          <li class="breadcrumb-item">
+            <a href="/" class="text-decoration-none">
+              <i class="fas fa-home text-primary"></i> Trang chủ
+            </a>
+          </li>
+          <li class="breadcrumb-item">
+            <a th:href="@{/loai(id=${sanpham.loai.idLoai})}" class="text-decoration-none" th:text="${sanpham.loai.tenLoai}">
+              <i class="fas fa-list text-primary me-1"></i>
+            </a>
+          </li>
+          <li class="breadcrumb-item active" th:text="${sanpham.tenSanpham}"></li>
+        </ol>
+      </nav>
+    </div>
+  </section>
+
+  <!-- Product Detail -->
+  <section class="section-content py-5">
+    <div class="container">
+      <div class="row">
+        <!-- Product Image -->
+        <aside class="col-lg-6 mb-4">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+              <div class="product-gallery">
+                <div class="product-img-large rounded overflow-hidden mb-4">
+                  <img th:src="@{/image/{url}(url=${sanpham.hinh})}" 
+                       class="img-fluid w-100" 
+                       th:alt="${sanpham.tenSanpham}">
+                </div>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Product Info -->
+        <main class="col-lg-6">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+              <h1 class="product-title h3 fw-bold mb-3" th:text="${sanpham.tenSanpham}"></h1>
+
+              <div class="product-meta mb-4">
+                <span class="badge bg-success">
+                  <i class="fas fa-shopping-cart me-1"></i>
+                  <span th:text="${luotMua}"></span> đã mua
+                </span>
+                <span class="badge bg-primary ms-2">
+                  <i class="fas fa-box me-1"></i>
+                  <span th:text="${sanpham.soluong}"></span> còn lại
+                </span>
+              </div>
+
+              <!-- Price -->
+              <div class="product-price mb-4">
+                <div th:if="${sanpham.giamgia == 0}" class="current-price">
+                  <span class="h3 fw-bold text-primary">
+                    <span th:text="${#numbers.formatInteger(sanpham.gia, 0, 'COMMA')}"></span>₫
+                  </span>
+                </div>
+                <div th:if="${sanpham.giamgia > 0}" class="d-flex align-items-center gap-3">
+                  <span class="h3 fw-bold text-primary mb-0">
+                    <span th:text="${#numbers.formatInteger(sanpham.gia * (100 - sanpham.giamgia) / 100, 0, 'COMMA')}"></span>₫
+                  </span>
+                  <span class="h5 text-decoration-line-through text-muted mb-0">
+                    <span th:text="${#numbers.formatInteger(sanpham.gia, 0, 'COMMA')}"></span>₫
+                  </span>
+                  <span class="badge bg-danger">
+                    <i class="fas fa-tag me-1"></i>
+                    -<span th:text="${sanpham.giamgia}"></span>%
+                  </span>
+                </div>
+              </div>
+
+              <!-- Product Info -->
+              <div class="product-info mb-4">
+                <div class="row g-3">
+                  <div class="col-12">
+                    <label class="text-muted">
+                      <i class="fas fa-info-circle me-2"></i>Mô tả ngắn:
+                    </label>
+                    <p class="mb-0" th:text="${sanpham.motangan}"></p>
+                  </div>
+                  <div class="col-12">
+                    <label class="text-muted">
+                      <i class="fas fa-list me-2"></i>Danh mục:
+                    </label>
+                    <a th:href="@{/loai(id=${sanpham.loai.idLoai})}" 
+                       class="text-decoration-none"
+                       th:text="${sanpham.loai.tenLoai}"></a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Quantity -->
+              <div class="product-quantity mb-4">
+                <label class="text-muted mb-2">
+                  <i class="fas fa-shopping-basket me-2"></i>Số lượng:
+                </label>
+                <div class="d-flex align-items-center gap-3">
+                  <input type="number" 
+                         id="cart-item-quantity" 
+                         class="form-control w-25" 
+                         value="1" 
+                         min="1"
+                         th:max="${sanpham.soluong}"
+                         step="1"/>
+                  <span class="text-muted small" th:if="${sanpham.soluong > 0}">
+                    Còn <span th:text="${sanpham.soluong}"></span> sản phẩm
+                  </span>
+                  <span class="text-danger small" th:if="${sanpham.soluong == 0}">
+                    Hết hàng
+                  </span>
+                </div>
+              </div>
+
+              <!-- Actions -->
+              <div class="product-actions">
+                <div class="d-grid gap-2">
+                  <button th:disabled="${sanpham.soluong==0}" 
+                          type="button" 
+                          class="btn btn-primary btn-lg"
+                          id="buy-now">
+                    <i class="fas fa-bolt me-2"></i>Mua ngay
+                  </button>
+                  <button th:disabled="${sanpham.soluong==0}" 
+                          type="button" 
+                          class="btn btn-outline-primary btn-lg"
+                          id="add-cart-item">
+                    <i class="fas fa-cart-plus me-2"></i>Thêm vào giỏ hàng
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+
+      <!-- Product Description -->
+      <div class="row mt-5">
+        <div class="col-12">
+          <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white p-4 border-0">
+              <h4 class="mb-0">
+                <i class="fas fa-file-alt me-2"></i>Mô tả sản phẩm
+              </h4>
+            </div>
+            <div class="card-body p-4">
+              <div class="product-description" th:text="${sanpham.mota}"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Related Products -->
+      <div class="row mt-5">
+        <div class="col-12">
+          <div class="section-header d-flex justify-content-between align-items-center mb-4">
+            <h4 class="mb-0">
+              <i class="fas fa-tags me-2"></i>Sản phẩm liên quan
+            </h4>
+          </div>
+          <div class="row g-4">
+            <div th:each="sanpham : ${sanphams}" class="col-xl-3 col-lg-4 col-md-6">
+              <div class="card product-card h-100 border-0 shadow-sm">
+                <div class="card-body p-3">
+                  <a th:href="@{/sanpham(id=${sanpham.idSanpham})}" class="product-img mb-3">
+                    <img th:src="@{/image/{url}(url=${sanpham.hinh})}" 
+                         class="img-fluid w-100" 
+                         th:alt="${sanpham.tenSanpham}">
+                  </a>
+                  <h5 class="product-title mb-3">
+                    <a th:href="@{/sanpham(id=${sanpham.idSanpham})}" 
+                       class="text-dark text-decoration-none"
+                       th:text="${sanpham.tenSanpham}"></a>
+                  </h5>
+                  <div class="product-price">
+                    <div th:if="${sanpham.giamgia == 0}">
+                      <span class="fw-bold text-primary">
+                        <span th:text="${#numbers.formatInteger(sanpham.gia, 0, 'COMMA')}"></span>₫
+                      </span>
+                    </div>
+                    <div th:if="${sanpham.giamgia > 0}" class="d-flex align-items-center gap-2">
+                      <span class="fw-bold text-primary">
+                        <span th:text="${#numbers.formatInteger(sanpham.gia * (100 - sanpham.giamgia) / 100, 0, 'COMMA')}"></span>₫
+                      </span>
+                      <span class="text-decoration-line-through text-muted small">
+                        <span th:text="${#numbers.formatInteger(sanpham.gia, 0, 'COMMA')}"></span>₫
+                      </span>
+                      <span class="badge bg-danger">
+                        -<span th:text="${sanpham.giamgia}"></span>%
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <th:block th:replace="~{user/_footer}" />
+
+  <style>
+    .product-img-large {
+      aspect-ratio: 1;
+      background: #f8f9fa;
+    }
+
+    .product-img-large img {
+      object-fit: contain;
+      height: 100%;
+    }
+
+    .product-title {
+      line-height: 1.5;
+    }
+
+    .product-meta .badge {
+      padding: 0.5rem 0.75rem;
+      font-weight: 500;
+    }
+
+    .product-description {
+      line-height: 1.8;
+    }
+
+    .product-card {
+      transition: transform 0.2s ease;
+    }
+
+    .product-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .product-card .product-img {
+      display: block;
+      aspect-ratio: 1;
+      background: #f8f9fa;
+      overflow: hidden;
+      border-radius: 0.5rem;
+    }
+
+    .product-card .product-title {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      font-size: 1rem;
+    }
+
+    @media (max-width: 991.98px) {
+      .product-img-large {
+        aspect-ratio: 4/3;
+      }
+    }
+  </style>
+</body>
+
+</html>

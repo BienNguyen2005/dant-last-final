@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <th:block th:replace="~{user/_meta}" />
+  <title>Quản lý loại sản phẩm</title>
+</head>
+
+<body class="bg-light">
+  <th:block th:replace="~{admin/_headerAdmin}" />
+
+  <div class="container-fluid px-4">
+    <!-- Page Header -->
+    <div class="card shadow-sm border-0 mb-4 mt-4">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <h3 class="fw-bold mb-0">Quản lý loại sản phẩm</h3>
+            <p class="text-muted mb-0">Quản lý danh sách các loại sản phẩm</p>
+          </div>
+          <a class="btn btn-primary" th:href="@{/admin/loai/create}">
+            <i class="fas fa-plus me-2"></i>Thêm loại mới
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alert Messages -->
+    <div class="position-fixed top-0 end-0 p-3" style="z-index: 1100">
+      <div th:if="${successMessage}" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+          <div class="toast-body">
+            <i class="fas fa-check-circle me-2"></i>
+            <span th:text="${successMessage}"></span>
+          </div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+      </div>
+      <div th:if="${errorMessage}" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+          <div class="toast-body">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            <span th:text="${errorMessage}"></span>
+          </div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Categories Table -->
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="bg-light">
+              <tr>
+                <th class="border-0 rounded-start ps-4" width="80px">#</th>
+                <th class="border-0">Tên loại</th>
+                <th class="border-0 rounded-end text-end pe-4" width="150px">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="loai, loop : ${loais}">
+                <td class="ps-4" th:text="${loop.index + 1}"></td>
+                <td>
+                  <span class="fw-medium" th:text="${loai.tenLoai}"></span>
+                </td>
+                <td class="text-end pe-4">
+                  <div class="d-flex gap-2 justify-content-end">
+                    <a class="btn btn-sm btn-primary" 
+                       data-bs-toggle="tooltip"
+                       data-bs-title="Chỉnh sửa"
+                       th:href="@{/admin/loai/edit/{id}(id=${loai.idLoai})}">
+                      <i class="fas fa-edit"></i>
+                    </a>
+                    <button class="btn btn-sm btn-danger"
+                            data-bs-toggle="tooltip"
+                            data-bs-title="Xóa"
+                            th:onclick="confirmDelete([[${loai.idLoai}]], [[${loai.tenLoai}]])">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr th:if="${#lists.isEmpty(loais)}">
+                <td colspan="3" class="text-center py-4 text-muted">
+                  <i class="fas fa-box-open fa-2x mb-2"></i>
+                  <p class="mb-0">Chưa có loại sản phẩm nào</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <nav th:if="${totalPages > 1}" class="mt-4 mb-5">
+      <ul class="pagination justify-content-center">
+        <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+          <a class="page-link" th:href="@{/admin/loai(page=${currentPage - 1})}">
+            <i class="fas fa-chevron-left"></i>
+          </a>
+        </li>
+        <li class="page-item" 
+            th:each="i : ${#numbers.sequence(1, totalPages)}"
+            th:classappend="${currentPage == i - 1} ? 'active'">
+          <a class="page-link" th:href="@{/admin/loai(page=${i - 1})}" th:text="${i}"></a>
+        </li>
+        <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+          <a class="page-link" th:href="@{/admin/loai(page=${currentPage + 1})}">
+            <i class="fas fa-chevron-right"></i>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0">
+          <h5 class="modal-title">Xác nhận xóa</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          Bạn có chắc chắn muốn xóa loại "<span id="categoryName"></span>"?
+        </div>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+          <a href="#" id="deleteLink" class="btn btn-danger">Xóa</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+ <!--  <th:block th:replace="~{admin/_footerAdmin}" /> -->
+
+  <script>
+    // Initialize toasts
+    var toastElList = [].slice.call(document.querySelectorAll('.toast'))
+    var toastList = toastElList.map(function(toastEl) {
+      return new bootstrap.Toast(toastEl, {
+        autohide: true,
+        delay: 3000
+      })
+    })
+    toastList.forEach(toast => toast.show())
+
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+
+    // Handle delete confirmation
+    function confirmDelete(id, name) {
+      document.getElementById('categoryName').textContent = name;
+      document.getElementById('deleteLink').href = '/admin/loai/delete/' + id;
+      var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+      deleteModal.show();
+    }
+
+    // Hide tooltips when modal shows
+    var deleteModal = document.getElementById('deleteModal')
+    deleteModal.addEventListener('show.bs.modal', function () {
+      tooltipList.forEach(tooltip => tooltip.hide())
+    })
+  </script>
+
+  <style>
+    .card {
+      border-radius: 0.5rem;
+    }
+
+    .table > :not(caption) > * > * {
+      padding: 1rem 0;
+    }
+
+    .btn-sm {
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+    }
+
+    .page-link {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50% !important;
+      margin: 0 3px;
+    }
+
+    .modal-content {
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+
+    .toast {
+      border-radius: 0.5rem;
+    }
+
+    .tooltip {
+      font-size: 0.875rem;
+    }
+  </style>
+</body>
+</html>

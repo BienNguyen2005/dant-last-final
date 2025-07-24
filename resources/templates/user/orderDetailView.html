@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <th:block th:replace="~{user/_meta}" />
+  <title th:text="'Thông tin đơn hàng #' + ${order.idHoadon}"></title>
+</head>
+
+<body>
+<th:block th:replace="~{user/_header}" />
+
+<section class="section-pagetop bg-light">
+  <div class="container">
+    <h2 class="title-page" th:text="'Thông tin đơn hàng #' + ${order.idHoadon}"></h2>
+  </div> <!-- container.// -->
+</section> <!-- section-pagetop.// -->
+
+<section class="section-content padding-y">
+  <div class="container">
+    <div class="row">
+	    <th:block th:insert="~{user/navPanel :: nav(active='ORDER')}"></th:block>
+	
+	    <main class="col-md-9">
+	      <article class="card mb-4">
+	
+	        <header class="card-header">
+	          <strong class="d-inline-block me-4" th:text="'Mã đơn hàng: ' + ${order.idHoadon}"></strong>
+	          <span th:text="'Ngày mua: ' + ${#dates.format(order.ngaytao, 'dd/MM/yyyy')}"></span>
+	            <th:block th:if="${order.trangthai == 'ondelivery'}">
+	              <span class="badge bg-warning text-dark float-end">Đang giao hàng</span>
+	            </th:block>
+	            <th:block th:if="${order.trangthai == 'received'}">
+	              <span class="badge bg-success float-end">Giao hàng thành công</span>
+	            </th:block>
+	            <th:block th:if="${order.trangthai == 'cancel'}">
+	              <span class="badge bg-danger float-end">Hủy đơn hàng</span>
+	            </th:block>
+	        </header> <!-- card-header.// -->
+	
+	        <div class="card-body pb-0">
+	          <div class="row">
+	            <div class="col-lg-8">
+	              <h6 class="text-muted">Địa chỉ người nhận</h6>
+	              <p class="lh-lg">
+	                  <span th:text="${session.currentUser.hoten}"></span> <br>
+	                  <span th:text="'Số điện thoại: ' + ${session.currentUser.sdt}"></span>  <br>
+	                  <span th:text="'Địa chỉ: ' + ${order.diachi}"></span>
+	              </p>
+	            </div>
+	            <div class="col-lg-4">
+	              <h6 class="text-muted">Hình thức giao hàng</h6>
+	              <span class="text-success">
+	              <i class="fab fa-lg fa-cc-visa"></i>
+	              <span th:text="${order.giaohang}"></span>
+	            </span>
+	              <p class="lh-lg">
+	                Tạm tính: <span th:text="${#numbers.formatInteger(tempPrice, 0, 'COMMA')}"/></span>₫ <br>
+	                Phí vận chuyển: <span th:text="${#numbers.formatInteger(deliveryPrice, 0, 'COMMA')}"></span>₫
+	                <br>
+	                <strong>
+	                  Tổng cộng: <span th:text="${#numbers.formatInteger(tempPrice + deliveryPrice, 0, 'COMMA')}"></span>₫
+	                </strong>
+	              </p>
+	            </div>
+	          </div> <!-- row.// -->
+	        </div> <!-- card-body.// -->
+	
+	        <hr class="m-0">
+	
+	        <div class="table-responsive">
+	          <table class="cart-table table table-borderless">
+	            <thead class="text-muted">
+	            <tr class="small text-uppercase">
+	              <th scope="col" style="min-width: 280px;">Sản phẩm</th>
+	              <th scope="col" style="min-width: 150px;">Giá</th>
+	              <th scope="col" style="min-width: 150px;">Số lượng</th>
+	            </tr>
+	            </thead>
+	            <tbody>
+	            <th:block th:each="sanpham : ${listSanPham}">
+	              <tr>
+	                <td>
+	                  <figure class="itemside">
+	                    <div class="float-start me-3">
+                          <img width="80" height="80" th:src="@{/image/{url}(url=${sanpham.hinh})}" th:alt="${sanpham.tenSanpham}" />
+	                    </div>
+	                    <figcaption class="info">
+	                      <a th:href="@{/sanpham(id=${sanpham.idSanpham})}" class="title td-text" th:text="${sanpham.tenSanpham}"></a>
+	                    </figcaption>
+	                  </figure>
+	                </td>
+	                <td>
+	                  <div class="price-wrap">
+	                      <th:block th:if="${sanpham.giamgia == 0}">
+	                      <span class="price">
+	                        <span th:text="${#numbers.formatInteger(sanpham.gia, 0, 'COMMA')}"></span>₫
+	                      </span>
+	                      </th:block>
+	                      <th:block th:if="${sanpham.giamgia > 0}">
+	                        <div>
+	                         <span class="price">
+			                    <span th:text="${#numbers.formatInteger(sanpham.gia * (100 - sanpham.giamgia) / 100, 0, 'COMMA')}"></span>₫
+			                 </span>
+	                          <span class="ms-2 badge bg-info">
+			                    -<span th:text="${sanpham.giamgia}"></span>%
+			                  </span>
+	                        </div>
+	                        <small class="text-muted text-decoration-line-through">
+			                    <span th:text="${#numbers.formatInteger(sanpham.gia, 0, 'COMMA')}"></span>₫
+			                </small>
+	                      </th:block>
+	                  </div>
+	                </td>
+	                <td th:text="${sanpham.soluong}"></td>
+	              </tr>
+	            </th:block>
+	            </tbody>
+	          </table>
+	        </div> <!-- table.responsive-md.// -->
+	
+	        <form th:action="@{/orderDetail}" method="post">
+	          <div class="card-footer py-3">
+	            <input type="hidden" name="id" th:value="${order.idHoadon}">
+	            <button type="submit" th:if="${order.trangthai == 'ondelivery'}"
+	                    class="btn btn-danger"
+	                    onclick="return confirm('Bạn có muốn hủy đơn hàng?')">
+	              Hủy đơn hàng
+	            </button>
+	          </div> <!-- card-footer.// -->
+	        </form>
+	
+	      </article>
+	    </main> <!-- col.// -->
+    </div> <!-- row.// -->
+  </div> <!-- container.// -->
+</section> <!-- section-content.// -->
+
+<th:block th:replace="~{user/_footer}" />
+</body>
+
+</html>

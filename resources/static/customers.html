@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Quản lý Khách hàng - POS Shop Dược Phẩm</title>
+  <link href="css/bootstrap.css" type="text/css" rel="stylesheet">
+  <link href="css/bootstrap-icons.css" type="text/css" rel="stylesheet">
+  <link href="css/styles.css" type="text/css" rel="stylesheet">
+  <link rel="icon" href="img/favicon.ico" type="image/x-icon">
+  
+  <style>
+    .customers-container {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+    }
+    
+    .customers-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 2rem 0;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    
+    .search-section {
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+      margin-bottom: 2rem;
+    }
+    
+    .customer-card {
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+      transition: all 0.3s ease;
+      border: none;
+      margin-bottom: 1rem;
+    }
+    
+    .customer-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+    
+    .customer-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: white;
+      margin-right: 1rem;
+    }
+    
+    .customer-info h6 {
+      margin-bottom: 0.25rem;
+      color: #2d3748;
+    }
+    
+    .customer-meta {
+      color: #718096;
+      font-size: 0.875rem;
+    }
+    
+    .loyalty-badge {
+      background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 1rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    
+    .stats-card {
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      text-align: center;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+      transition: all 0.3s ease;
+    }
+    
+    .stats-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+    
+    .quick-actions {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 1000;
+    }
+    
+    .floating-btn {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: none;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+      transition: all 0.3s ease;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .floating-btn:hover {
+      transform: translateY(-3px) scale(1.1);
+      box-shadow: 0 12px 35px rgba(0,0,0,0.4);
+    }
+    
+    .purchase-history {
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    
+    .history-item {
+      padding: 0.5rem;
+      border-bottom: 1px solid #e2e8f0;
+      font-size: 0.875rem;
+    }
+    
+    .history-item:last-child {
+      border-bottom: none;
+    }
+  </style>
+</head>
+
+<body class="customers-container">
+  <!-- Header -->
+  <header class="customers-header">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <div class="d-flex align-items-center">
+            <a href="home.html" class="btn btn-light btn-sm me-3">
+              <i class="bi bi-arrow-left"></i> Quay lại
+            </a>
+            <div>
+              <h2 class="mb-1">
+                <i class="bi bi-people"></i> Quản lý Khách hàng
+              </h2>
+              <p class="mb-0 opacity-75">Thông tin và lịch sử mua hàng</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 text-end">
+          <div class="d-flex align-items-center justify-content-end">
+            <span class="me-3">
+              <i class="bi bi-person-circle"></i> Nhân viên: <strong>Nguyễn Văn A</strong>
+            </span>
+            <div class="time-display">
+              <i class="bi bi-clock me-1"></i>
+              <span id="current-time"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container py-4">
+    <!-- Statistics Row -->
+    <div class="row mb-4">
+      <div class="col-lg-3 col-md-6 mb-3">
+        <div class="stats-card">
+          <div class="text-primary mb-2">
+            <i class="bi bi-people display-6"></i>
+          </div>
+          <h4 class="text-primary" id="total-customers">1,245</h4>
+          <p class="text-muted mb-0">Tổng khách hàng</p>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 mb-3">
+        <div class="stats-card">
+          <div class="text-success mb-2">
+            <i class="bi bi-person-check display-6"></i>
+          </div>
+          <h4 class="text-success" id="active-customers">987</h4>
+          <p class="text-muted mb-0">Khách hàng thân thiết</p>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 mb-3">
+        <div class="stats-card">
+          <div class="text-warning mb-2">
+            <i class="bi bi-person-plus display-6"></i>
+          </div>
+          <h4 class="text-warning" id="new-today">12</h4>
+          <p class="text-muted mb-0">Mới hôm nay</p>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 mb-3">
+        <div class="stats-card">
+          <div class="text-info mb-2">
+            <i class="bi bi-graph-up display-6"></i>
+          </div>
+          <h4 class="text-info" id="total-revenue">2.5M₫</h4>
+          <p class="text-muted mb-0">Doanh thu trung bình</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search Section -->
+    <div class="search-section">
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <div class="input-group">
+            <span class="input-group-text bg-light">
+              <i class="bi bi-search"></i>
+            </span>
+            <input type="text" class="form-control modern-input" placeholder="Tìm kiếm khách hàng (Tên, SĐT, Email...)" id="customer-search">
+            <button class="btn btn-primary" onclick="searchCustomers()">
+              <i class="bi bi-search"></i> Tìm kiếm
+            </button>
+          </div>
+        </div>
+        <div class="col-md-4 text-end">
+          <div class="btn-group" role="group">
+            <button class="btn btn-outline-primary" onclick="filterCustomers('all')">
+              <i class="bi bi-people"></i> Tất cả
+            </button>
+            <button class="btn btn-outline-info" onclick="filterCustomers('loyal')">
+              <i class="bi bi-heart"></i> Thân thiết
+            </button>
+            <button class="btn btn-outline-warning" onclick="filterCustomers('new')">
+              <i class="bi bi-person-plus"></i> Mới
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Customer List -->
+    <div class="row">
+      <div class="col-lg-8">
+        <div id="customers-list">
+          <!-- Customer cards will be loaded here -->
+        </div>
+        
+        <!-- Pagination -->
+        <nav aria-label="Customer pagination" class="mt-4">
+          <ul class="pagination justify-content-center">
+            <li class="page-item disabled">
+              <span class="page-link">Trước</span>
+            </li>
+            <li class="page-item active">
+              <span class="page-link">1</span>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="#">2</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="#">3</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="#">Sau</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+      
+      <div class="col-lg-4">
+        <div class="search-section">
+          <h5 class="mb-3">
+            <i class="bi bi-filter"></i> Bộ lọc nâng cao
+          </h5>
+          
+          <div class="mb-3">
+            <label class="form-label">Loại khách hàng</label>
+            <select class="form-select" id="customer-type-filter">
+              <option value="">Tất cả</option>
+              <option value="new">Mới</option>
+              <option value="loyal">Thân thiết</option>
+              <option value="returning">Quay lại</option>
+            </select>
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label">Khu vực</label>
+            <select class="form-select" id="area-filter">
+              <option value="">Tất cả khu vực</option>
+              <option value="q1">Quận 1</option>
+              <option value="q3">Quận 3</option>
+              <option value="q5">Quận 5</option>
+              <option value="q10">Quận 10</option>
+            </select>
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label">Tổng chi tiêu</label>
+            <div class="row">
+              <div class="col-6">
+                <input type="number" class="form-control" placeholder="Từ" id="spending-from">
+              </div>
+              <div class="col-6">
+                <input type="number" class="form-control" placeholder="Đến" id="spending-to">
+              </div>
+            </div>
+          </div>
+          
+          <div class="d-grid gap-2">
+            <button class="btn btn-primary" onclick="applyFilters()">
+              <i class="bi bi-funnel"></i> Áp dụng bộ lọc
+            </button>
+            <button class="btn btn-outline-secondary" onclick="clearFilters()">
+              <i class="bi bi-arrow-clockwise"></i> Xóa bộ lọc
+            </button>
+          </div>
+        </div>
+        
+        <!-- Quick Stats -->
+        <div class="search-section mt-4">
+          <h5 class="mb-3">
+            <i class="bi bi-graph-up"></i> Thống kê nhanh
+          </h5>
+          
+          <div class="mb-3">
+            <div class="d-flex justify-content-between">
+              <span>Khách mới tuần này:</span>
+              <strong class="text-success">+28</strong>
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <div class="d-flex justify-content-between">
+              <span>Tỷ lệ quay lại:</span>
+              <strong class="text-primary">78%</strong>
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <div class="d-flex justify-content-between">
+              <span>Doanh thu/KH TB:</span>
+              <strong class="text-warning">2,150,000₫</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="quick-actions">
+    <button class="floating-btn btn-primary" onclick="showAddCustomerModal()" title="Thêm khách hàng mới">
+      <i class="bi bi-person-plus"></i>
+    </button>
+    <button class="floating-btn btn-success" onclick="exportCustomers()" title="Xuất danh sách">
+      <i class="bi bi-download"></i>
+    </button>
+  </div>
+
+  <!-- Add Customer Modal -->
+  <div class="modal fade" id="addCustomerModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title">
+            <i class="bi bi-person-plus"></i> Thêm khách hàng mới
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="add-customer-form">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Họ và tên *</label>
+                  <input type="text" class="form-control" name="fullname" required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Số điện thoại *</label>
+                  <input type="tel" class="form-control" name="phone" required>
+                </div>
+              </div>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Email</label>
+                  <input type="email" class="form-control" name="email">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Ngày sinh</label>
+                  <input type="date" class="form-control" name="birthday">
+                </div>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Địa chỉ</label>
+              <textarea class="form-control" name="address" rows="2"></textarea>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Giới tính</label>
+                  <select class="form-select" name="gender">
+                    <option value="">Chọn giới tính</option>
+                    <option value="male">Nam</option>
+                    <option value="female">Nữ</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label class="form-label">Mức độ thân thiết</label>
+                  <select class="form-select" name="type">
+                    <option value="new">Khách hàng mới</option>
+                    <option value="returning">Quay lại</option>
+                    <option value="loyal">Thân thiết</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Ghi chú</label>
+              <textarea class="form-control" name="notes" rows="2" placeholder="Thông tin bổ sung về khách hàng..."></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+          <button type="button" class="btn btn-primary" onclick="saveCustomer()">
+            <i class="bi bi-check-circle"></i> Lưu thông tin
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Customer Detail Modal -->
+  <div class="modal fade" id="customerDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">
+            <i class="bi bi-person-circle"></i> Chi tiết khách hàng
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="customer-detail-content">
+          <!-- Customer details will be loaded here -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-primary" onclick="editCustomer()">
+            <i class="bi bi-pencil"></i> Chỉnh sửa
+          </button>
+          <button type="button" class="btn btn-primary" onclick="createOrder()">
+            <i class="bi bi-cart-plus"></i> Tạo đơn hàng
+          </button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="js/bootstrap.bundle.js"></script>
+  
+  <script>
+    // Sample customer data
+    const customers = [
+      {
+        id: 'C001',
+        name: 'Nguyễn Văn An',
+        phone: '0901234567',
+        email: 'vanan@email.com',
+        address: '123 Nguyễn Huệ, Q1, TP.HCM',
+        birthday: '1985-03-15',
+        gender: 'male',
+        type: 'vip',
+        registrationDate: '2023-01-15',
+        totalSpent: 3250000,
+        orderCount: 28,
+        lastPurchase: '2024-01-10',
+        points: 325,
+        notes: 'Khách hàng thân thiết, thường mua thuốc tim mạch'
+      },
+      {
+        id: 'C002',
+        name: 'Trần Thị Bích',
+        phone: '0907654321',
+        email: 'bichtran@email.com',
+        address: '456 Lê Lợi, Q3, TP.HCM',
+        birthday: '1990-07-22',
+        gender: 'female',
+        type: 'regular',
+        registrationDate: '2023-06-10',
+        totalSpent: 1850000,
+        orderCount: 15,
+        lastPurchase: '2024-01-08',
+        points: 185,
+        notes: 'Hay mua vitamin và thực phẩm chức năng'
+      },
+      {
+        id: 'C003',
+        name: 'Lê Minh Tuấn',
+        phone: '0912345678',
+        email: 'minhtuan@email.com',
+        address: '789 Điện Biên Phủ, Q10, TP.HCM',
+        birthday: '1975-12-08',
+        gender: 'male',
+        type: 'vip',
+        registrationDate: '2022-08-20',
+        totalSpent: 5680000,
+        orderCount: 45,
+        lastPurchase: '2024-01-12',
+        points: 568,
+        notes: 'Bệnh tiểu đường, cần theo dõi đặc biệt'
+      },
+      {
+        id: 'C004',
+        name: 'Phạm Thị Mai',
+        phone: '0923456789',
+        email: 'maiPham@email.com',
+        address: '321 Cách Mạng Tháng 8, Q5, TP.HCM',
+        birthday: '1988-04-30',
+        gender: 'female',
+        type: 'regular',
+        registrationDate: '2024-01-05',
+        totalSpent: 250000,
+        orderCount: 2,
+        lastPurchase: '2024-01-11',
+        points: 25,
+        notes: 'Khách hàng mới'
+      }
+    ];
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', function() {
+      updateClock();
+      setInterval(updateClock, 1000);
+      loadCustomers();
+      updateStats();
+    });
+
+    function updateClock() {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString('vi-VN');
+      document.getElementById('current-time').textContent = timeString;
+    }
+
+    function loadCustomers(filter = 'all') {
+      const customersList = document.getElementById('customers-list');
+      let filteredCustomers = customers;
+      
+      if (filter !== 'all') {
+        filteredCustomers = customers.filter(c => c.type === filter || 
+          (filter === 'new' && new Date(c.registrationDate) > new Date('2024-01-01')));
+      }
+      
+      customersList.innerHTML = filteredCustomers.map(customer => `
+        <div class="customer-card" onclick="showCustomerDetail('${customer.id}')">
+          <div class="d-flex align-items-center">
+            <div class="customer-avatar" style="background: ${getAvatarColor(customer.name)}">
+              ${customer.name.charAt(0)}
+            </div>
+            <div class="customer-info flex-grow-1">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <h6>${customer.name}</h6>
+                  <div class="customer-meta">
+                    <i class="bi bi-telephone me-1"></i>${customer.phone}
+                    <span class="mx-2">•</span>
+                    <i class="bi bi-envelope me-1"></i>${customer.email}
+                  </div>
+                  <div class="customer-meta mt-1">
+                    <i class="bi bi-geo-alt me-1"></i>${customer.address}
+                  </div>
+                </div>
+                <div class="text-end">
+                  ${customer.type === 'vip' ? '<span class="loyalty-badge">VIP</span>' : ''}
+                  <div class="customer-meta mt-1">
+                    <strong>${formatPrice(customer.totalSpent)}</strong>
+                  </div>
+                  <div class="customer-meta">
+                    ${customer.orderCount} đơn hàng
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row mt-3">
+            <div class="col-md-4">
+              <small class="text-muted">Điểm tích lũy</small>
+              <div class="fw-bold text-success">${customer.points} điểm</div>
+            </div>
+            <div class="col-md-4">
+              <small class="text-muted">Mua lần cuối</small>
+              <div class="fw-bold">${formatDate(customer.lastPurchase)}</div>
+            </div>
+            <div class="col-md-4">
+              <small class="text-muted">Thành viên từ</small>
+              <div class="fw-bold">${formatDate(customer.registrationDate)}</div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function updateStats() {
+      const totalCustomers = customers.length;
+      const vipCustomers = customers.filter(c => c.type === 'vip').length;
+      const newToday = customers.filter(c => 
+        new Date(c.registrationDate).toDateString() === new Date().toDateString()
+      ).length;
+      const activeCustomers = customers.filter(c => c.orderCount > 5).length;
+      
+      document.getElementById('total-customers').textContent = totalCustomers.toLocaleString();
+      document.getElementById('vip-customers').textContent = vipCustomers;
+      document.getElementById('new-today').textContent = newToday;
+      document.getElementById('active-customers').textContent = activeCustomers;
+    }
+
+    function getAvatarColor(name) {
+      const colors = [
+        'linear-gradient(45deg, #667eea, #764ba2)',
+        'linear-gradient(45deg, #f093fb, #f5576c)',
+        'linear-gradient(45deg, #4facfe, #00f2fe)',
+        'linear-gradient(45deg, #43e97b, #38f9d7)',
+        'linear-gradient(45deg, #fa709a, #fee140)',
+        'linear-gradient(45deg, #a8edea, #fed6e3)',
+        'linear-gradient(45deg, #ff9a9e, #fecfef)',
+        'linear-gradient(45deg, #ffecd2, #fcb69f)'
+      ];
+      const index = name.charCodeAt(0) % colors.length;
+      return colors[index];
+    }
+
+    function searchCustomers() {
+      const query = document.getElementById('customer-search').value.toLowerCase();
+      if (!query) {
+        loadCustomers();
+        return;
+      }
+      
+      const filteredCustomers = customers.filter(c => 
+        c.name.toLowerCase().includes(query) ||
+        c.phone.includes(query) ||
+        c.email.toLowerCase().includes(query)
+      );
+      
+      const customersList = document.getElementById('customers-list');
+      if (filteredCustomers.length === 0) {
+        customersList.innerHTML = `
+          <div class="text-center py-5">
+            <i class="bi bi-search display-1 text-muted"></i>
+            <h5 class="text-muted mt-3">Không tìm thấy khách hàng</h5>
+            <p class="text-muted">Thử tìm kiếm với từ khóa khác</p>
+          </div>
+        `;
+        return;
+      }
+      
+      customersList.innerHTML = filteredCustomers.map(customer => `
+        <div class="customer-card" onclick="showCustomerDetail('${customer.id}')">
+          <div class="d-flex align-items-center">
+            <div class="customer-avatar" style="background: ${getAvatarColor(customer.name)}">
+              ${customer.name.charAt(0)}
+            </div>
+            <div class="customer-info flex-grow-1">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <h6>${customer.name}</h6>
+                  <div class="customer-meta">
+                    <i class="bi bi-telephone me-1"></i>${customer.phone}
+                    <span class="mx-2">•</span>
+                    <i class="bi bi-envelope me-1"></i>${customer.email}
+                  </div>
+                  <div class="customer-meta mt-1">
+                    <i class="bi bi-geo-alt me-1"></i>${customer.address}
+                  </div>
+                </div>
+                <div class="text-end">
+                  ${customer.type === 'vip' ? '<span class="loyalty-badge">VIP</span>' : ''}
+                  <div class="customer-meta mt-1">
+                    <strong>${formatPrice(customer.totalSpent)}</strong>
+                  </div>
+                  <div class="customer-meta">
+                    ${customer.orderCount} đơn hàng
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function filterCustomers(type) {
+      // Update active button
+      document.querySelectorAll('.btn-group .btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      event.target.classList.add('active');
+      
+      loadCustomers(type);
+    }
+
+    function showAddCustomerModal() {
+      const modal = new bootstrap.Modal(document.getElementById('addCustomerModal'));
+      modal.show();
+    }
+
+    function saveCustomer() {
+      const form = document.getElementById('add-customer-form');
+      const formData = new FormData(form);
+      
+      // Validate required fields
+      if (!formData.get('fullname') || !formData.get('phone')) {
+        alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
+        return;
+      }
+      
+      // Create new customer object
+      const newCustomer = {
+        id: 'C' + String(customers.length + 1).padStart(3, '0'),
+        name: formData.get('fullname'),
+        phone: formData.get('phone'),
+        email: formData.get('email') || '',
+        address: formData.get('address') || '',
+        birthday: formData.get('birthday') || '',
+        gender: formData.get('gender') || '',
+        type: formData.get('type') || 'regular',
+        registrationDate: new Date().toISOString().split('T')[0],
+        totalSpent: 0,
+        orderCount: 0,
+        lastPurchase: '',
+        points: 0,
+        notes: formData.get('notes') || ''
+      };
+      
+      // Add to customers array
+      customers.unshift(newCustomer);
+      
+      // Reload customers list
+      loadCustomers();
+      updateStats();
+      
+      // Close modal and reset form
+      bootstrap.Modal.getInstance(document.getElementById('addCustomerModal')).hide();
+      form.reset();
+      
+      // Show success message
+      showToast('Thêm khách hàng thành công!', 'success');
+    }
+
+    function showCustomerDetail(customerId) {
+      const customer = customers.find(c => c.id === customerId);
+      if (!customer) return;
+      
+      const detailContent = `
+        <div class="row">
+          <div class="col-md-4">
+            <div class="text-center mb-4">
+              <div class="customer-avatar mx-auto mb-3" style="background: ${getAvatarColor(customer.name)}; width: 120px; height: 120px; font-size: 2.5rem;">
+                ${customer.name.charAt(0)}
+              </div>
+              <h4>${customer.name}</h4>
+              ${customer.type === 'vip' ? '<span class="loyalty-badge">VIP Member</span>' : ''}
+            </div>
+            
+            <div class="card">
+              <div class="card-header">
+                <h6 class="mb-0">Thông tin liên hệ</h6>
+              </div>
+              <div class="card-body">
+                <p><i class="bi bi-telephone me-2"></i>${customer.phone}</p>
+                <p><i class="bi bi-envelope me-2"></i>${customer.email}</p>
+                <p><i class="bi bi-geo-alt me-2"></i>${customer.address}</p>
+                <p><i class="bi bi-calendar me-2"></i>${formatDate(customer.birthday)}</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-md-8">
+            <div class="row mb-4">
+              <div class="col-md-3">
+                <div class="card text-center">
+                  <div class="card-body">
+                    <h4 class="text-primary">${customer.orderCount}</h4>
+                    <small class="text-muted">Đơn hàng</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="card text-center">
+                  <div class="card-body">
+                    <h4 class="text-success">${formatPrice(customer.totalSpent)}</h4>
+                    <small class="text-muted">Tổng chi tiêu</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="card text-center">
+                  <div class="card-body">
+                    <h4 class="text-warning">${customer.points}</h4>
+                    <small class="text-muted">Điểm tích lũy</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="card text-center">
+                  <div class="card-body">
+                    <h4 class="text-info">${Math.round(customer.totalSpent / customer.orderCount) || 0}</h4>
+                    <small class="text-muted">TB/đơn</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="card">
+              <div class="card-header">
+                <h6 class="mb-0">Lịch sử mua hàng gần đây</h6>
+              </div>
+              <div class="card-body">
+                <div class="purchase-history">
+                  <div class="history-item d-flex justify-content-between">
+                    <span>HD001 - Paracetamol, Vitamin C</span>
+                    <span class="text-success">156,000₫</span>
+                  </div>
+                  <div class="history-item d-flex justify-content-between">
+                    <span>HD002 - Kem dưỡng da, Thuốc ho</span>
+                    <span class="text-success">285,000₫</span>
+                  </div>
+                  <div class="history-item d-flex justify-content-between">
+                    <span>HD003 - Insulin, Que thử đường</span>
+                    <span class="text-success">1,250,000₫</span>
+                  </div>
+                  <div class="history-item d-flex justify-content-between">
+                    <span>HD004 - Vitamin tổng hợp</span>
+                    <span class="text-success">125,000₫</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            ${customer.notes ? `
+            <div class="card mt-3">
+              <div class="card-header">
+                <h6 class="mb-0">Ghi chú</h6>
+              </div>
+              <div class="card-body">
+                <p class="mb-0">${customer.notes}</p>
+              </div>
+            </div>
+            ` : ''}
+          </div>
+        </div>
+      `;
+      
+      document.getElementById('customer-detail-content').innerHTML = detailContent;
+      const modal = new bootstrap.Modal(document.getElementById('customerDetailModal'));
+      modal.show();
+    }
+
+    function editCustomer() {
+      // Implementation for editing customer
+      alert('Chức năng chỉnh sửa sẽ được triển khai');
+    }
+
+    function createOrder() {
+      // Redirect to POS with customer selected
+      window.location.href = 'pos.html?customer=' + encodeURIComponent(JSON.stringify(customer));
+    }
+
+    function applyFilters() {
+      // Implementation for advanced filtering
+      console.log('Applying filters...');
+    }
+
+    function clearFilters() {
+      document.getElementById('customer-type-filter').value = '';
+      document.getElementById('area-filter').value = '';
+      document.getElementById('spending-from').value = '';
+      document.getElementById('spending-to').value = '';
+      loadCustomers();
+    }
+
+    function exportCustomers() {
+      // Simple CSV export
+      const csvContent = "data:text/csv;charset=utf-8," + 
+        "Tên,Điện thoại,Email,Địa chỉ,Loại,Tổng chi tiêu,Số đơn hàng\n" +
+        customers.map(c => `${c.name},${c.phone},${c.email},"${c.address}",${c.type},${c.totalSpent},${c.orderCount}`).join('\n');
+      
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "danh-sach-khach-hang.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      showToast('Xuất danh sách thành công!', 'success');
+    }
+
+    function formatPrice(price) {
+      return new Intl.NumberFormat('vi-VN').format(price) + '₫';
+    }
+
+    function formatDate(dateString) {
+      if (!dateString) return '-';
+      return new Date(dateString).toLocaleDateString('vi-VN');
+    }
+
+    function showToast(message, type = 'info') {
+      // Simple toast notification
+      const toast = document.createElement('div');
+      toast.className = `toast align-items-center text-white bg-${type} border-0`;
+      toast.style.position = 'fixed';
+      toast.style.top = '20px';
+      toast.style.right = '20px';
+      toast.style.zIndex = '9999';
+      toast.innerHTML = `
+        <div class="d-flex">
+          <div class="toast-body">${message}</div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="this.parentElement.parentElement.remove()"></button>
+        </div>
+      `;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        if (toast.parentElement) {
+          toast.remove();
+        }
+      }, 3000);
+    }
+
+    // Enter key search
+    document.getElementById('customer-search').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        searchCustomers();
+      }
+    });
+  </script>
+</body>
+
+</html> 

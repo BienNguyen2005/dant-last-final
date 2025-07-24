@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <th:block th:replace="~{user/_meta}" />
+  <title>Thiết đặt</title>
+  <script th:src="@{/js/toast.js}" type="module"></script>
+  <script th:src="@{/js/home.js}" type="module"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+
+<body>
+<th:block th:replace="~{user/_header}" />
+
+<section class="section-pagetop bg-light">
+  <div class="container">
+    <h2 class="title-page">Thiết đặt</h2>
+  </div> <!-- container.// -->
+</section> <!-- section-pagetop.// -->
+
+<section class="section-content padding-y">
+  <div class="container">
+    <div class="row">
+		 <th:block th:insert="~{user/navPanel :: nav(active='SETTING')}"></th:block>
+         <main class="col-md-9">
+           <article class="card">
+             <div class="card-body row">
+              <div th:if="${successMessage}" class="alert alert-success" role="alert" th:text="${successMessage}"></div>
+        	  <div th:if="${errorMessage}" class="alert alert-danger" role="alert" th:text="${errorMessage}"></div>
+
+               <div class="col-lg-6">
+                 <form th:action="@{/setting}" method="post"  autocomplete="off" enctype="multipart/form-data">
+                   <div class="mb-3 d-flex justify-content-center">
+                    <label for="avatarInput" class="avatar-label">
+				    	<img th:if="${user.hinh == null}" th:src="@{img/280px.png}" alt="Avatar" id="avatarPreview">
+				    	<img th:if="${user.hinh != null}" th:src="@{/image/{url}(url=${user.hinh})}" th:alt="${user.hoten}" id="avatarPreview">
+				  	</label>
+				  	<input type="file" name="image" class="d-none" id="avatarInput" accept="image/*">
+                   </div>
+                   <div class="mb-3">
+                     <label for="username" class="form-label">Tên đăng nhập</label>
+                     <input type="text"
+                            class="form-control"
+                            id="username"
+                            name="username" readonly
+                            th:value="${user.idUser}">
+                   </div>
+                   <div class="mb-3">
+                     <label for="hoten" class="form-label">Họ và tên</label>
+                     <input type="text"
+                            class="form-control"
+                            id="hoten"
+                            name="hoten"
+                            th:value="${user.hoten}">
+                   </div>
+                   <div class="mb-3">
+                     <label for="sdt" class="form-label">Số điện thoại</label>
+                     <input type="text"
+                            class="form-control"
+                            id="sdt"
+                            name="sdt"
+                            th:value="${user.sdt}">
+                   </div>
+                   <div class="d-flex gap-2">
+	                   <button type="submit" class="btn btn-primary w-100">Cập nhật thông tin mới</button>
+	                   <button type="submit" form="cancel-account" class="btn btn-danger w-100" onclick="return confirm('Bạn có muốn hủy tài khoản?')">Hủy tài khoản</button>
+                   </div>
+                 </form>
+                 
+                 <form th:action="@{/cance-account}" method="post"
+	                    id="cancel-account">
+	                <input type="hidden" name="idUser" th:value="${user.idUser}">
+	              </form>
+               </div>
+             </div> <!-- card-body.// -->
+           </article>
+         </main> <!-- col.// -->
+    </div> <!-- row.// -->
+  </div> <!-- container.// -->
+</section> <!-- section-content.// -->
+
+
+<th:block th:replace="~{user/_footer}" />
+</body>
+<script>
+  document.getElementById("avatarInput").addEventListener("change", function (event) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        document.getElementById("avatarPreview").src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+</script>
+</html>

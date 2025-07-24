@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <th:block th:replace="~{user/_meta}" />
+  <title th:text="${loai.tenLoai}"></title>
+</head>
+
+<body>
+<th:block th:replace="~{user/_header}" />
+
+<section class="section-pagetop bg-light">
+  <div class="container">
+    <h2 class="title-page" th:text="${loai.tenLoai}"></h2>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item" aria-current="page">
+          <a href="/">Trang chủ</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page" th:text="${loai.tenLoai}"></li>
+      </ol>
+    </nav>
+  </div> <!-- container.// -->
+</section> <!-- section-pagetop.// -->
+
+<section class="section-content padding-y">
+  <div class="container">
+    <div class="row">
+      <aside class="col-md-4 col-lg-3 mb-md-0 mb-3">
+        <div class="card">
+          <form th:action="@{/loai}" method="get">
+           <input type="hidden" name="id" th:value="${loai.idLoai}">
+            <article class="filter-group">
+              <header class="card-header my-1">
+                <a data-bs-toggle="collapse" href="#collapse_2" aria-expanded="true"
+                   aria-controls="collapse_2">
+                  <i class="float-end bi bi-chevron-down"></i>
+                  <h6 class="title fw-bold">Giá bán</h6>
+                </a>
+              </header>
+              <div class="filter-content collapse show" id="collapse_2">
+                <div class="card-body pt-0">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" value=""
+                           id="checkbox_price_0" name="priceRanges" th:checked="${priceRanges == ''}">
+                    <label class="form-check-label" for="checkbox_price_0">
+                     Tất cả
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" value="0-50000"
+                           id="checkbox_price_1" name="priceRanges" th:checked="${priceRanges == '0-50000'}">
+                    <label class="form-check-label" for="checkbox_price_1">
+                      Dưới 50.000₫
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" value="50000-200000"
+                           id="checkbox_price_2" name="priceRanges" th:checked="${priceRanges == '50000-200000'}">
+                    <label class="form-check-label" for="checkbox_price_2">
+                      Từ 50.000₫ đến 200.000₫
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" value="200000-infinity"
+                           id="checkbox_price_3" name="priceRanges" th:checked="${priceRanges == '200000-infinity'}">
+                    <label class="form-check-label" for="checkbox_price_3">
+                      Trên 200.000₫
+                    </label>
+                  </div>
+                </div> <!-- card-body.// -->
+              </div>
+            </article>
+            <article class="filter-group">
+              <header class="card-header my-1">
+                <a data-bs-toggle="collapse" href="#collapse_3" aria-expanded="true"
+                   aria-controls="collapse_3">
+                  <i class="float-end bi bi-chevron-down"></i>
+                  <h6 class="title fw-bold">Sắp xếp theo</h6>
+                </a>
+              </header>
+              <div class="filter-content collapse show" id="collapse_3">
+                <div class="card-body pt-0">
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" value="totalBuy-DESC" name="order"
+                           id="radio_order_1" th:checked="${order == 'totalBuy-DESC'}">
+                    <label class="form-check-label" for="radio_order_1">
+                      Bán chạy nhất
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" value="createdAt-DESC" name="order"
+                           id="radio_order_2" th:checked="${order == 'createdAt-DESC'}">
+                    <label class="form-check-label" for="radio_order_2">
+                      Mới nhất
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" value="price-ASC" name="order"
+                           id="radio_order_3" th:checked="${order == 'price-ASC'}">
+                    <label class="form-check-label" for="radio_order_3">
+                      Giá thấp nhất
+                    </label>
+                  </div>
+                </div> <!-- card-body.// -->
+              </div>
+            </article>
+            <article class="card-body">
+              <button type="submit" class="btn btn-primary w-100">Lọc</button>
+            </article>
+          </form>
+        </div> <!-- card.// -->
+      </aside> <!-- col.// -->
+
+      <main class="col-md-8 col-lg-9">
+
+        <header class="border-bottom mb-4 pb-3">
+          <div class="form-inline d-flex justify-content-between align-items-center">
+            <span th:text="${totalProducts} + ' sản phẩm'"></span>
+          </div>
+        </header> <!-- sect-heading -->
+
+        <div class="row item-grid">
+          <th:block th:each="sanpham : ${sanphams}">
+            <div class="col-xl-4 col-lg-6">
+              <div class="card p-3 mb-4">
+                <a th:href="@{/sanpham(id=${sanpham.idSanpham})}" class="img-wrap text-center">
+                <img width="200" height="200" class="img-fluid" th:src="@{/image/{url}(url=${sanpham.hinh})}" th:alt="${sanpham.tenSanpham}" />
+                </a>
+                <figcaption class="info-wrap mt-2">
+	              <a th:href="@{/sanpham(id=${sanpham.idSanpham})}" class="title td-text" th:text="${sanpham.tenSanpham}"></a>
+	              <div>
+	                <div th:if="${sanpham.giamgia == 0}">
+	                  <span class="price mt-1 fw-bold">
+	                    <span th:text="${#numbers.formatInteger(sanpham.gia, 0, 'COMMA')}"></span>₫
+	                  </span>
+	                </div>
+	                <div th:if="${sanpham.giamgia > 0}">
+	                  <span class="price mt-1 fw-bold">
+	                    <span th:text="${#numbers.formatInteger(sanpham.gia * (100 - sanpham.giamgia) / 100, 0, 'COMMA')}"></span>₫
+	                  </span>
+	                  <span class="ms-2 text-muted text-decoration-line-through">
+	                    <span th:text="${#numbers.formatInteger(sanpham.gia, 0, 'COMMA')}"></span>₫
+	                  </span>
+	                  <span class="ms-2 badge bg-info">
+	                    -<span th:text="${sanpham.giamgia}"></span>%
+	                  </span>
+	                </div>
+	              </div>
+	            </figcaption>
+              </div>
+            </div> <!-- col.// -->
+          </th:block>
+        </div> <!-- row end.// -->
+
+        <!-- <c:if test="${requestScope.totalPages != 0}">
+          <nav class="mt-4 d-flex justify-content-center">
+            <ul class="pagination">
+              <li class="page-item ${requestScope.page == 1 ? 'disabled' : ''}">
+                <a class="page-link"
+                   href="${pageContext.request.contextPath}/category?id=${requestScope.category.id}&page=${requestScope.page - 1}${requestScope.filterQueryString}">
+                  Trang trước
+                </a>
+              </li>
+
+              <c:forEach begin="1" end="${requestScope.totalPages}" var="i">
+                <c:choose>
+                  <c:when test="${requestScope.page == i}">
+                    <li class="page-item active">
+                      <a class="page-link">${i}</a>
+                    </li>
+                  </c:when>
+                  <c:otherwise>
+                    <li class="page-item">
+                      <a class="page-link"
+                         href="${pageContext.request.contextPath}/category?id=${requestScope.category.id}&page=${i}${requestScope.filterQueryString}">
+                          ${i}
+                      </a>
+                    </li>
+                  </c:otherwise>
+                </c:choose>
+              </c:forEach>
+
+              <li class="page-item ${requestScope.page == requestScope.totalPages ? 'disabled' : ''}">
+                <a class="page-link"
+                   href="${pageContext.request.contextPath}/category?id=${requestScope.category.id}&page=${requestScope.page + 1}${requestScope.filterQueryString}">
+                  Trang sau
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </c:if> -->
+
+      </main> <!-- col.// -->
+    </div> <!-- row.// -->
+  </div> <!-- container.//  -->
+</section> <!-- section-content.// -->
+
+<th:block th:replace="~{user/_footer}" />
+</body>
+
+</html>

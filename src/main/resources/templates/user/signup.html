@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <th:block th:replace="~{user/_meta}" />
+  <title>Đăng ký</title>
+  <script th:src="@{/js/toast.js}" type="module"></script>
+  <script th:src="@{/js/home.js}" type="module"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+
+<body class="bg-light">
+  <th:block th:replace="~{user/_header}" />
+
+  <section class="section-content py-5">
+    <div class="container">
+      <div class="card mx-auto shadow-sm border-0" style="max-width: 380px">
+        <div class="card-body p-4">
+          <!-- Alert Messages -->
+          <div th:if="${successMessage}" class="alert alert-success d-flex align-items-center" role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            <div th:text="${successMessage}"></div>
+          </div>
+          <div th:if="${errorMessage}" class="alert alert-danger d-flex align-items-center" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            <div th:text="${errorMessage}"></div>
+          </div>
+
+          <!-- Register Form -->
+          <div class="text-center mb-4">
+            <i class="fas fa-user-plus fa-3x text-primary mb-3"></i>
+            <h4 class="card-title">Đăng ký tài khoản</h4>
+          </div>
+
+          <form th:action="@{/signup}" method="post">
+            <!-- Email Input -->
+            <div class="form-floating mb-3">
+              <input type="email"
+                     id="inputEmail"
+                     class="form-control"
+                     name="idUser" 
+                     th:value="${user.idUser}"
+                     placeholder="Email"
+                     required>
+              <label for="inputEmail">
+                <i class="fas fa-envelope me-2"></i>Email
+              </label>
+            </div>
+
+            <!-- Password Input -->
+            <div class="form-floating mb-3">
+              <input type="password"
+                     id="inputPassword"
+                     class="form-control"
+                     name="matkhau" 
+                     th:value="${user.matkhau}"
+                     placeholder="Mật khẩu"
+                     required>
+              <label for="inputPassword">
+                <i class="fas fa-lock me-2"></i>Mật khẩu
+              </label>
+            </div>
+
+            <!-- Full Name Input -->
+            <div class="form-floating mb-3">
+              <input type="text"
+                     id="inputFullname"
+                     class="form-control"
+                     name="hoten" 
+                     th:value="${user.hoten}"
+                     placeholder="Họ và tên"
+                     required>
+              <label for="inputFullname">
+                <i class="fas fa-user me-2"></i>Họ và tên
+              </label>
+            </div>
+
+            <!-- Phone Number Input -->
+            <div class="form-floating mb-4">
+              <input type="text"
+                     id="inputPhoneNumber"
+                     class="form-control"
+                     name="sdt" 
+                     th:value="${user.sdt}"
+                     pattern="0[0-9]{9}"
+                     placeholder="Số điện thoại"
+                     required
+                     title="Số điện thoại phải có 10 chữ số và bắt đầu bằng số 0">
+              <label for="inputPhoneNumber">
+                <i class="fas fa-phone me-2"></i>Số điện thoại
+              </label>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary w-100 mb-3">
+              <i class="fas fa-user-plus me-2"></i>Đăng ký
+            </button>
+
+            <!-- Sign In Link -->
+            <div class="text-center">
+              <p class="mb-0">
+                Đã có tài khoản? 
+                <a th:href="@{/signin}" class="text-decoration-none">
+                  <i class="fas fa-sign-in-alt me-1"></i>Đăng nhập
+                </a>
+              </p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <th:block th:replace="~{user/_footer}" />
+
+  <style>
+    .form-floating > .form-control {
+      padding-left: 1rem;
+    }
+    
+    .form-floating > label {
+      padding-left: 1rem;
+    }
+    
+    .form-control:focus {
+      border-color: #86b7fe;
+      box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+    
+    .btn-primary {
+      padding: 0.75rem;
+      font-weight: 500;
+    }
+    
+    .card {
+      border-radius: 0.5rem;
+    }
+    
+    .alert {
+      border: none;
+      border-radius: 0.375rem;
+    }
+    
+    @media (max-width: 767.98px) {
+      .card {
+        margin: 0 1rem;
+      }
+    }
+  </style>
+</body>
+
+</html>

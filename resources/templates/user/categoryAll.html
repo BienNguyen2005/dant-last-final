@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <th:block th:replace="~{user/_meta}" />
+  <title>Trang chủ</title>
+</head>
+
+<body>
+<th:block th:replace="~{user/_header}" />
+
+<section class="section-content mb-2">
+  <div class="container">
+    <header class="section-heading py-4 d-flex justify-content-between">
+      <h3 class="section-title">Danh mục sản phẩm</h3>
+    </header> <!-- section-heading.// -->
+    <div class="row item-grid">
+      <th:block th:each="loai : ${loais}">
+        <div class="col-lg-2 col-md-6">
+          <div class="card mb-4">
+            <div class="card-body">
+              <a th:href="@{/loai(id=${loai.idLoai})}" class="stretched-link">
+                <div class="text-center">
+                  <span class="category-title" th:text="${loai.tenLoai}"></span>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div> <!-- col.// -->
+      </th:block>
+    </div> <!-- row.// -->
+  </div> <!-- container.// -->
+</section> <!-- section-content.// -->
+
+<th:block th:replace="~{user/_footer}" />
+</body>
+
+</html>

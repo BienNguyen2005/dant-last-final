@@ -1,0 +1,120 @@
+<header class="header-admin fixed-top">
+  <!-- Top Navigation -->
+  <nav class="navbar navbar-expand navbar-dark bg-primary px-3">
+    <div class="container-fluid">
+      <!-- Brand -->
+      <a class="navbar-brand d-flex align-items-center" th:href="@{/admin}">
+        <i class="fas fa-clinic-medical me-2"></i>
+        <span class="fw-bold">MEDISALE ADMIN</span>
+      </a>
+
+      <!-- Top Right Menu -->
+      <ul class="navbar-nav ms-auto d-flex align-items-center">
+        <!-- Client Site Link -->
+        <!-- <li class="nav-item me-3">
+          <a th:href="@{/}" class="nav-link" target="_blank">
+            <i class="fas fa-external-link-alt me-1"></i>
+            Xem trang chủ
+          </a>
+        </li> -->
+
+        <!-- User Menu -->
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" th:href="@{/signout}">
+            <i class="fas fa-sign-out-alt me-2"></i>
+            <span>Đăng xuất</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-3">
+    <div class="container-fluid">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="adminNavbar">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a th:if="${session.currentUser.vaitro}"  class="nav-link" th:href="@{/admin}">
+              <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" th:href="@{/banhangtaiquay}">
+              <i class="fas fa-shopping-bag me-2"></i>Bán Hàng
+            </a>
+          </li>
+          <li class="nav-item">
+            <a th:if="${session.currentUser.vaitro}" class="nav-link" th:href="@{/admin/user}">
+              <i class="fas fa-users me-2"></i>Quản lý người dùng
+            </a>
+          </li>
+          <li th:if="${session.currentUser.vaitro}" class="nav-item">
+            <a class="nav-link" th:href="@{/admin/loai}">
+              <i class="fas fa-tags me-2"></i>Quản lý thể loại
+            </a>
+          </li>
+          <li th:if="${session.currentUser.vaitro}" class="nav-item">
+            <a class="nav-link" th:href="@{/admin/sanpham}">
+              <i class="fas fa-box me-2"></i>Quản lý sản phẩm
+            </a>
+          </li>
+          <li th:if="${session.currentUser.vaitro}" class="nav-item">
+            <a class="nav-link" th:href="@{/admin/hoadon}">
+              <i class="fas fa-file-invoice me-2"></i>Quản lý đơn hàng
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<!-- Spacer to prevent content from hiding under fixed header -->
+<div style="margin-top: 120px;"></div>
+
+<style>
+.header-admin {
+  z-index: 1030;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.navbar-dark .navbar-nav .nav-link:hover {
+  color: #fff;
+}
+
+.navbar-light .navbar-nav .nav-link {
+  color: #495057;
+  padding: 1rem 1.5rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.navbar-light .navbar-nav .nav-link:hover {
+  color: var(--bs-primary);
+  background-color: rgba(13, 110, 253, 0.1);
+}
+
+.navbar-light .navbar-nav .nav-link.active {
+  color: var(--bs-primary);
+  background-color: rgba(13, 110, 253, 0.1);
+}
+
+@media (max-width: 991.98px) {
+  .navbar-light .navbar-nav .nav-link {
+    padding: 0.5rem 1rem;
+  }
+  
+  /* Spacer adjustment for mobile */
+  div[style*="margin-top: 120px"] {
+    margin-top: 110px !important;
+  }
+}
+</style>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Đăng ký - Shop Dược Phẩm</title>
+  <link href="css/bootstrap.css" type="text/css" rel="stylesheet">
+  <link href="css/bootstrap-icons.css" type="text/css" rel="stylesheet">
+  <link href="css/styles.css" type="text/css" rel="stylesheet">
+  <link rel="icon" href="img/favicon.ico" type="image/x-icon">
+</head>
+
+<body>
+  <!-- Header -->
+  <header class="section-header">
+    <section class="header-main border-bottom">
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col-lg-3 py-3">
+            <a class="text-body" href="home.html">
+              <h3>Shop Dược Phẩm</h3>
+            </a>
+          </div>
+          <div class="col-lg-4 col-xl-5">
+            <form action="search.html" method="get" class="search" autocomplete="off">
+              <div class="input-group w-100">
+                <input type="text" class="form-control" placeholder="Nhập từ khóa cần tìm ..." name="q">
+                <button class="btn btn-primary" type="submit" aria-label="Tìm kiếm">
+                  <i class="bi bi-search"></i>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </header>
+
+  <!-- Navigation -->
+  <nav class="navbar navbar-main navbar-expand-lg navbar-light border-bottom">
+    <div class="container">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <strong><i class="bi bi-list"></i> Danh mục sản phẩm</strong>
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <li><a class="dropdown-item" href="category.html?type=prescription">Thuốc kê đơn</a></li>
+              <li><a class="dropdown-item" href="category.html?type=otc">Thuốc không kê đơn</a></li>
+              <li><a class="dropdown-item" href="category.html?type=supplements">Thực phẩm chức năng</a></li>
+              <li><a class="dropdown-item" href="category.html?type=medical-devices">Thiết bị y tế</a></li>
+              <li><a class="dropdown-item" href="category.html?type=cosmetics">Mỹ phẩm làm đẹp</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="categories.html">Tất cả danh mục</a></li>
+            </ul>
+          </li>
+        </ul>
+        <div id="user-auth">
+          <a class="btn btn-light me-2" href="signup.html">Đăng ký</a>
+          <a class="btn btn-primary" href="signin.html">Đăng nhập</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <section class="section-content" style="margin: 50px 0;">
+    <div class="card mx-auto" style="max-width: 500px">
+      <div class="card-body">
+        <div id="error-message" class="alert alert-danger" role="alert" style="display: none;"></div>
+        <div id="success-message" class="alert alert-success" role="alert" style="display: none;"></div>
+        <h4 class="card-title mb-4">Đăng ký tài khoản</h4>
+        <form id="signup-form">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <input class="form-control" placeholder="Họ" type="text" name="firstName" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <input class="form-control" placeholder="Tên" type="text" name="lastName" required>
+            </div>
+          </div>
+          <div class="mb-3">
+            <input class="form-control" placeholder="Tên đăng nhập" type="text" name="username" required>
+          </div>
+          <div class="mb-3">
+            <input class="form-control" placeholder="Email" type="email" name="email" required>
+          </div>
+          <div class="mb-3">
+            <input class="form-control" placeholder="Số điện thoại" type="tel" name="phone" required>
+          </div>
+          <div class="mb-3">
+            <input class="form-control" placeholder="Địa chỉ" type="text" name="address" required>
+          </div>
+          <div class="mb-3">
+            <input name="password" class="form-control" placeholder="Mật khẩu" type="password" required>
+          </div>
+          <div class="mb-3">
+            <input name="confirmPassword" class="form-control" placeholder="Xác nhận mật khẩu" type="password" required>
+          </div>
+          <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="agreeTerms" required>
+            <label class="form-check-label" for="agreeTerms">
+              Tôi đồng ý với <a href="#">Điều khoản sử dụng</a> và <a href="#">Chính sách bảo mật</a>
+            </label>
+          </div>
+          <button type="submit" class="btn btn-primary w-100">Đăng ký</button>
+        </form>
+      </div>
+    </div>
+    <p class="text-center mt-4">Đã có tài khoản? <a href="signin.html">Đăng nhập</a></p>
+  </section>
+
+  <!-- Footer -->
+  <footer class="section-footer">
+    <section class="footer-top py-5 bg-light">
+      <div class="container">
+        <div class="row">
+          <aside class="col-sm-6 col-lg-3">
+            <h6 class="pb-2">Giới thiệu</h6>
+            <ul class="list-unstyled">
+              <li><a href="#">Về Shop</a></li>
+              <li><a href="#">Tuyển dụng</a></li>
+              <li><a href="#">Chính sách thanh toán</a></li>
+              <li><a href="#">Chính sách bảo mật</a></li>
+              <li><a href="#">Giải quyết khiếu nại</a></li>
+              <li><a href="#">Hợp tác</a></li>
+            </ul>
+          </aside>
+          <aside class="col-sm-6 col-lg-3">
+            <h6 class="pb-2">Hỗ trợ khách hàng</h6>
+            <ul class="list-unstyled">
+              <li>Hotline: 0931418748</li>
+              <li><a href="#">Câu hỏi thường gặp</a></li>
+              <li><a href="#">Hướng dẫn đặt hàng</a></li>
+              <li><a href="#">Phương thức vận chuyển</a></li>
+              <li><a href="#">Chính sách đổi trả</a></li>
+            </ul>
+          </aside>
+          <aside class="col-lg-5">
+            <h6 class="pb-2">Đăng ký nhận tin</h6>
+            <form>
+              <div class="input-group w-100">
+                <input type="email" class="form-control" placeholder="Email của bạn ...">
+                <button class="btn btn-primary" type="submit" aria-label="Đăng ký nhận tin">Đăng ký</button>
+              </div>
+            </form>
+          </aside>
+        </div>
+      </div>
+    </section>
+    
+    <section class="footer-bottom text-center bg-light border-top py-3">
+      <div class="container-fluid">© 2024 — Shop Dược Phẩm</div>
+    </section>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="js/bootstrap.bundle.js"></script>
+  <script src="js/auth.js"></script>
+  
+  <script>
+    document.getElementById('signup-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(this);
+      const password = formData.get('password');
+      const confirmPassword = formData.get('confirmPassword');
+      
+      // Clear previous messages
+      document.getElementById('error-message').style.display = 'none';
+      document.getElementById('success-message').style.display = 'none';
+      
+      // Validate passwords match
+      if (password !== confirmPassword) {
+        document.getElementById('error-message').style.display = 'block';
+        document.getElementById('error-message').textContent = 'Mật khẩu xác nhận không khớp!';
+        return;
+      }
+      
+      // Validate password length
+      if (password.length < 6) {
+        document.getElementById('error-message').style.display = 'block';
+        document.getElementById('error-message').textContent = 'Mật khẩu phải có ít nhất 6 ký tự!';
+        return;
+      }
+      
+      // Simple validation for other fields
+      const requiredFields = ['firstName', 'lastName', 'username', 'email', 'phone', 'address'];
+      for (let field of requiredFields) {
+        if (!formData.get(field)) {
+          document.getElementById('error-message').style.display = 'block';
+          document.getElementById('error-message').textContent = 'Vui lòng điền đầy đủ thông tin!';
+          return;
+        }
+      }
+      
+      // Success message
+      document.getElementById('success-message').style.display = 'block';
+      document.getElementById('success-message').textContent = 'Đăng ký thành công! Đang chuyển đến trang đăng nhập...';
+      
+      // Redirect to signin page after 2 seconds
+      setTimeout(function() {
+        window.location.href = 'signin.html';
+      }, 2000);
+    });
+  </script>
+</body>
+
+</html> 

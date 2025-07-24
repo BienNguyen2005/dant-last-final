@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <th:block th:replace="~{user/_meta}" />
+  <title>Cập nhật người dùng</title>
+</head>
+
+<body class="bg-light">
+  <th:block th:replace="~{admin/_headerAdmin}" />
+
+  <div class="container-fluid px-4">
+    <!-- Page Header -->
+    <div class="card shadow-sm border-0 mb-4 mt-4">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <h3 class="fw-bold mb-0">Cập nhật người dùng</h3>
+            <p class="text-muted mb-0">Chỉnh sửa thông tin tài khoản người dùng</p>
+          </div>
+          <a th:href="@{/admin/user}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Quay lại
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alert Messages -->
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+      <i class="fas fa-check-circle me-2"></i>
+      <span th:text="${successMessage}"></span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+      <i class="fas fa-exclamation-circle me-2"></i>
+      <span th:text="${errorMessage}"></span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- User Form -->
+    <div class="row justify-content-center mb-5">
+      <div class="col-lg-6">
+        <div class="card shadow-sm border-0">
+          <div class="card-body p-4">
+            <form method="POST" th:action="@{/admin/user/update/{id}(id=${user.idUser})}" autocomplete="off">
+              <div class="mb-4">
+                <label for="idUser" class="form-label">Email <span class="text-danger">*</span></label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-end-0">
+                    <i class="fas fa-envelope text-muted"></i>
+                  </span>
+                  <input type="email" 
+                         class="form-control border-start-0 ps-0 bg-light" 
+                         th:value="${user.idUser}" 
+                         name="idUser" 
+                         id="idUser" 
+                         readonly>
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <label for="matkhau" class="form-label">Mật khẩu <span class="text-danger">*</span></label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-end-0">
+                    <i class="fas fa-lock text-muted"></i>
+                  </span>
+                  <input type="password" 
+                         class="form-control border-start-0 ps-0" 
+                         th:value="${user.matkhau}" 
+                         name="matkhau" 
+                         id="matkhau" 
+                         placeholder="Nhập mật khẩu mới"
+                         required>
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <label for="hoten" class="form-label">Họ và tên <span class="text-danger">*</span></label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-end-0">
+                    <i class="fas fa-user text-muted"></i>
+                  </span>
+                  <input type="text" 
+                         class="form-control border-start-0 ps-0" 
+                         th:value="${user.hoten}" 
+                         id="hoten" 
+                         name="hoten" 
+                         placeholder="Nhập họ và tên"
+                         required>
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <label for="sdt" class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-end-0">
+                    <i class="fas fa-phone text-muted"></i>
+                  </span>
+                  <input type="text" 
+                         class="form-control border-start-0 ps-0" 
+                         th:value="${user.sdt}" 
+                         id="sdt" 
+                         name="sdt" 
+                         placeholder="Nhập số điện thoại"
+                         pattern="0[0-9]{9}"
+                         title="Số điện thoại phải có 10 chữ số và bắt đầu bằng số 0"
+                         required>
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <label for="kichhoat" class="form-label">Trạng thái <span class="text-danger">*</span></label>
+                <select class="form-select" name="kichhoat" id="kichhoat" required>
+                  <option value="true" th:selected="${user.kichhoat}">Kích hoạt</option>
+                  <option value="false" th:selected="${!user.kichhoat}">Khóa</option>
+                </select>
+              </div>
+
+              <div class="mb-4">
+                <label for="vaitro" class="form-label">Vai trò <span class="text-danger">*</span></label>
+                <select class="form-select" name="vaitro" id="vaitro" required>
+                  <option value="true" th:selected="${user.vaitro}">Quản trị viên</option>
+                  <option value="false" th:selected="${!user.vaitro}">Khách hàng</option>
+                </select>
+              </div>
+
+              <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary flex-grow-1">
+                  <i class="fas fa-save me-2"></i>Cập nhật
+                </button>
+                <a class="btn btn-danger" 
+                   th:href="@{/admin/user}" 
+                   role="button" 
+                   onclick="return confirm('Bạn có muốn hủy?')">
+                  <i class="fas fa-times me-2"></i>Hủy
+                </a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- <th:block th:replace="~{admin/_footerAdmin}" /> -->
+
+  <style>
+    .card {
+      border-radius: 0.5rem;
+    }
+
+    .form-label {
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-control,
+    .form-select {
+      padding: 0.75rem 1rem;
+      border-radius: 0.375rem;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+      border-color: #86b7fe;
+      box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    .input-group-text {
+      padding-left: 1rem;
+      padding-right: 0;
+      border-radius: 0.375rem;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      font-weight: 500;
+    }
+
+    .alert {
+      border: none;
+      border-radius: 0.5rem;
+    }
+  </style>
+</body>
+</html>

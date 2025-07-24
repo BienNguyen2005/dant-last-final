@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Tìm kiếm & Quản lý Thuốc - POS Shop Dược Phẩm</title>
+  <link href="css/bootstrap.css" type="text/css" rel="stylesheet">
+  <link href="css/bootstrap-icons.css" type="text/css" rel="stylesheet">
+  <link href="css/styles.css" type="text/css" rel="stylesheet">
+  <link rel="icon" href="img/favicon.ico" type="image/x-icon">
+  
+  <style>
+    .medication-card {
+      border: 2px solid #e9ecef;
+      transition: all 0.3s ease;
+    }
+    
+    .medication-card:hover {
+      border-color: #007bff;
+      box-shadow: 0 4px 8px rgba(0,123,255,0.1);
+    }
+    
+    .prescription-badge {
+      background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+      color: white;
+      font-size: 0.75rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.25rem;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+    
+    .dosage-info {
+      background: #f8f9fa;
+      border-left: 4px solid #007bff;
+      padding: 0.5rem;
+      margin: 0.5rem 0;
+    }
+    
+    .warning-box {
+      background: #fff3cd;
+      border: 1px solid #ffecb5;
+      border-radius: 0.25rem;
+      padding: 0.75rem;
+      margin: 1rem 0;
+    }
+    
+    .category-filter {
+      background: #f8f9fa;
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin-bottom: 2rem;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header -->
+  <header class="section-header">
+    <section class="header-main border-bottom">
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col-lg-3 py-3">
+            <a class="text-body" href="home.html">
+              <h3>Shop Dược Phẩm</h3>
+            </a>
+          </div>
+          <div class="col-lg-4 col-xl-5">
+            <form action="search.html" method="get" class="search" autocomplete="off">
+              <div class="input-group w-100">
+                <input type="text" class="form-control" placeholder="Tìm kiếm thuốc..." name="q">
+                <button class="btn btn-primary" type="submit" aria-label="Tìm kiếm">
+                  <i class="bi bi-search"></i>
+                </button>
+              </div>
+            </form>
+          </div>
+          <div class="col-lg-5 col-xl-4">
+            <ul class="nav col-12 col-lg-auto my-2 my-lg-0 justify-content-center justify-content-lg-end text-small">
+              <li>
+                <a href="admin/home.html" class="nav-link text-body">
+                  <i class="bi bi-gear d-block text-center fs-3"></i>
+                  Admin
+                </a>
+              </li>
+              <li>
+                <a href="setting.html" class="nav-link text-body">
+                  <i class="bi bi-person d-block text-center fs-3"></i>
+                  Tài khoản
+                </a>
+              </li>
+              <li>
+                <a href="orders.html" class="nav-link text-body">
+                  <i class="bi bi-list-check d-block text-center fs-3"></i>
+                  Đơn hàng
+                </a>
+              </li>
+              <li>
+                <a href="cart.html" class="nav-link text-body position-relative">
+                  <span id="total-cart-items-quantity" class="position-absolute top-0 end-0 mt-2 badge rounded-pill bg-primary">
+                    0
+                  </span>
+                  <i class="bi bi-cart d-block text-center fs-3 position-relative"></i>
+                  Giỏ hàng
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </header>
+
+  <!-- Navigation -->
+  <nav class="navbar navbar-main navbar-expand-lg navbar-light border-bottom">
+    <div class="container">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <strong><i class="bi bi-list"></i> Danh mục sản phẩm</strong>
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <li><a class="dropdown-item" href="category.html?type=prescription">Thuốc kê đơn</a></li>
+              <li><a class="dropdown-item" href="category.html?type=otc">Thuốc không kê đơn</a></li>
+              <li><a class="dropdown-item" href="category.html?type=supplements">Thực phẩm chức năng</a></li>
+              <li><a class="dropdown-item" href="category.html?type=medical-devices">Thiết bị y tế</a></li>
+              <li><a class="dropdown-item" href="category.html?type=cosmetics">Mỹ phẩm làm đẹp</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item active" href="medications.html">Thuốc đặc biệt</a></li>
+            </ul>
+          </li>
+        </ul>
+        <div id="user-auth">
+          <span id="user-greeting" style="display: none;">Xin chào <strong id="user-name"></strong>!</span>
+          <a class="btn btn-light ms-2" href="signin.html" id="signout-btn" style="display: none;">Đăng xuất</a>
+          <div id="auth-buttons">
+            <a class="btn btn-light me-2" href="signup.html">Đăng ký</a>
+            <a class="btn btn-primary" href="signin.html">Đăng nhập</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Breadcrumb -->
+  <section class="section-pagetop-2 bg-light">
+    <div class="container">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="home.html">Trang chủ</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Thuốc đặc biệt</li>
+        </ol>
+      </nav>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <section class="section-content padding-y">
+    <div class="container">
+      <div class="row">
+        <!-- Sidebar -->
+        <aside class="col-lg-3 mb-4">
+          <div class="category-filter">
+            <h6 class="mb-3">Lọc theo danh mục</h6>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="prescription" id="prescription">
+              <label class="form-check-label" for="prescription">
+                Thuốc kê đơn
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="chronic" id="chronic">
+              <label class="form-check-label" for="chronic">
+                Thuốc điều trị mãn tính
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="specialist" id="specialist">
+              <label class="form-check-label" for="specialist">
+                Thuốc chuyên khoa
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="rare" id="rare">
+              <label class="form-check-label" for="rare">
+                Thuốc hiếm
+              </label>
+            </div>
+          </div>
+          
+          <div class="warning-box">
+            <div class="d-flex align-items-center mb-2">
+              <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>
+              <strong>Lưu ý quan trọng</strong>
+            </div>
+            <p class="mb-0 small">Thuốc đặc biệt cần có đơn thuốc của bác sĩ. Vui lòng tham khảo ý kiến dược sĩ trước khi sử dụng.</p>
+          </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="col-lg-9">
+          <header class="section-heading mb-4">
+            <h2>Thuốc Đặc Biệt</h2>
+            <p class="text-muted">Thuốc chuyên khoa và thuốc điều trị các bệnh lý đặc biệt</p>
+          </header>
+
+          <div class="row">
+            <!-- Medication 1 -->
+            <div class="col-lg-4 col-md-6 mb-4">
+              <div class="medication-card card h-100 position-relative">
+                <div class="prescription-badge">
+                  <i class="bi bi-prescription2"></i> Kê đơn
+                </div>
+                <div class="card-body">
+                  <div class="text-center mb-3">
+                    <img src="img/280px.png" alt="Insulin" class="img-fluid" style="max-height: 150px;">
+                  </div>
+                  <h5 class="card-title">Insulin Glargine 100UI/ml</h5>
+                  <p class="text-muted small">Thuốc điều trị tiểu đường</p>
+                  
+                  <div class="dosage-info">
+                    <strong>Liều dùng:</strong> Theo chỉ định bác sĩ<br>
+                    <strong>Dạng bào chế:</strong> Tiêm
+                  </div>
+                  
+                  <div class="d-flex justify-content-between align-items-center mt-3">
+                    <div>
+                      <span class="h5 text-primary">1,250,000₫</span>
+                      <div class="small text-muted">Hộp 5 bút tiêm</div>
+                    </div>
+                    <button class="btn btn-outline-primary btn-sm">
+                      <i class="bi bi-info-circle"></i> Chi tiết
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Medication 2 -->
+            <div class="col-lg-4 col-md-6 mb-4">
+              <div class="medication-card card h-100 position-relative">
+                <div class="prescription-badge">
+                  <i class="bi bi-prescription2"></i> Kê đơn
+                </div>
+                <div class="card-body">
+                  <div class="text-center mb-3">
+                    <img src="img/280px.png" alt="Adalimumab" class="img-fluid" style="max-height: 150px;">
+                  </div>
+                  <h5 class="card-title">Adalimumab 40mg</h5>
+                  <p class="text-muted small">Thuốc điều trị viêm khớp dạng thấp</p>
+                  
+                  <div class="dosage-info">
+                    <strong>Liều dùng:</strong> 40mg/2 tuần<br>
+                    <strong>Dạng bào chế:</strong> Tiêm dưới da
+                  </div>
+                  
+                  <div class="d-flex justify-content-between align-items-center mt-3">
+                    <div>
+                      <span class="h5 text-primary">15,800,000₫</span>
+                      <div class="small text-muted">Hộp 2 bút tiêm</div>
+                    </div>
+                    <button class="btn btn-outline-primary btn-sm">
+                      <i class="bi bi-info-circle"></i> Chi tiết
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Medication 3 -->
+            <div class="col-lg-4 col-md-6 mb-4">
+              <div class="medication-card card h-100 position-relative">
+                <div class="prescription-badge">
+                  <i class="bi bi-prescription2"></i> Kê đơn
+                </div>
+                <div class="card-body">
+                  <div class="text-center mb-3">
+                    <img src="img/280px.png" alt="Sofosbuvir" class="img-fluid" style="max-height: 150px;">
+                  </div>
+                  <h5 class="card-title">Sofosbuvir 400mg</h5>
+                  <p class="text-muted small">Thuốc điều trị viêm gan C</p>
+                  
+                  <div class="dosage-info">
+                    <strong>Liều dùng:</strong> 1 viên/ngày<br>
+                    <strong>Dạng bào chế:</strong> Viên nén bao phim
+                  </div>
+                  
+                  <div class="d-flex justify-content-between align-items-center mt-3">
+                    <div>
+                      <span class="h5 text-primary">25,600,000₫</span>
+                      <div class="small text-muted">Hộp 28 viên</div>
+                    </div>
+                    <button class="btn btn-outline-primary btn-sm">
+                      <i class="bi bi-info-circle"></i> Chi tiết
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Medication 4 -->
+            <div class="col-lg-4 col-md-6 mb-4">
+              <div class="medication-card card h-100 position-relative">
+                <div class="prescription-badge">
+                  <i class="bi bi-prescription2"></i> Kê đơn
+                </div>
+                <div class="card-body">
+                  <div class="text-center mb-3">
+                    <img src="img/280px.png" alt="Rituximab" class="img-fluid" style="max-height: 150px;">
+                  </div>
+                  <h5 class="card-title">Rituximab 500mg</h5>
+                  <p class="text-muted small">Thuốc điều trị ung thư máu</p>
+                  
+                  <div class="dosage-info">
+                    <strong>Liều dùng:</strong> Theo chỉ định bác sĩ<br>
+                    <strong>Dạng bào chế:</strong> Tiêm tĩnh mạch
+                  </div>
+                  
+                  <div class="d-flex justify-content-between align-items-center mt-3">
+                    <div>
+                      <span class="h5 text-primary">18,500,000₫</span>
+                      <div class="small text-muted">Lọ 50ml</div>
+                    </div>
+                    <button class="btn btn-outline-primary btn-sm">
+                      <i class="bi bi-info-circle"></i> Chi tiết
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Medication 5 -->
+            <div class="col-lg-4 col-md-6 mb-4">
+              <div class="medication-card card h-100 position-relative">
+                <div class="prescription-badge">
+                  <i class="bi bi-prescription2"></i> Kê đơn
+                </div>
+                <div class="card-body">
+                  <div class="text-center mb-3">
+                    <img src="img/280px.png" alt="Levetiracetam" class="img-fluid" style="max-height: 150px;">
+                  </div>
+                  <h5 class="card-title">Levetiracetam 500mg</h5>
+                  <p class="text-muted small">Thuốc điều trị động kinh</p>
+                  
+                  <div class="dosage-info">
+                    <strong>Liều dùng:</strong> 500mg x 2 lần/ngày<br>
+                    <strong>Dạng bào chế:</strong> Viên nén bao phim
+                  </div>
+                  
+                  <div class="d-flex justify-content-between align-items-center mt-3">
+                    <div>
+                      <span class="h5 text-primary">420,000₫</span>
+                      <div class="small text-muted">Hộp 60 viên</div>
+                    </div>
+                    <button class="btn btn-outline-primary btn-sm">
+                      <i class="bi bi-info-circle"></i> Chi tiết
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Medication 6 -->
+            <div class="col-lg-4 col-md-6 mb-4">
+              <div class="medication-card card h-100 position-relative">
+                <div class="prescription-badge">
+                  <i class="bi bi-prescription2"></i> Kê đơn
+                </div>
+                <div class="card-body">
+                  <div class="text-center mb-3">
+                    <img src="img/280px.png" alt="Tacrolimus" class="img-fluid" style="max-height: 150px;">
+                  </div>
+                  <h5 class="card-title">Tacrolimus 1mg</h5>
+                  <p class="text-muted small">Thuốc chống thải ghép</p>
+                  
+                  <div class="dosage-info">
+                    <strong>Liều dùng:</strong> Theo chỉ định bác sĩ<br>
+                    <strong>Dạng bào chế:</strong> Viên nang cứng
+                  </div>
+                  
+                  <div class="d-flex justify-content-between align-items-center mt-3">
+                    <div>
+                      <span class="h5 text-primary">3,200,000₫</span>
+                      <div class="small text-muted">Hộp 50 viên</div>
+                    </div>
+                    <button class="btn btn-outline-primary btn-sm">
+                      <i class="bi bi-info-circle"></i> Chi tiết
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Information Section -->
+          <section class="mt-5">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="card bg-light">
+                  <div class="card-body">
+                    <h5 class="card-title">
+                      <i class="bi bi-shield-check text-success"></i> Cam kết chất lượng
+                    </h5>
+                    <ul class="list-unstyled mb-0">
+                      <li><i class="bi bi-check-circle text-success"></i> Thuốc chính hãng 100%</li>
+                      <li><i class="bi bi-check-circle text-success"></i> Nguồn gốc xuất xứ rõ ràng</li>
+                      <li><i class="bi bi-check-circle text-success"></i> Bảo quản đúng tiêu chuẩn</li>
+                      <li><i class="bi bi-check-circle text-success"></i> Dược sĩ tư vấn miễn phí</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="card bg-light">
+                  <div class="card-body">
+                    <h5 class="card-title">
+                      <i class="bi bi-telephone text-primary"></i> Hỗ trợ chuyên môn
+                    </h5>
+                    <p class="card-text">
+                      Đội ngũ dược sĩ chuyên nghiệp sẵn sàng tư vấn về thuốc đặc biệt
+                    </p>
+                    <div class="d-flex gap-2">
+                      <a href="tel:0931418748" class="btn btn-primary btn-sm">
+                        <i class="bi bi-telephone"></i> Gọi ngay
+                      </a>
+                      <a href="#" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-chat-dots"></i> Chat tư vấn
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="section-footer">
+    <section class="footer-top py-5 bg-light">
+      <div class="container">
+        <div class="row">
+          <aside class="col-sm-6 col-lg-3">
+            <h6 class="pb-2">Giới thiệu</h6>
+            <ul class="list-unstyled">
+              <li><a href="#">Về Shop</a></li>
+              <li><a href="#">Tuyển dụng</a></li>
+              <li><a href="#">Chính sách thanh toán</a></li>
+              <li><a href="#">Chính sách bảo mật</a></li>
+              <li><a href="#">Giải quyết khiếu nại</a></li>
+              <li><a href="#">Hợp tác</a></li>
+            </ul>
+          </aside>
+          <aside class="col-sm-6 col-lg-3">
+            <h6 class="pb-2">Hỗ trợ khách hàng</h6>
+            <ul class="list-unstyled">
+              <li>Hotline: 0931418748</li>
+              <li><a href="#">Câu hỏi thường gặp</a></li>
+              <li><a href="#">Hướng dẫn đặt hàng</a></li>
+              <li><a href="#">Phương thức vận chuyển</a></li>
+              <li><a href="#">Chính sách đổi trả</a></li>
+            </ul>
+          </aside>
+          <aside class="col-lg-5">
+            <h6 class="pb-2">Đăng ký nhận tin</h6>
+            <form>
+              <div class="input-group w-100">
+                <input type="email" class="form-control" placeholder="Email của bạn ...">
+                <button class="btn btn-primary" type="submit" aria-label="Đăng ký nhận tin">Đăng ký</button>
+              </div>
+            </form>
+          </aside>
+        </div>
+      </div>
+    </section>
+    
+    <section class="footer-bottom text-center bg-light border-top py-3">
+      <div class="container-fluid">© 2024 — Shop Dược Phẩm</div>
+    </section>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="js/bootstrap.bundle.js"></script>
+  <script src="js/header.js"></script>
+  <script src="js/auth.js"></script>
+  
+  <script>
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', function() {
+      updateCartCounter();
+      
+      // Filter functionality
+      const filterCheckboxes = document.querySelectorAll('.category-filter input[type="checkbox"]');
+      filterCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+          filterMedications();
+        });
+      });
+    });
+    
+    function updateCartCounter() {
+      const cartItems = JSON.parse(localStorage.getItem('cart') || '[]');
+      const counter = document.getElementById('total-cart-items-quantity');
+      if (counter) {
+        counter.textContent = cartItems.length;
+      }
+    }
+    
+    function filterMedications() {
+      // This would filter medications based on selected categories
+      console.log('Filtering medications...');
+    }
+  </script>
+</body>
+
+</html> 

@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Quản lý Kho hàng - Admin</title>
+  <link href="../css/bootstrap.css" type="text/css" rel="stylesheet">
+  <link href="../css/bootstrap-icons.css" type="text/css" rel="stylesheet">
+  <link href="../css/styles.css" type="text/css" rel="stylesheet">
+  <link rel="icon" href="../img/favicon.ico" type="image/x-icon">
+  
+  <style>
+    .admin-container {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    
+    .admin-sidebar {
+      background: white;
+      border-radius: 0 1rem 1rem 0;
+      box-shadow: 5px 0 15px rgba(0,0,0,0.1);
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 280px;
+      z-index: 1000;
+      padding: 2rem 0;
+    }
+    
+    .admin-main {
+      margin-left: 280px;
+      padding: 2rem;
+    }
+    
+    .admin-header {
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+      margin-bottom: 2rem;
+    }
+    
+    .admin-card {
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+      transition: all 0.3s ease;
+      border: none;
+      margin-bottom: 2rem;
+    }
+    
+    .stats-card {
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+      transition: all 0.3s ease;
+      text-align: center;
+      border: none;
+    }
+    
+    .stats-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      font-size: 1.5rem;
+    }
+    
+    .inventory-card {
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+      transition: all 0.3s ease;
+      border: none;
+      margin-bottom: 1rem;
+    }
+    
+    .inventory-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+    }
+    
+    .btn-custom {
+      border-radius: 0.5rem;
+      padding: 0.5rem 1rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    
+    .form-control, .form-select {
+      border-radius: 0.5rem;
+      border: 1px solid #e0e6ed;
+      padding: 0.75rem 1rem;
+    }
+    
+    .modal-content {
+      border-radius: 1rem;
+      border: none;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+    }
+    
+    .modal-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 1rem 1rem 0 0;
+      border: none;
+    }
+    
+    .sidebar-item {
+      padding: 1rem 2rem;
+      color: #4a5568;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      border-radius: 0 2rem 2rem 0;
+      margin: 0.25rem 0;
+      margin-right: 2rem;
+      display: flex;
+      align-items: center;
+      font-weight: 500;
+    }
+    
+    .sidebar-item:hover,
+    .sidebar-item.active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      transform: translateX(10px);
+      text-decoration: none;
+    }
+    
+    .sidebar-item i {
+      margin-right: 1rem;
+      font-size: 1.1rem;
+    }
+    
+    .admin-logo {
+      text-align: center;
+      padding: 2rem;
+      border-bottom: 1px solid #e2e8f0;
+      margin-bottom: 2rem;
+    }
+    
+    .admin-logo h4 {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: bold;
+    }
+    
+    @media (max-width: 768px) {
+      .admin-sidebar {
+        display: none;
+      }
+      
+      .admin-main {
+        margin-left: 0;
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+
+<body class="admin-container">
+  <!-- Sidebar -->
+  <div class="admin-sidebar">
+    <div class="admin-logo">
+      <i class="bi bi-shield-check display-4 text-primary"></i>
+      <h4 class="mt-2">Admin Panel</h4>
+      <small class="text-muted">Shop Dược Phẩm</small>
+    </div>
+    
+    <nav>
+      <a href="home.html" class="sidebar-item">
+        <i class="bi bi-house"></i>
+        Dashboard
+      </a>
+      <a href="users.html" class="sidebar-item">
+        <i class="bi bi-people"></i>
+        Quản lý Người dùng
+      </a>
+      <a href="staff.html" class="sidebar-item">
+        <i class="bi bi-person-badge"></i>
+        Quản lý Nhân viên
+      </a>
+      <a href="categories.html" class="sidebar-item">
+        <i class="bi bi-tags"></i>
+        Quản lý Danh mục
+      </a>
+      <a href="products.html" class="sidebar-item">
+        <i class="bi bi-boxes"></i>
+        Quản lý Sản phẩm
+      </a>
+      <a href="orders.html" class="sidebar-item">
+        <i class="bi bi-receipt"></i>
+        Quản lý Đơn hàng
+      </a>
+      <a href="inventory.html" class="sidebar-item active">
+        <i class="bi bi-archive"></i>
+        Quản lý Kho
+      </a>
+      <a href="settings.html" class="sidebar-item">
+        <i class="bi bi-gear"></i>
+        Cài đặt
+      </a>
+      
+      <div style="position: absolute; bottom: 2rem; left: 2rem; right: 2rem;">
+        <a href="../home.html" class="sidebar-item">
+          <i class="bi bi-box-arrow-left"></i>
+          Về POS
+        </a>
+        <a href="../signin.html" class="sidebar-item">
+          <i class="bi bi-box-arrow-right"></i>
+          Đăng xuất
+        </a>
+      </div>
+    </nav>
+  </div>
+
+  <!-- Main Content -->
+  <div class="admin-main">
+    <!-- Header -->
+    <div class="admin-header">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <h2 class="mb-1 text-primary">Quản lý Kho hàng</h2>
+          <p class="text-muted mb-0">Theo dõi tồn kho và cảnh báo</p>
+        </div>
+        <div class="col-md-6 text-end">
+          <div class="d-flex align-items-center justify-content-end">
+            <span class="me-3">
+              <i class="bi bi-person-circle"></i> Admin: <strong>Administrator</strong>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row g-4 mb-4">
+      <div class="col-md-3">
+        <div class="stats-card">
+          <div class="stats-icon bg-primary text-white">
+            <i class="bi bi-boxes"></i>
+          </div>
+          <h3 class="mb-1 text-primary" id="total-items">1,245</h3>
+          <p class="text-muted mb-0">Tổng sản phẩm</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stats-card">
+          <div class="stats-icon bg-success text-white">
+            <i class="bi bi-check-circle"></i>
+          </div>
+          <h3 class="mb-1 text-success" id="available-items">1,180</h3>
+          <p class="text-muted mb-0">Còn hàng</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stats-card">
+          <div class="stats-icon bg-warning text-white">
+            <i class="bi bi-exclamation-triangle"></i>
+          </div>
+          <h3 class="mb-1 text-warning" id="low-stock">60</h3>
+          <p class="text-muted mb-0">Sắp hết</p>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stats-card">
+          <div class="stats-icon bg-danger text-white">
+            <i class="bi bi-x-circle"></i>
+          </div>
+          <h3 class="mb-1 text-danger" id="out-stock">5</h3>
+          <p class="text-muted mb-0">Hết hàng</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="admin-card">
+      <!-- Header Actions -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="mb-0">
+          <i class="bi bi-list"></i> Tình trạng tồn kho
+        </h4>
+        <div class="d-flex gap-2">
+          <button class="btn btn-outline-secondary btn-custom" onclick="exportInventory()">
+            <i class="bi bi-download"></i> Xuất Excel
+          </button>
+          <button class="btn btn-primary btn-custom" onclick="updateStock()">
+            <i class="bi bi-arrow-clockwise"></i> Cập nhật tồn kho
+          </button>
+        </div>
+      </div>
+
+      <!-- Search and Filter -->
+      <div class="row mb-4">
+        <div class="col-md-4">
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input type="text" class="form-control" placeholder="Tìm kiếm sản phẩm..." id="searchInventory">
+          </div>
+        </div>
+        <div class="col-md-3">
+          <select class="form-select" id="filterStatus">
+            <option value="">Tất cả trạng thái</option>
+            <option value="high">Còn nhiều</option>
+            <option value="medium">Vừa phải</option>
+            <option value="low">Sắp hết</option>
+            <option value="out">Hết hàng</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <select class="form-select" id="filterCategory">
+            <option value="">Tất cả danh mục</option>
+            <option value="medicine">Thuốc</option>
+            <option value="supplement">TPCN</option>
+            <option value="equipment">Thiết bị</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <button class="btn btn-outline-primary w-100 btn-custom" onclick="resetFilters()">
+            <i class="bi bi-arrow-clockwise"></i> Reset
+          </button>
+        </div>
+      </div>
+
+      <!-- Inventory List -->
+      <div id="inventoryList">
+        <!-- Inventory items will be rendered here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Update Stock Modal -->
+  <div class="modal fade" id="updateStockModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">
+            <i class="bi bi-pencil"></i> Cập nhật tồn kho
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="updateStockForm">
+            <input type="hidden" id="updateItemId">
+            <div class="mb-3">
+              <label class="form-label">Tên sản phẩm</label>
+              <input type="text" class="form-control" id="updateItemName" readonly>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Tồn kho hiện tại</label>
+              <input type="number" class="form-control" id="updateCurrentStock" readonly>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Số lượng thay đổi</label>
+              <input type="number" class="form-control" id="updateStockChange" placeholder="Nhập số dương để nhập kho, số âm để xuất">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Ghi chú</label>
+              <textarea class="form-control" rows="2" id="updateStockNote" placeholder="Lý do thay đổi"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Hủy</button>
+          <button type="button" class="btn btn-primary btn-custom" onclick="saveStockUpdate()">
+            <i class="bi bi-check-lg"></i> Cập nhật
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="../js/bootstrap.bundle.js"></script>
+  <script src="../js/toast.js"></script>
+  
+  <script>
+    // Sample inventory data
+    let inventoryData = [
+      {
+        id: 1,
+        name: 'Paracetamol 500mg',
+        category: 'medicine',
+        stock: 150,
+        minLevel: 50,
+        expiry: '2025-12-31',
+        status: 'high'
+      },
+      {
+        id: 2,
+        name: 'Vitamin C 1000mg',
+        category: 'supplement',
+        stock: 25,
+        minLevel: 30,
+        expiry: '2024-08-15',
+        status: 'low'
+      },
+      {
+        id: 3,
+        name: 'Nhiệt kế điện tử',
+        category: 'equipment',
+        stock: 0,
+        minLevel: 10,
+        expiry: '2026-01-01',
+        status: 'out'
+      },
+      {
+        id: 4,
+        name: 'Amoxicillin 500mg',
+        category: 'medicine',
+        stock: 80,
+        minLevel: 20,
+        expiry: '2024-11-30',
+        status: 'medium'
+      }
+    ];
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', function() {
+      renderInventoryList();
+      updateStats();
+      setupEventListeners();
+    });
+
+    function setupEventListeners() {
+      document.getElementById('searchInventory').addEventListener('input', filterInventory);
+      document.getElementById('filterStatus').addEventListener('change', filterInventory);
+      document.getElementById('filterCategory').addEventListener('change', filterInventory);
+    }
+
+    function renderInventoryList(data = inventoryData) {
+      const container = document.getElementById('inventoryList');
+      
+      if (data.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-5">
+            <i class="bi bi-boxes" style="font-size: 3rem; color: #dee2e6;"></i>
+            <p class="text-muted mt-3">Không tìm thấy sản phẩm nào</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = data.map(item => `
+        <div class="inventory-card">
+          <div class="row align-items-center">
+            <div class="col-md-4">
+              <h6 class="mb-1">${item.name}</h6>
+              <small class="text-muted">${getCategoryName(item.category)}</small>
+            </div>
+            <div class="col-md-2">
+              <div class="progress mb-1" style="height: 20px;">
+                <div class="progress-bar bg-${getStatusColor(item.status)}" 
+                     style="width: ${getProgressWidth(item.stock, item.minLevel)}%">
+                  ${item.stock}
+                </div>
+              </div>
+              <small class="text-muted">Tối thiểu: ${item.minLevel}</small>
+            </div>
+            <div class="col-md-2">
+              <small class="text-muted">HSD: ${formatDate(item.expiry)}</small>
+            </div>
+            <div class="col-md-2">
+              <span class="badge bg-${getStatusColor(item.status)}">${getStatusName(item.status)}</span>
+            </div>
+            <div class="col-md-2 text-end">
+              <div class="btn-group">
+                <button class="btn btn-sm btn-outline-primary btn-custom" onclick="editStock(${item.id})" title="Cập nhật">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-info btn-custom" onclick="viewHistory(${item.id})" title="Lịch sử">
+                  <i class="bi bi-clock-history"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function getStatusColor(status) {
+      const colors = {
+        'high': 'success',
+        'medium': 'warning',
+        'low': 'danger',
+        'out': 'dark'
+      };
+      return colors[status] || 'secondary';
+    }
+
+    function getStatusName(status) {
+      const names = {
+        'high': 'Còn nhiều',
+        'medium': 'Vừa phải',
+        'low': 'Sắp hết',
+        'out': 'Hết hàng'
+      };
+      return names[status] || status;
+    }
+
+    function getCategoryName(category) {
+      const names = {
+        'medicine': 'Thuốc',
+        'supplement': 'TPCN',
+        'equipment': 'Thiết bị'
+      };
+      return names[category] || category;
+    }
+
+    function getProgressWidth(stock, minLevel) {
+      if (stock === 0) return 0;
+      const ratio = stock / (minLevel * 3);
+      return Math.min(100, Math.max(10, ratio * 100));
+    }
+
+    function updateStats() {
+      const totalItems = inventoryData.length;
+      const availableItems = inventoryData.filter(i => i.stock > 0).length;
+      const lowStock = inventoryData.filter(i => i.status === 'low').length;
+      const outStock = inventoryData.filter(i => i.status === 'out').length;
+
+      document.getElementById('total-items').textContent = totalItems * 78;
+      document.getElementById('available-items').textContent = availableItems * 295;
+      document.getElementById('low-stock').textContent = lowStock * 20;
+      document.getElementById('out-stock').textContent = outStock * 1;
+    }
+
+    function filterInventory() {
+      const search = document.getElementById('searchInventory').value.toLowerCase();
+      const statusFilter = document.getElementById('filterStatus').value;
+      const categoryFilter = document.getElementById('filterCategory').value;
+
+      let filtered = inventoryData;
+
+      if (search) {
+        filtered = filtered.filter(item => 
+          item.name.toLowerCase().includes(search)
+        );
+      }
+
+      if (statusFilter) {
+        filtered = filtered.filter(item => item.status === statusFilter);
+      }
+
+      if (categoryFilter) {
+        filtered = filtered.filter(item => item.category === categoryFilter);
+      }
+
+      renderInventoryList(filtered);
+    }
+
+    function resetFilters() {
+      document.getElementById('searchInventory').value = '';
+      document.getElementById('filterStatus').value = '';
+      document.getElementById('filterCategory').value = '';
+      renderInventoryList();
+    }
+
+    function editStock(id) {
+      const item = inventoryData.find(i => i.id === id);
+      if (!item) return;
+
+      document.getElementById('updateItemId').value = item.id;
+      document.getElementById('updateItemName').value = item.name;
+      document.getElementById('updateCurrentStock').value = item.stock;
+      document.getElementById('updateStockChange').value = '';
+      document.getElementById('updateStockNote').value = '';
+
+      new bootstrap.Modal(document.getElementById('updateStockModal')).show();
+    }
+
+    function saveStockUpdate() {
+      const id = parseInt(document.getElementById('updateItemId').value);
+      const change = parseInt(document.getElementById('updateStockChange').value);
+      const note = document.getElementById('updateStockNote').value;
+
+      if (isNaN(change) || !note) {
+        showToast('Vui lòng nhập đầy đủ thông tin!', 'warning');
+        return;
+      }
+
+      const itemIndex = inventoryData.findIndex(i => i.id === id);
+      if (itemIndex !== -1) {
+        inventoryData[itemIndex].stock = Math.max(0, inventoryData[itemIndex].stock + change);
+        
+        // Update status
+        const item = inventoryData[itemIndex];
+        if (item.stock === 0) item.status = 'out';
+        else if (item.stock <= item.minLevel) item.status = 'low';
+        else if (item.stock <= item.minLevel * 2) item.status = 'medium';
+        else item.status = 'high';
+
+        renderInventoryList();
+        updateStats();
+        
+        bootstrap.Modal.getInstance(document.getElementById('updateStockModal')).hide();
+        showToast('Cập nhật tồn kho thành công!', 'success');
+      }
+    }
+
+    function updateStock() {
+      showToast('Đang đồng bộ tồn kho...', 'info');
+      setTimeout(() => {
+        showToast('Đồng bộ tồn kho thành công!', 'success');
+      }, 1000);
+    }
+
+    function exportInventory() {
+      showToast('Đang xuất dữ liệu...', 'info');
+      setTimeout(() => {
+        showToast('Xuất file Excel thành công!', 'success');
+      }, 1000);
+    }
+
+    function viewHistory(id) {
+      showToast('Chức năng xem lịch sử sẽ được cập nhật!', 'info');
+    }
+
+    function formatDate(dateString) {
+      return new Date(dateString).toLocaleDateString('vi-VN');
+    }
+  </script>
+</body>
+</html> 

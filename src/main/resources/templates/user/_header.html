@@ -1,0 +1,176 @@
+<!-- Top Bar -->
+<div class="top-bar bg-primary text-white py-2">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6 d-none d-lg-block">
+        <div class="d-flex gap-4">
+          <span><i class="fas fa-phone-alt me-2"></i>0931418748</span>
+          <span><i class="fas fa-envelope me-2"></i>support@medisale.com</span>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="text-end">
+          <a href="#" class="text-white me-3"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
+          <a href="#" class="text-white me-3"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="text-white"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Main Header -->
+<header class="header-main border-bottom shadow-sm sticky-top bg-white">
+  <div class="container">
+    <div class="row py-3 align-items-center">
+      <!-- Logo -->
+      <div class="col-lg-2 col-sm-4 col-6">
+        <a class="navbar-brand d-flex align-items-center" th:href="@{/}">
+          <i class="fas fa-clinic-medical text-primary me-2" style="font-size: 1.8rem;"></i>
+          <h1 class="mb-0 h4 fw-bold">MEDISALE</h1>
+        </a>
+      </div>
+      
+      <!-- Search -->
+      <div class="col-lg-5 col-sm-8 col-6 order-lg-0 order-3">
+        <form th:action="@{/search}" method="get" class="search-form" autocomplete="off">
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="Tìm kiếm sản phẩm..." name="q" th:value="${query}">
+            <button class="btn btn-primary" type="submit">
+              <i class="fas fa-search"></i>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- User Actions -->
+      <div class="col-lg-5 d-none d-lg-block">
+        <div class="d-flex justify-content-end align-items-center gap-4">
+          <div th:if="${session.currentUser == null}" class="d-flex gap-2">
+            <a class="btn btn-outline-primary" th:href="@{/signin}">
+              <i class="fas fa-sign-in-alt me-2"></i>Đăng nhập
+            </a>
+            <a class="btn btn-primary" th:href="@{/signup}">
+              <i class="fas fa-user-plus me-2"></i>Đăng ký
+            </a>
+          </div>
+          
+          <div th:if="${session.currentUser != null}" class="d-flex align-items-center gap-4">
+            <a th:if="${session.currentUser.vaitro}" th:href="@{/admin}" 
+               class="text-dark text-decoration-none">
+              <i class="fas fa-cog fs-5"></i>
+              <span class="ms-2">Admin</span>
+            </a>
+            
+            <div class="dropdown">
+              <a href="#" class="text-dark text-decoration-none dropdown-toggle" 
+                 data-bs-toggle="dropdown">
+                <i class="fas fa-user-circle fs-5"></i>
+                <span class="ms-2" th:text="${session.currentUser.hoten}">Tài khoản</span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" th:href="@{/setting}">
+                  <i class="fas fa-user-cog me-2"></i>Cài đặt tài khoản
+                </a></li>
+                <li><a class="dropdown-item" th:href="@{/order}">
+                  <i class="fas fa-clipboard-list me-2"></i>Đơn hàng
+                </a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" th:href="@{/signout}">
+                  <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
+                </a></li>
+              </ul>
+            </div>
+            
+            <a th:href="@{/cart}" class="text-dark text-decoration-none position-relative">
+              <i class="fas fa-shopping-cart fs-5"></i>
+              <span class="cart-count position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" 
+                    th:text="${session.cartCount ?: 0}">0</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+  <div class="container">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
+            data-bs-target="#navbarMain" aria-expanded="false">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    
+    <div class="collapse navbar-collapse" id="navbarMain">
+      <ul class="navbar-nav">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle fw-bold" href="#" 
+             data-bs-toggle="dropdown">
+            <i class="fas fa-bars me-2"></i>Danh mục sản phẩm
+          </a>
+          <ul class="dropdown-menu">
+            <li th:each="loai : ${loais}">
+              <a class="dropdown-item" th:href="@{/loai(id=${loai.idLoai})}" 
+                 th:text="${loai.tenLoai}"></a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <a class="dropdown-item" th:href="@{/loai-all}">
+                <i class="fas fa-th-list me-2"></i>Tất cả danh mục
+              </a>
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Sản phẩm mới</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Khuyến mãi</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Tin tức</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Liên hệ</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<style>
+.top-bar {
+  font-size: 0.9rem;
+}
+.top-bar a:hover {
+  opacity: 0.8;
+}
+.header-main {
+  z-index: 1020;
+}
+.search-form .form-control {
+  border-radius: 20px 0 0 20px;
+  border-right: none;
+}
+.search-form .btn {
+  border-radius: 0 20px 20px 0;
+}
+.navbar .nav-link {
+  padding: 1rem 1.2rem;
+  color: #333;
+}
+.navbar .nav-link:hover {
+  color: var(--bs-primary);
+}
+.dropdown-menu {
+  border: none;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+@media (max-width: 991.98px) {
+  .search-form {
+    margin: 1rem 0;
+  }
+}
+</style>

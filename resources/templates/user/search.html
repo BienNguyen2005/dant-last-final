@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <th:block th:replace="~{user/_meta}" />
+  <title th:text="'Kết quả tìm kiếm cho ' + ${query}"></title>
+</head>
+
+<body>
+  <th:block th:replace="~{user/_header}" />
+
+  <section class="section-content mb-5">
+    <div class="container">
+      <header class="section-heading py-4">
+        <h3 class="section-title">
+          Kết quả tìm kiếm cho "<span th:text="${query}"></span>": 
+          <span th:text="${totalProducts}"></span> sản phẩm
+        </h3>
+      </header>
+
+      <div class="row item-grid">
+        <div th:each="sanpham : ${sanphams}" class="col-xl-3 col-lg-4 col-md-6">
+          <div class="card p-3 mb-4">
+            <a th:href="@{/sanpham(id=${sanpham.idSanpham})}" class="img-wrap text-center">
+              <img width="200" height="200" class="img-fluid"
+                   th:src="@{/image/{url}(url=${sanpham.hinh})}" th:alt="${sanpham.tenSanpham}">
+            </a>
+            <figcaption class="info-wrap mt-2">
+              <a th:href="@{/sanpham(id=${sanpham.idSanpham})}" class="title td-text" th:text="${sanpham.tenSanpham}"></a>
+              <div>
+                <div th:if="${sanpham.giamgia == 0}">
+                  <span class="price mt-1 fw-bold">
+                    <span th:text="${#numbers.formatInteger(sanpham.gia, 0, 'COMMA')}"></span>₫
+                  </span>
+                </div>
+                <div th:if="${sanpham.giamgia > 0}">
+                  <span class="price mt-1 fw-bold">
+                    <span th:text="${#numbers.formatInteger(sanpham.gia * (100 - sanpham.giamgia) / 100, 0, 'COMMA')}"></span>₫
+                  </span>
+                  <span class="ms-2 text-muted text-decoration-line-through">
+                    <span th:text="${#numbers.formatInteger(sanpham.gia, 0, 'COMMA')}"></span>₫
+                  </span>
+                  <span class="ms-2 badge bg-info">
+                    -<span th:text="${sanpham.giamgia}"></span>%
+                  </span>
+                </div>
+              </div>
+            </figcaption>
+          </div>
+        </div> 
+      </div>
+
+      <div th:if="${totalPages > 0}">
+        <nav class="mt-4 d-flex justify-content-center">
+          <ul class="pagination">
+            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+              <a class="page-link" th:href="@{/search(q=${query}, page=${currentPage - 1})}">Trang trước</a>
+            </li>
+
+            <li th:each="i : ${#numbers.sequence(1, totalPages)}"
+                class="page-item"  th:classappend="${currentPage == i - 1} ? 'active'">
+              <a class="page-link" th:href="@{/search(q=${query}, page=${i - 1})}" th:text="${i}"></a>
+            </li>
+
+            <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+              <a class="page-link" th:href="@{/search(q=${query}, page=${currentPage + 1})}">Trang sau</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </section>
+
+  <th:block th:replace="~{user/_footer}" />
+</body>
+</html>

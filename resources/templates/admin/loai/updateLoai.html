@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <th:block th:replace="~{user/_meta}" />
+  <title>Cập nhật loại hàng</title>
+</head>
+
+<body>
+<th:block th:replace="~{admin/_headerAdmin}" />
+
+<section class="section-content">
+  <div class="container">
+    <header class="section-heading py-4">
+      <h3 class="section-title">Cập nhật loại hàng</h3>
+    </header>
+
+    <main class="row mb-5">
+      <form class="col-lg-6" method="POST" th:action="@{/admin/loai/update/{id}(id=${loai.idLoai})}" autocomplete="off">
+        <div th:if="${successMessage}" class="alert alert-success mb-3" role="alert" th:text="${successMessage}"></div>
+        <div th:if="${errorMessage}" class="alert alert-danger mb-3" role="alert" th:text="${errorMessage}"></div>
+        
+        <input type="hidden" class="form-control" th:value="${loai.idLoai}" name="idLoai" id="idLoai" required>
+
+        <div class="mb-3">
+          <label for="tenLoai" class="form-label">Tên loại <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" th:value="${loai.tenLoai}" id="tenLoai" name="tenLoai" required>
+        </div>
+        
+        <button type="submit" class="btn btn-primary me-2 mb-3">Cập nhật</button>
+        <a class="btn btn-danger mb-3" th:href="@{/admin/loai}" role="button" onclick="return confirm('Bạn có muốn hủy?')">Hủy</a>
+      </form>
+    </main>
+  </div>
+</section>
+
+<th:block th:replace="~{admin/_footerAdmin}" />
+</body>
+
+</html>
