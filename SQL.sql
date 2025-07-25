@@ -1,102 +1,212 @@
-﻿USE master
+﻿USE [STORE]
 GO
-CREATE DATABASE STORE
+/****** Object:  Table [dbo].[GIOHANG]    Script Date: 7/26/2025 12:14:54 AM ******/
+SET ANSI_NULLS ON
 GO
-USE STORE
+SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE USERS(
-	id_user VARCHAR(50) PRIMARY KEY,
-	sdt VARCHAR(10) NOT NULL,
-	hinh VARCHAR(255) NULL,
-	hoten NVARCHAR(50) NOT NULL,
-	matkhau VARCHAR(50) NOT NULL,
-	kichhoat BIT NOT NULL,
-	vaitro BIT NOT NULL
-)
+CREATE TABLE [dbo].[GIOHANG](
+	[id_giohang] [int] IDENTITY(1,1) NOT NULL,
+	[id_user] [varchar](50) NULL,
+	[id_khach_hang] [varchar](50) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[id_giohang] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
 GO
-CREATE TABLE LOAI(
-	id_loai INT IDENTITY(1,1) PRIMARY KEY,
-	ten_loai NVARCHAR(255) NOT NULL
-)
+/****** Object:  Table [dbo].[GIOHANGCHITIET]    Script Date: 7/26/2025 12:14:54 AM ******/
+SET ANSI_NULLS ON
 GO
-CREATE TABLE SANPHAM(
-	id_sanpham INT IDENTITY(1,1) PRIMARY KEY,
-	ten_sanpham NVARCHAR(255) NOT NULL,
-	soluong INT NOT NULL,
-	hinh VARCHAR(255) NULL,
-	mota NVARCHAR(MAX) NOT NULL,
-	motangan NVARCHAR(MAX) NULL,
-	gia INT NOT NULL,
-	giamgia INT NOT NULL,
-	ngaytao DATE NOT NULL,
-	id_loai INT FOREIGN KEY REFERENCES Loai(id_loai)
-)
+SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE HOADON(
-	id_hoadon INT IDENTITY(1,1) PRIMARY KEY,
-	ngaytao DATE NOT NULL,
-	trangthai VARCHAR(30) NOT NULL,
-	diachi NVARCHAR(50) NOT NULL,
-	giaohang NVARCHAR(MAX) NULL,
-	id_user VARCHAR(50) FOREIGN KEY REFERENCES Users(id_user)
-)
+CREATE TABLE [dbo].[GIOHANGCHITIET](
+	[id_giohang] [int] NOT NULL,
+	[id_sanpham] [int] NOT NULL,
+	[soluong] [int] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[id_giohang] ASC,
+	[id_sanpham] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
 GO
-CREATE TABLE HOADONCHITIET(
-	id_hoadon INT,
-	id_sanpham INT,
-	soluong INT NOT NULL,
-	giamgia INT NULL,
-	gia INT NOT NULL,
-	PRIMARY KEY (id_hoadon, id_sanpham),
-    FOREIGN KEY (id_hoadon) REFERENCES HoaDon(id_hoadon),
-    FOREIGN KEY (id_sanpham) REFERENCES SanPham(id_sanpham)
-)
+/****** Object:  Table [dbo].[HOADON]    Script Date: 7/26/2025 12:14:54 AM ******/
+SET ANSI_NULLS ON
 GO
-CREATE TABLE GIOHANG(
-	id_giohang INT IDENTITY(1,1) PRIMARY KEY,
-	id_user VARCHAR(50) FOREIGN KEY REFERENCES Users(id_user)
-)
+SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE GIOHANGCHITIET(
-	id_giohang INT,
-	id_sanpham INT,
-	soluong INT NOT NULL,
-	PRIMARY KEY (id_giohang, id_sanpham),
-    FOREIGN KEY (id_giohang) REFERENCES GioHang(id_giohang),
-    FOREIGN KEY (id_sanpham) REFERENCES SanPham(id_sanpham)
-)
+CREATE TABLE [dbo].[HOADON](
+	[id_hoadon] [int] IDENTITY(1,1) NOT NULL,
+	[ngaytao] [date] NOT NULL,
+	[trangthai] [varchar](30) NOT NULL,
+	[diachi] [nvarchar](50) NOT NULL,
+	[giaohang] [nvarchar](max) NULL,
+	[id_user] [varchar](50) NULL,
+	[id_khach_hang] [varchar](50) NULL,
+	[discount_percent] [int] NULL,
+	[discount_amount] [int] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[id_hoadon] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
--- Tạo bảng KHACH_HANG nếu chưa tồn tại
-IF OBJECT_ID('KHACH_HANG', 'U') IS NULL
-BEGIN
-    CREATE TABLE KHACH_HANG (
-        id_khach_hang VARCHAR(50) PRIMARY KEY,
-        hoten VARCHAR(255) NOT NULL,
-        sdt VARCHAR(10) NOT NULL,
-        email VARCHAR(255),
-        dia_chi VARCHAR(255),
-        trang_thai BIT NOT NULL,
-        phan_loai VARCHAR(50)
-    );
-END
+/****** Object:  Table [dbo].[HOADONCHITIET]    Script Date: 7/26/2025 12:14:54 AM ******/
+SET ANSI_NULLS ON
 GO
-
--- Tạo bảng NHAN_VIEN nếu chưa tồn tại
-IF OBJECT_ID('NHAN_VIEN', 'U') IS NULL
-BEGIN
-    CREATE TABLE NHAN_VIEN (
-        id_nhan_vien VARCHAR(50) PRIMARY KEY,
-        hoten VARCHAR(255) NOT NULL,
-        sdt VARCHAR(10) NOT NULL,
-        email VARCHAR(255),
-        dia_chi VARCHAR(255),
-        trang_thai BIT NOT NULL,
-        luong DECIMAL(18,2),
-        ca_lam_viec VARCHAR(100)
-    );
-END
+SET QUOTED_IDENTIFIER ON
 GO
-
+CREATE TABLE [dbo].[HOADONCHITIET](
+	[id_hoadon] [int] NOT NULL,
+	[id_sanpham] [int] NOT NULL,
+	[soluong] [int] NOT NULL,
+	[giamgia] [int] NULL,
+	[gia] [int] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[id_hoadon] ASC,
+	[id_sanpham] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
 GO
-select * from GIOHANGCHITIET
-delete from GIOHANGCHITIET
+/****** Object:  Table [dbo].[KHACH_HANG]    Script Date: 7/26/2025 12:14:54 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[KHACH_HANG](
+	[id_khach_hang] [bigint] IDENTITY(1,1) NOT NULL,
+	[hoten] [varchar](255) NOT NULL,
+	[sdt] [varchar](10) NOT NULL,
+	[email] [varchar](255) NULL,
+	[dia_chi] [varchar](255) NULL,
+	[trang_thai] [bit] NOT NULL,
+	[phan_loai] [nvarchar](255) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[id_khach_hang] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[LOAI]    Script Date: 7/26/2025 12:14:54 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[LOAI](
+	[id_loai] [int] IDENTITY(1,1) NOT NULL,
+	[ten_loai] [nvarchar](255) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[id_loai] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[NHAN_VIEN]    Script Date: 7/26/2025 12:14:54 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[NHAN_VIEN](
+	[id_nhan_vien] [varchar](50) NOT NULL,
+	[hoten] [varchar](255) NOT NULL,
+	[sdt] [varchar](10) NOT NULL,
+	[email] [varchar](255) NULL,
+	[dia_chi] [varchar](255) NULL,
+	[trang_thai] [bit] NOT NULL,
+	[luong] [decimal](18, 2) NULL,
+	[ca_lam_viec] [varchar](100) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[id_nhan_vien] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[NOTIFICATION]    Script Date: 7/26/2025 12:14:54 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[NOTIFICATION](
+	[id_notification] [int] IDENTITY(1,1) NOT NULL,
+	[id_user] [varchar](50) NULL,
+	[title] [nvarchar](255) NOT NULL,
+	[content] [nvarchar](max) NOT NULL,
+	[is_read] [bit] NOT NULL,
+	[created_at] [datetime] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[id_notification] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[SANPHAM]    Script Date: 7/26/2025 12:14:54 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[SANPHAM](
+	[id_sanpham] [int] IDENTITY(1,1) NOT NULL,
+	[ten_sanpham] [nvarchar](255) NOT NULL,
+	[soluong] [int] NOT NULL,
+	[hinh] [varchar](255) NULL,
+	[mota] [nvarchar](max) NOT NULL,
+	[motangan] [nvarchar](max) NULL,
+	[gia] [int] NOT NULL,
+	[giamgia] [int] NOT NULL,
+	[ngaytao] [date] NOT NULL,
+	[id_loai] [int] NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[id_sanpham] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[USERS]    Script Date: 7/26/2025 12:14:54 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[USERS](
+	[id_user] [varchar](50) NOT NULL,
+	[sdt] [varchar](10) NOT NULL,
+	[hinh] [varchar](255) NULL,
+	[hoten] [nvarchar](50) NOT NULL,
+	[matkhau] [varchar](50) NOT NULL,
+	[kichhoat] [bit] NOT NULL,
+	[vaitro] [bit] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[id_user] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[NOTIFICATION] ADD  DEFAULT ((0)) FOR [is_read]
+GO
+ALTER TABLE [dbo].[NOTIFICATION] ADD  DEFAULT (getdate()) FOR [created_at]
+GO
+ALTER TABLE [dbo].[GIOHANG]  WITH CHECK ADD FOREIGN KEY([id_user])
+REFERENCES [dbo].[USERS] ([id_user])
+GO
+ALTER TABLE [dbo].[GIOHANGCHITIET]  WITH CHECK ADD FOREIGN KEY([id_giohang])
+REFERENCES [dbo].[GIOHANG] ([id_giohang])
+GO
+ALTER TABLE [dbo].[GIOHANGCHITIET]  WITH CHECK ADD FOREIGN KEY([id_sanpham])
+REFERENCES [dbo].[SANPHAM] ([id_sanpham])
+GO
+ALTER TABLE [dbo].[HOADON]  WITH CHECK ADD FOREIGN KEY([id_user])
+REFERENCES [dbo].[USERS] ([id_user])
+GO
+ALTER TABLE [dbo].[HOADONCHITIET]  WITH CHECK ADD FOREIGN KEY([id_hoadon])
+REFERENCES [dbo].[HOADON] ([id_hoadon])
+GO
+ALTER TABLE [dbo].[HOADONCHITIET]  WITH CHECK ADD FOREIGN KEY([id_sanpham])
+REFERENCES [dbo].[SANPHAM] ([id_sanpham])
+GO
+ALTER TABLE [dbo].[NOTIFICATION]  WITH CHECK ADD FOREIGN KEY([id_user])
+REFERENCES [dbo].[USERS] ([id_user])
+GO
+ALTER TABLE [dbo].[SANPHAM]  WITH CHECK ADD FOREIGN KEY([id_loai])
+REFERENCES [dbo].[LOAI] ([id_loai])
+GO
