@@ -2,10 +2,10 @@ package com.poly.controller.admin;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +22,7 @@ import com.poly.entity.HoaDonChiTietId;
 import com.poly.entity.Loai;
 import com.poly.entity.SanPham;
 import com.poly.entity.Users;
+import com.poly.entity.KhachHang;
 import com.poly.repository.GioHangChiTietRepository;
 import com.poly.repository.GioHangRepository;
 import com.poly.repository.HoaDonChiTietRepository;
@@ -30,14 +31,15 @@ import com.poly.repository.SanPhamRepository;
 import com.poly.service.LoaiService;
 import com.poly.service.SanPhamService;
 import com.poly.service.UserService;
+import com.poly.service.KhachHangService;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import vn.payos.PayOS;
 import vn.payos.type.CheckoutResponseData;
 import vn.payos.type.ItemData;
 import vn.payos.type.PaymentData;
+import org.springframework.http.ResponseEntity;
 
 @Controller
 public class BanHangTaiQuayController {
@@ -66,6 +68,9 @@ public class BanHangTaiQuayController {
 	private HoaDonRepository hoaDonRepository;
 	@Autowired
 	private HoaDonChiTietRepository hoaDonChiTietRepository;
+
+	@Autowired
+	private KhachHangService khachHangService;
 
 	@GetMapping("/banhangtaiquay")
 	public String banHangTaiQuay(@RequestParam(name = "page", defaultValue = "0") int page,
@@ -102,36 +107,45 @@ public class BanHangTaiQuayController {
 		model.addAttribute("keyword", keyword);
 		model.addAttribute("idLoai", idLoai);
 		model.addAttribute("gioHang", gioHangChiTietList);
+		model.addAttribute("khachHangs", khachHangService.getAllKhachHang());
 		return "admin/banhangtaiquay/banhangtaiquay";
 	}
 
 	@PostMapping("giohang/them")
-	public String themVaoGio(@RequestParam("idSanpham") Integer idSanpham, HttpSession session,
+	public ResponseEntity<?> themVaoGio(@RequestParam("idSanpham") Integer idSanpham, HttpSession session,
 			@RequestParam("soluong") Integer soluong, RedirectAttributes redirectAttributes,
 			HttpServletRequest request) {
 
 		Users currentUser = (Users) session.getAttribute("currentUser");
 		if (currentUser == null) {
-			return "redirect:/signin";
+			if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {
+				return ResponseEntity.status(401).body("{\"success\":false, \"message\":\"Chưa đăng nhập\"}");
+			}
+			return ResponseEntity.status(302).header("Location", "/signin").build();
 		}
 
 		GioHang gioHang = gioHangRepository.findByUsers_IdUser(currentUser.getIdUser());
-
 		SanPham sanPham = sanPhamRepository.findById(idSanpham)
 				.orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm"));
 
 		GioHangChiTietId chiTietId = new GioHangChiTietId(gioHang.getIdGiohang(), sanPham.getIdSanpham());
-
-		GioHangChiTiet chiTiet = gioHangChiTietRepository.findById(chiTietId)
-				.orElse(new GioHangChiTiet(chiTietId, gioHang, sanPham, 0));
-
-		chiTiet.setSoluong(chiTiet.getSoluong() + soluong);
+		Optional<GioHangChiTiet> opt = gioHangChiTietRepository.findById(chiTietId);
+		GioHangChiTiet chiTiet;
+		if (opt.isPresent()) {
+			chiTiet = opt.get();
+			chiTiet.setSoluong(chiTiet.getSoluong() + soluong);
+		} else {
+			chiTiet = new GioHangChiTiet(chiTietId, gioHang, sanPham, soluong);
+		}
 		gioHangChiTietRepository.save(chiTiet);
 
-		redirectAttributes.addFlashAttribute("successMessage", "Đã thêm vào giỏ hàng!");
+		if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {
+			return ResponseEntity.ok("{\"success\":true}");
+		}
 
+		redirectAttributes.addFlashAttribute("successMessage", "Đã thêm vào giỏ hàng!");
 		String referer = request.getHeader("referer");
-		return "redirect:" + (referer != null ? referer : "/banhangtaiquay");
+		return ResponseEntity.status(302).header("Location", referer != null ? referer : "/banhangtaiquay").build();
 	}
 
 	@PostMapping("/giohang/xoa")
@@ -156,32 +170,62 @@ public class BanHangTaiQuayController {
 	}
 
 	@PostMapping("/banhangtaiquay/thanh-toan")
-	public String thanhToan(@RequestParam("phuongthuc") String phuongThuc, HttpSession session,
-			RedirectAttributes redirectAttributes, HttpServletRequest request) {
+	public String thanhToan(@RequestParam("phuongthuc") String phuongThuc,
+						   @RequestParam(value = "khachHangId", required = false) String khachHangId,
+						   @RequestParam(value = "adminDiscount", required = false) Integer adminDiscount,
+						   HttpSession session,
+						   RedirectAttributes redirectAttributes,
+						   HttpServletRequest request) {
 		Users currentUser = (Users) session.getAttribute("currentUser");
 		if (currentUser == null) {
 			return "redirect:/signin";
 		}
-
 		GioHang gioHang = gioHangRepository.findByUsers_IdUser(currentUser.getIdUser());
 		if (gioHang == null) {
 			redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy giỏ hàng!");
 			return "redirect:/banhangtaiquay";
 		}
-
 		List<GioHangChiTiet> chiTietList = gioHang.getGioHangChiTiets();
-
 		if (chiTietList.isEmpty()) {
 			redirectAttributes.addFlashAttribute("errorMessage", "Giỏ hàng đang trống!");
 			return "redirect:/banhangtaiquay";
 		}
+		KhachHang khachHang;
+		if (khachHangId == null || khachHangId.isEmpty()) {
+			Optional<KhachHang> guessOpt = khachHangService.findBySdt("guess");
+			if (guessOpt.isEmpty()) {
+				KhachHang guess = new KhachHang();
+				guess.setHoten("Khách vãng lai");
+				guess.setSdt("guess");
+				guess.setTrangThai(true);
+				guess.setPhanLoai("Khách vãng lai");
+				khachHang = khachHangService.saveKhachHang(guess);
+			} else {
+				khachHang = guessOpt.get();
+			}
+		} else {
+			khachHang = khachHangService.getKhachHangById(Long.valueOf(khachHangId)).orElse(null);
+		}
+
+		// TÍNH GIẢM GIÁ
+		int totalQuantity = chiTietList.stream().mapToInt(GioHangChiTiet::getSoluong).sum();
+		int tongTienTruocGiam = chiTietList.stream().mapToInt(ct -> {
+			int giaSauGiam = ct.getSanPham().getGia() * (100 - ct.getSanPham().getGiamgia()) / 100;
+			return giaSauGiam * ct.getSoluong();
+		}).sum();
+		int discountPercent = 0;
+		String loaiKh = khachHang.getPhanLoai() != null ? khachHang.getPhanLoai().toLowerCase() : "";
+		if (adminDiscount != null && adminDiscount > 0) {
+			discountPercent = adminDiscount;
+		} else if (loaiKh.contains("vip")) {
+			discountPercent = 30;
+		} else if (loaiKh.contains("thường") && totalQuantity > 3) {
+			discountPercent = 10;
+		}
+		int tongGiam = tongTienTruocGiam * discountPercent / 100;
+		int tongTienSauGiam = tongTienTruocGiam - tongGiam;
 
 		if ("BANK".equals(phuongThuc)) {
-			int tongTien = chiTietList.stream().mapToInt(ct -> {
-				int giaSauGiam = ct.getSanPham().getGia() * (100 - ct.getSanPham().getGiamgia()) / 100;
-				return giaSauGiam * ct.getSoluong();
-			}).sum();
-
 			String currentTimeString = String.valueOf(new Date().getTime());
 			long orderCode = Long.parseLong(currentTimeString.substring(currentTimeString.length() - 6));
 
@@ -194,7 +238,7 @@ public class BanHangTaiQuayController {
 								.price(ct.getSanPham().getGia() * (100 - ct.getSanPham().getGiamgia()) / 100).build())
 						.toList();
 				System.out.println(baseUrl + "/banhangtaiquay/success");
-				PaymentData paymentData = PaymentData.builder().orderCode(orderCode).amount(tongTien)
+				PaymentData paymentData = PaymentData.builder().orderCode(orderCode).amount(tongTienSauGiam)
 						.description("Thanh toán đơn hàng")
 						.returnUrl(baseUrl + "/banhangtaiquay/success?idUser=" + currentUser.getIdUser())
 						.cancelUrl(baseUrl + "/banhangtaiquay").items(items).build();
@@ -206,13 +250,16 @@ public class BanHangTaiQuayController {
 				e.printStackTrace();
 				return "redirect:/banhangtaiquay";
 			}
-		} else {
+		}
+		else {
 			HoaDon hoaDon = new HoaDon();
 			hoaDon.setUsers(currentUser);
 			hoaDon.setNgaytao(new Date());
 			hoaDon.setDiachi("");
 			hoaDon.setGiaohang("");
 			hoaDon.setTrangthai(phuongThuc.equals("CASH") ? "ondelivery" : "received");
+			hoaDon.setDiscountPercent(discountPercent);
+			hoaDon.setDiscountAmount(tongGiam);
 			hoaDonRepository.save(hoaDon);
 
 			for (GioHangChiTiet ct : chiTietList) {
@@ -240,7 +287,8 @@ public class BanHangTaiQuayController {
 
 			gioHangChiTietRepository.deleteAll(chiTietList);
 
-			redirectAttributes.addFlashAttribute("successMessage", "Thanh toán thành công!");
+			redirectAttributes.addFlashAttribute("successMessage", "Thanh toán thành công! Tổng tiền: " + tongTienSauGiam + "₫ (Đã giảm " + discountPercent + "%)");
+			redirectAttributes.addFlashAttribute("idHoaDon", hoaDon.getIdHoadon());
 			return "redirect:/banhangtaiquay";
 		}
 	}
@@ -296,6 +344,21 @@ public class BanHangTaiQuayController {
 			e.printStackTrace();
 		}
 		return "redirect:/banhangtaiquay";
+	}
+
+	@GetMapping("/banhangtaiquay/cart-fragment")
+	public String getCartFragment(HttpSession session, Model model) {
+		Users currentUser = (Users) session.getAttribute("currentUser");
+		if (currentUser == null) return "redirect:/signin";
+		GioHang gioHang = gioHangRepository.findByUsers_IdUser(currentUser.getIdUser());
+		List<GioHangChiTiet> gioHangChiTietList = gioHang.getGioHangChiTiets();
+		int tongCong = gioHangChiTietList.stream().mapToInt(ct -> {
+			int giaSauGiam = ct.getSanPham().getGia() * (100 - ct.getSanPham().getGiamgia()) / 100;
+			return giaSauGiam * ct.getSoluong();
+		}).sum();
+		model.addAttribute("tongCong", tongCong);
+		model.addAttribute("gioHang", gioHangChiTietList);
+		return "admin/banhangtaiquay/cart-fragment :: cartArea";
 	}
 
 }

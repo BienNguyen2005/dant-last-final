@@ -66,5 +66,37 @@ CREATE TABLE GIOHANGCHITIET(
     FOREIGN KEY (id_sanpham) REFERENCES SanPham(id_sanpham)
 )
 GO
+-- Tạo bảng KHACH_HANG nếu chưa tồn tại
+IF OBJECT_ID('KHACH_HANG', 'U') IS NULL
+BEGIN
+    CREATE TABLE KHACH_HANG (
+        id_khach_hang VARCHAR(50) PRIMARY KEY,
+        hoten VARCHAR(255) NOT NULL,
+        sdt VARCHAR(10) NOT NULL,
+        email VARCHAR(255),
+        dia_chi VARCHAR(255),
+        trang_thai BIT NOT NULL,
+        phan_loai VARCHAR(50)
+    );
+END
+GO
+
+-- Tạo bảng NHAN_VIEN nếu chưa tồn tại
+IF OBJECT_ID('NHAN_VIEN', 'U') IS NULL
+BEGIN
+    CREATE TABLE NHAN_VIEN (
+        id_nhan_vien VARCHAR(50) PRIMARY KEY,
+        hoten VARCHAR(255) NOT NULL,
+        sdt VARCHAR(10) NOT NULL,
+        email VARCHAR(255),
+        dia_chi VARCHAR(255),
+        trang_thai BIT NOT NULL,
+        luong DECIMAL(18,2),
+        ca_lam_viec VARCHAR(100)
+    );
+END
+GO
+
+GO
 select * from GIOHANGCHITIET
 delete from GIOHANGCHITIET

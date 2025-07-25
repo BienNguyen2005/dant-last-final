@@ -28,15 +28,6 @@ public class Users {
 	public Users() {
 	}
 
-	public Users(String idUser, String sdt, String hoten, String matkhau, boolean vaitro, boolean kichhoat) {
-		this.idUser = idUser;
-		this.sdt = sdt;
-		this.hoten = hoten;
-		this.matkhau = matkhau;
-		this.vaitro = vaitro;
-		this.kichhoat = kichhoat;
-	}
-
 	public Users(String idUser, String sdt, String hinh, String hoten, String matkhau, boolean vaitro,
 			List<GioHang> gioHangs, List<HoaDon> hoaDons) {
 		this.idUser = idUser;

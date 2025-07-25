@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <th:block th:replace="~{user/_meta}" />
+  <title>Chi tiết nhân viên</title>
+</head>
+<body>
+  <th:block th:replace="~{admin/_headerAdmin}" />
+  <section class="section-content">
+    <div class="container">
+      <h3 class="section-title py-4">Chi tiết nhân viên</h3>
+      <div class="card mb-4">
+        <div class="card-body">
+          <dl class="row">
+            <dt class="col-sm-3">Mã nhân viên</dt>
+            <dd class="col-sm-9" th:text="${nhanVien.idNhanVien}"></dd>
+            <dt class="col-sm-3">Họ tên</dt>
+            <dd class="col-sm-9" th:text="${nhanVien.hoten}"></dd>
+            <dt class="col-sm-3">Số điện thoại</dt>
+            <dd class="col-sm-9" th:text="${nhanVien.sdt}"></dd>
+            <dt class="col-sm-3">Email</dt>
+            <dd class="col-sm-9" th:text="${nhanVien.email}"></dd>
+            <dt class="col-sm-3">Địa chỉ</dt>
+            <dd class="col-sm-9" th:text="${nhanVien.diaChi}"></dd>
+            <dt class="col-sm-3">Ca làm việc</dt>
+            <dd class="col-sm-9" th:text="${nhanVien.caLamViec}"></dd>
+            <dt class="col-sm-3">Lương</dt>
+            <dd class="col-sm-9" th:text="${#numbers.formatDecimal(nhanVien.luong, 0, 'COMMA', 0, 'POINT')}"></dd>
+            <dt class="col-sm-3">Trạng thái</dt>
+            <dd class="col-sm-9" th:text="${nhanVien.trangThai} ? 'Hoạt động' : 'Ngưng' "></dd>
+          </dl>
+        </div>
+      </div>
+      <a th:href="@{/admin/nhanvien}" class="btn btn-secondary">Quay lại</a>
+      <a th:href="@{/admin/nhanvien/edit/{id}(id=${nhanVien.idNhanVien})}" class="btn btn-primary ms-2">Sửa</a>
+    </div>
+  </section>
+  <th:block th:replace="~{admin/_footerAdmin}" />
+</body>
+</html> 

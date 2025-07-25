@@ -76,6 +76,36 @@ public class HoaDonController {
 		return "admin/hoadon/hoadonManagerDetailView";
 	}
 
+	@GetMapping("/admin/hoadon/print/{id}")
+	public String printInvoice(@PathVariable("id") Integer id, Model model) {
+		Users currentUser = (Users) session.getAttribute("currentUser");
+		if (currentUser == null || !currentUser.isVaitro()) {
+			return "redirect:/";
+		}
+		try {
+			AtomicReference<Double> tempPrice = new AtomicReference<>(0.0);
+			List<SanPham> listSanPham = new ArrayList<>();
+			HoaDon hoaDon = hoaDonService.getHoaDonById(Integer.valueOf(id));
+			hoaDon.getHoaDonChiTiets().forEach(item -> {
+				SanPham sanPham = sanPhamService.getSanPhamById(item.getId().getIdSanpham());
+				double price = (item.getGiamgia() == 0) ? item.getGia() * item.getSoluong()
+						: (item.getGia() * (100 - item.getGiamgia()) / 100) * item.getSoluong();
+				tempPrice.updateAndGet(v -> v + price);
+				sanPham.setSoluong(item.getSoluong());
+				sanPham.setGia(item.getGia());
+				sanPham.setGiamgia(item.getGiamgia());
+				listSanPham.add(sanPham);
+			});
+			model.addAttribute("tempPrice", tempPrice.get());
+			model.addAttribute("listSanPham", listSanPham);
+			model.addAttribute("deliveryPrice", hoaDon.getGiaohang().equals("Giao hàng nhanh") ? 50000 : 20000);
+			model.addAttribute("order", hoaDon);
+		} catch (Exception e) {
+			model.addAttribute("errorMessage", e.getMessage());
+		}
+		return "admin/hoadon/hoadonPrintView";
+	}
+
 	@PostMapping("/admin/hoadon/update")
 	public String updateUser(RedirectAttributes redirectAttributes, @RequestParam("id") Integer id,
 			@RequestParam("action") String action) {

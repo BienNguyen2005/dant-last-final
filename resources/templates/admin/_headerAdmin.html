@@ -56,7 +56,7 @@
           </a>
         </li>
       </ul>
-      <th:block th:if="${session.currentUser != null}">
+      <th:block th:if="${session.currentUser != null and session.currentUser.vaitro}">
         <span>Xin chào <strong th:text="${session.currentUser.hoten}"></strong>!</span>
         <a class="btn btn-light ms-2" th:href="@{/signout}" role="button">Đăng xuất</a>
       </th:block>

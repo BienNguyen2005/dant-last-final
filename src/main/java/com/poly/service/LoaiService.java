@@ -7,14 +7,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import com.poly.entity.GioHang;
 import com.poly.entity.Loai;
-import com.poly.entity.Users;
 import com.poly.repository.GioHangRepository;
 import com.poly.repository.LoaiRepository;
-import com.poly.repository.UsersRepository;
 
-import jakarta.servlet.http.HttpSession;
 
 @Service
 public class LoaiService {

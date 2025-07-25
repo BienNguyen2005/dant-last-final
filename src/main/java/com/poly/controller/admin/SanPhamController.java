@@ -14,12 +14,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.poly.entity.Loai;
 import com.poly.entity.SanPham;
 import com.poly.entity.Users;
 import com.poly.service.LoaiService;
 import com.poly.service.SanPhamService;
-import com.poly.utils.ImageUtils;
 
 import jakarta.servlet.http.HttpSession;
 

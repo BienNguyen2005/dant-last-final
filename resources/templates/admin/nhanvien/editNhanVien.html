@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <th:block th:replace="~{user/_meta}" />
+  <title>Sửa nhân viên</title>
+</head>
+<body>
+  <th:block th:replace="~{admin/_headerAdmin}" />
+  <section class="section-content">
+    <div class="container">
+      <h3 class="section-title py-4">Sửa nhân viên</h3>
+      <form th:action="@{/admin/nhanvien/edit/{id}(id=${nhanVien.idNhanVien})}" th:object="${nhanVien}" method="post" class="row g-3">
+        <div class="col-md-6">
+          <label for="hoten" class="form-label">Họ tên</label>
+          <input type="text" th:field="*{hoten}" class="form-control" id="hoten" required>
+        </div>
+        <div class="col-md-6">
+          <label for="sdt" class="form-label">Số điện thoại</label>
+          <input type="text" th:field="*{sdt}" class="form-control" id="sdt" required>
+        </div>
+        <div class="col-md-6">
+          <label for="email" class="form-label">Email</label>
+          <input type="email" th:field="*{email}" class="form-control" id="email">
+        </div>
+        <div class="col-md-6">
+          <label for="diaChi" class="form-label">Địa chỉ</label>
+          <input type="text" th:field="*{diaChi}" class="form-control" id="diaChi">
+        </div>
+        <div class="col-md-6">
+          <label for="caLamViec" class="form-label">Ca làm việc</label>
+          <input type="text" th:field="*{caLamViec}" class="form-control" id="caLamViec">
+        </div>
+        <div class="col-md-6">
+          <label for="luong" class="form-label">Lương</label>
+          <input type="number" th:field="*{luong}" class="form-control" id="luong" min="0">
+        </div>
+        <div class="col-md-6">
+          <label for="trangThai" class="form-label">Trạng thái</label>
+          <select th:field="*{trangThai}" class="form-select" id="trangThai">
+            <option th:value="true">Hoạt động</option>
+            <option th:value="false">Ngưng</option>
+          </select>
+        </div>
+        <div class="col-12">
+          <button type="submit" class="btn btn-primary">Lưu</button>
+          <a th:href="@{/admin/nhanvien}" class="btn btn-secondary ms-2">Quay lại</a>
+        </div>
+      </form>
+    </div>
+  </section>
+  <th:block th:replace="~{admin/_footerAdmin}" />
+</body>
+</html> 
