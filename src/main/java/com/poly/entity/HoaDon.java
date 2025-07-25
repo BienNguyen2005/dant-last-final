@@ -15,7 +15,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import lombok.ToString;
 
 @Entity
 @Table(name = "HOADON")
@@ -28,6 +27,9 @@ public class HoaDon {
 	private String giaohang;
 	private String diachi;
 	private List<HoaDonChiTiet> hoaDonChiTiets;
+	private KhachHang khachHang;
+	private Integer discountPercent;
+	private Integer discountAmount;
 
 	public HoaDon() {
 	}
@@ -114,5 +116,22 @@ public class HoaDon {
 	public void setHoaDonChiTiets(List<HoaDonChiTiet> hoaDonChiTiets) {
 		this.hoaDonChiTiets = hoaDonChiTiets;
 	}
+
+	@ManyToOne
+	@JoinColumn(name = "id_khach_hang")
+	public KhachHang getKhachHang() {
+		return khachHang;
+	}
+	public void setKhachHang(KhachHang khachHang) {
+		this.khachHang = khachHang;
+	}
+
+	@Column(name = "discount_percent")
+	public Integer getDiscountPercent() { return discountPercent; }
+	public void setDiscountPercent(Integer discountPercent) { this.discountPercent = discountPercent; }
+
+	@Column(name = "discount_amount")
+	public Integer getDiscountAmount() { return discountAmount; }
+	public void setDiscountAmount(Integer discountAmount) { this.discountAmount = discountAmount; }
 
 }

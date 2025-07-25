@@ -7,9 +7,17 @@
 </head>
 
 <body class="bg-light">
-  <th:block th:replace="~{admin/_headerAdmin}" />
+  <th:block th:replace="~{admin/_headerAdmin}" class="no-print" />
 
   <div class="container-fluid px-4">
+    <!-- Header hóa đơn khi in -->
+    <div class="d-none d-print-block text-center mb-4">
+      <img src="/static/img/favicon.ico" alt="Logo" style="height:48px; margin-bottom:8px;"/>
+      <h3 class="mb-1" th:text="${storeName}"></h3>
+      <div th:text="${storeAddress}"></div>
+      <div>ĐT: <span th:text="${storePhone}"></span></div>
+      <hr style="margin: 12px 0;"/>
+    </div>
     <!-- Page Header -->
     <div class="card shadow-sm border-0 mb-4 mt-4">
       <div class="card-body p-4">
@@ -18,8 +26,11 @@
             <h3 class="fw-bold mb-0" th:text="'Đơn hàng #' + ${order.idHoadon}"></h3>
             <p class="text-muted mb-0">Chi tiết thông tin đơn hàng</p>
           </div>
-            <a th:href="@{/admin/hoadon}" class="btn btn-outline-secondary">
+            <a th:href="@{/admin/hoadon}" class="btn btn-outline-secondary no-print">
               <i class="fas fa-arrow-left me-2"></i>Quay lại
+            </a>
+            <a th:href="@{/admin/hoadon/print/{id}(id=${order.idHoadon})}" target="_blank" class="btn btn-primary ms-2 no-print">
+              <i class="fas fa-print me-2"></i>In hóa đơn
             </a>
           </div>
         </div>
@@ -69,6 +80,10 @@
                   <i class="fas fa-times me-1"></i>Hủy đơn hàng
                 </span> -->
               </div>
+            </div>
+            <div class="info-group mb-3">
+              <label class="text-muted small mb-1">Giảm giá</label>
+              <p class="mb-0 fw-medium" th:text="${order.discountAmount != null ? #numbers.formatInteger(order.discountAmount, 0, 'COMMA') + '₫ (' + (order.discountPercent != null ? order.discountPercent : 0) + '%)' : '-'}"></p>
             </div>
           </div>
         </div>
@@ -127,18 +142,16 @@
                       <span class="fw-medium" th:text="${#numbers.formatInteger(tempPrice, 0, 'COMMA')} + '₫'"></span>
                     </td>
                   </tr>
-                  <!-- <tr>
-                    <td class="ps-4"><strong>Phí vận chuyển</strong></td>
-                    <td class="text-end" colspan="2">
-                      <span class="fw-medium" th:text="${#numbers.formatInteger(deliveryPrice, 0, 'COMMA')} + '₫'"></span>
-                    </td>
-                  </tr> -->
                   <tr>
-                    <td class="ps-4"><strong>Tổng cộng</strong></td>
-                    <td class="text-end" colspan="2">
-                      <span class="fw-bold text-primary fs-5" 
-                            th:text="${#numbers.formatInteger(tempPrice, 0, 'COMMA')} + '₫'">
-                      </span>
+                    <td class="ps-4"><strong>Tổng giảm giá</strong></td>
+                    <td class="text-end text-danger" colspan="2">
+                      <span class="fw-medium" th:text="${order.discountAmount != null ? #numbers.formatInteger(order.discountAmount, 0, 'COMMA') + '₫' : '-'}"></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="ps-4"><strong>Tổng tiền sau giảm</strong></td>
+                    <td class="text-end text-success" colspan="2">
+                      <span class="fw-bold fs-5" th:text="${order.discountAmount != null ? #numbers.formatInteger(tempPrice - order.discountAmount, 0, 'COMMA') + '₫' : #numbers.formatInteger(tempPrice, 0, 'COMMA') + '₫'}"></span>
                     </td>
                   </tr>
                 </tfoot>
@@ -150,21 +163,11 @@
     </div>
   </div>
 
- <!--  <th:block th:replace="~{admin/_footerAdmin}" /> -->
+  <th:block th:replace="~{admin/_footerAdmin}" />
 
   <script>
-    document.getElementById("xuatHoaDon").addEventListener("click", function () {
-      const invoiceContent = document.querySelector(".container-fluid").cloneNode(true);
-      const originalContent = document.body.innerHTML;
-      
-      // Remove buttons before printing
-      const buttons = invoiceContent.querySelectorAll('.btn');
-      buttons.forEach(btn => btn.remove());
-      
-      document.body.innerHTML = invoiceContent.innerHTML;
+    document.getElementById("xuatHoaDon")?.addEventListener("click", function () {
       window.print();
-      document.body.innerHTML = originalContent;
-      window.location.reload();
     });
   </script>
 
@@ -192,17 +195,47 @@
     }
 
     @media print {
+      .no-print, .no-print * {
+        display: none !important;
+      }
+      body, .container-fluid {
+        background: #fff !important;
+        color: #000 !important;
+        font-size: 14px;
+      }
       .container-fluid {
         padding: 2rem !important;
+        max-width: 700px;
+        margin: 0 auto;
       }
-      
       .card {
         box-shadow: none !important;
         margin: 0 !important;
+        border: none !important;
       }
-      
       .badge {
         border: 1px solid #dee2e6;
+      }
+      img {
+        max-width: 60px;
+        max-height: 60px;
+      }
+      h3, h5, strong {
+        font-weight: bold;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th, td {
+        border: 1px solid #dee2e6;
+        padding: 8px;
+      }
+      thead th {
+        background: #f8f9fa !important;
+      }
+      tfoot td {
+        font-weight: bold;
       }
     }
   </style>

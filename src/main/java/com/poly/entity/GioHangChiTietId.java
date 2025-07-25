@@ -35,4 +35,16 @@ public class GioHangChiTietId {
 		this.idSanpham = idSanpham;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		GioHangChiTietId that = (GioHangChiTietId) o;
+		return idGiohang == that.idGiohang && idSanpham == that.idSanpham;
+	}
+
+	@Override
+	public int hashCode() {
+		return java.util.Objects.hash(idGiohang, idSanpham);
+	}
 }

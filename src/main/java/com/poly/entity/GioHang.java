@@ -20,6 +20,7 @@ public class GioHang {
 	private Integer idGiohang;
 	private Users users;
 	private List<GioHangChiTiet> gioHangChiTiets;
+	private KhachHang khachHang;
 
 	public GioHang() {
 	}
@@ -49,6 +50,15 @@ public class GioHang {
 
 	public void setUsers(Users users) {
 		this.users = users;
+	}
+
+	@ManyToOne
+	@JoinColumn(name = "id_khach_hang")
+	public KhachHang getKhachHang() {
+		return khachHang;
+	}
+	public void setKhachHang(KhachHang khachHang) {
+		this.khachHang = khachHang;
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "gioHang")

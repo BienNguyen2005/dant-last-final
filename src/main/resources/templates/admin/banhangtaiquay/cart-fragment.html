@@ -1,0 +1,37 @@
+<div th:fragment="cartArea" id="cart-area">
+  <table class="table table-sm table-bordered">
+    <thead>
+      <tr>
+        <th>Sản phẩm</th>
+        <th>Số lượng</th>
+        <th>Giảm giá</th>
+        <th>Giá</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="ct : ${gioHang}">
+        <td th:text="${ct.sanPham.tenSanpham}"></td>
+        <td th:text="${ct.soluong}"></td>
+        <td th:text="${#numbers.formatInteger(ct.sanPham.giamgia, 0, 'COMMA')} + '%'" ></td>
+        <td th:text="${#numbers.formatInteger((ct.sanPham.gia * (100 - ct.sanPham.giamgia) / 100) * ct.soluong, 0, 'COMMA')} + '₫'"></td>
+        <td>
+          <form th:action="@{/giohang/xoa}" method="post">
+            <input type="hidden" name="idSanpham" th:value="${ct.sanPham.idSanpham}">
+            <button class="btn btn-sm btn-danger">
+              <i class="fas fa-trash"></i>
+            </button>
+          </form>
+        </td>
+      </tr>
+      <tr th:if="${!#lists.isEmpty(gioHang)}">
+        <td colspan="3" class="text-end fw-bold">Tổng cộng:</td>
+        <td class="fw-bold text-danger" th:text="${#numbers.formatInteger(tongCong, 0, 'COMMA')} + '₫'"></td>
+        <td></td>
+      </tr>
+      <tr th:if="${#lists.isEmpty(gioHang)}">
+        <td colspan="4" class="text-center">Chưa có sản phẩm</td>
+      </tr>
+    </tbody>
+  </table>
+</div> 

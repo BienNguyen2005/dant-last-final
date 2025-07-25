@@ -39,7 +39,9 @@ const state = {
 
 // RENDER
 function render() {
-  totalCartItemsQuantityRootElement.innerHTML = state.totalCartItemsQuantity;
+  if (totalCartItemsQuantityRootElement) {
+    totalCartItemsQuantityRootElement.innerHTML = state.totalCartItemsQuantity;
+  }
 }
 
 // MAIN

@@ -4,24 +4,17 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.poly.entity.CartItemRequest;
 import com.poly.entity.GioHang;
 import com.poly.entity.GioHangChiTiet;
 import com.poly.entity.GioHangChiTietId;
-import com.poly.entity.HoaDonChiTiet;
 import com.poly.entity.SanPham;
-import com.poly.entity.Users;
 import com.poly.repository.GioHangChiTietRepository;
 import com.poly.repository.GioHangRepository;
-import com.poly.repository.HoaDonChiTietRepository;
-import com.poly.repository.HoaDonRepository;
 import com.poly.repository.UsersRepository;
 
-import jakarta.servlet.http.HttpSession;
 
 @Service
 public class GioHangChiTietService {

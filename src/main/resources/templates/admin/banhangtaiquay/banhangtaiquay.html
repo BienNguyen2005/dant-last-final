@@ -1,170 +1,664 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
-  <th:block th:replace="~{user/_meta}" />
-  <title>Bán hàng tại quầy</title>
+	<th:block th:replace="~{user/_meta}" />
+	<title>Bán hàng tại quầy</title>
 </head>
+
 <body class="bg-light">
-<th:block th:replace="~{admin/_headerAdmin}" />
+	<th:block th:replace="~{admin/_headerAdmin}" />
 
-<div class="container-fluid px-4">
-  <div class="row">
-    <!-- Khu sản phẩm -->
-    <div class="col-md-8 mt-3">
-    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show">
-	  <i class="fas fa-check-circle me-2"></i>
-	  <span th:text="${successMessage}"></span>
-	</div>
-	<div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show">
-	  <i class="fas fa-exclamation-circle me-2"></i>
-	  <span th:text="${errorMessage}"></span>
-	</div>
-      <div class="card shadow-sm mb-3">
-        <div class="card-body">
-          <form method="get" th:action="@{/banhangtaiquay}" class="d-flex align-items-center gap-2 mb-3">
-			  <input type="text" name="keyword" class="form-control" placeholder="Tìm theo tên..."
-			         th:value="${keyword}" style="max-width: 200px;">
-			  <select class="form-select" name="idLoai" style="max-width: 200px;">
-			    <option value="" th:selected="${idLoai == null}">Tất cả loại</option>
-			    <option th:each="loai : ${dsLoai}" th:value="${loai.idLoai}" th:text="${loai.tenLoai}"
-			            th:selected="${idLoai == loai.idLoai}"></option>
-			  </select>
-			  <button class="btn btn-primary"><i class="fas fa-search me-1"></i>Tìm</button>
-			</form>
-        </div>
-      </div>
-
-      <div class="row row-cols-1 row-cols-md-3 g-4">
-		  <div th:each="sp : ${dsSanPham.content}" class="col">
-		    <div class="card h-100 shadow-sm">
-		      <img th:src="@{/image/{url}(url=${sp.hinh})}" class="card-img-top" style="height: 180px; object-fit: cover;" />
-		      <div class="card-body d-flex flex-column">
-				  <h6 th:text="${sp.tenSanpham}"></h6>
-				  <p class="mb-1">
-				    Tồn kho: <strong th:text="${sp.soluong}"></strong><br/>
-				    Giá: <strong th:text="${#numbers.formatInteger(sp.gia, 0, 'COMMA')} + '₫'"></strong><br/>
-				    <span th:if="${sp.giamgia > 0}" class="price fw-bold text-primary">
-				      <span th:text="${#numbers.formatInteger(sp.gia * (100 - sp.giamgia) / 100, 0, 'COMMA')}"></span>₫
-				    </span><br/>
-				    <span th:if="${sp.giamgia > 0}" class="text-danger">Giảm: <strong th:text="${sp.giamgia + '%'}"></strong></span>
-				  </p>
-				
-				  <!-- Nút thêm hoặc thông báo hết hàng luôn nằm dưới -->
-				  <div class="mt-auto">
-				    <form th:if="${sp.soluong > 0}" th:action="@{/giohang/them}" method="post" class="d-flex">
-				      <input type="hidden" name="idSanpham" th:value="${sp.idSanpham}">
-				      <input type="number" name="soluong" value="1" min="1"
-				             class="form-control me-2" style="max-width: 80px;" />
-				      <button class="btn btn-success">
-				        <i class="fas fa-plus"></i>
-				      </button>
-				    </form>
-				
-				    <div th:if="${sp.soluong == 0}" class="text-danger fw-bold mt-2">Hết hàng</div>
-				  </div>
+	<div class="container-fluid px-4">
+		<div class="row">
+			<!-- Khu sản phẩm -->
+			<div class="col-md-8 mt-3">
+				<div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show">
+					<i class="fas fa-check-circle me-2"></i>
+					<span th:text="${successMessage}"></span>
+					<a th:if="${idHoaDon != null}" th:href="@{/admin/hoadon/print/{id}(id=${idHoaDon})}" target="_blank" class="btn btn-primary btn-sm ms-3">
+						<i class="fas fa-print me-1"></i>In hóa đơn
+					</a>
+				</div>
+				<div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show">
+					<i class="fas fa-exclamation-circle me-2"></i>
+					<span th:text="${errorMessage}"></span>
+				</div>
+				<div class="card shadow-sm mb-3">
+					<div class="card-body">
+						<form method="get" th:action="@{/banhangtaiquay}" class="d-flex align-items-center gap-2 mb-3">
+							<input type="text" name="keyword" class="form-control" placeholder="Tìm theo tên..."
+								th:value="${keyword}" style="max-width: 200px;">
+							<select class="form-select" name="idLoai" style="max-width: 200px;">
+								<option value="" th:selected="${idLoai == null}">Tất cả loại</option>
+								<option th:each="loai : ${dsLoai}" th:value="${loai.idLoai}" th:text="${loai.tenLoai}"
+									th:selected="${idLoai == loai.idLoai}"></option>
+							</select>
+							<button class="btn btn-primary"><i class="fas fa-search me-1"></i>Tìm</button>
+						</form>
+					</div>
 				</div>
 
-		    </div>
-		  </div>
+				<div id="product-list-area">
+					<div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
+						<div th:each="sp : ${dsSanPham.content}" class="col">
+							<div class="card h-100 shadow-sm product-card" style="cursor:pointer;">
+								<img th:src="@{/image/{url}(url=${sp.hinh})}" class="card-img-top"
+									style="height: 110px; object-fit: cover;" loading="lazy" />
+								<div class="card-body d-flex flex-column p-2 clickable-card-body" th:attr="data-tonkho=${sp.soluong},data-idsanpham=${sp.idSanpham}">
+									<h6 th:text="${sp.tenSanpham}" class="mb-1" style="font-size:0.95rem;"></h6>
+									<p class="mb-1" style="font-size:0.85rem;">
+										Tồn kho: <strong th:text="${sp.soluong}"></strong><br />
+										Giá: <strong
+											th:text="${#numbers.formatInteger(sp.gia, 0, 'COMMA')} + '₫'"></strong><br />
+										<span th:if="${sp.giamgia > 0}" class="price fw-bold text-primary">
+											<span
+												th:text="${#numbers.formatInteger(sp.gia * (100 - sp.giamgia) / 100, 0, 'COMMA')}"></span>₫
+										</span><br />
+										<span th:if="${sp.giamgia > 0}" class="text-danger">Giảm: <strong
+												th:text="${sp.giamgia + '%'}"></strong></span>
+									</p>
+									<div class="mt-auto">
+										<div th:if="${sp.soluong == 0}" class="text-danger fw-bold mt-2">Hết hàng</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- PHÂN TRANG -->
+					<div class="mt-4 d-flex justify-content-center">
+						<nav th:if="${dsSanPham.totalPages > 1}">
+							<ul class="pagination">
+								<li class="page-item" th:classappend="${dsSanPham.first} ? 'disabled'">
+									<a class="page-link"
+										th:href="@{/banhangtaiquay(page=${dsSanPham.number - 1}, keyword=${keyword}, idLoai=${idLoai})}">«</a>
+								</li>
+								<li class="page-item" th:each="i : ${#numbers.sequence(0, dsSanPham.totalPages - 1)}"
+									th:classappend="${i == dsSanPham.number} ? 'active'">
+									<a class="page-link"
+										th:href="@{/banhangtaiquay(page=${i}, keyword=${keyword}, idLoai=${idLoai})}"
+										th:text="${i + 1}"></a>
+								</li>
+								<li class="page-item" th:classappend="${dsSanPham.last} ? 'disabled'">
+									<a class="page-link"
+										th:href="@{/banhangtaiquay(page=${dsSanPham.number + 1}, keyword=${keyword}, idLoai=${idLoai})}">»</a>
+								</li>
+							</ul>
+						</nav>
+					</div>
+				</div>
+
+			</div>
+
+			<!-- Khu hóa đơn -->
+			<div class="col-md-4 mt-3">
+				<div class="card shadow-sm mb-3">
+					<div class="card-header bg-primary text-white">
+						<strong>Hóa đơn tạm</strong>
+					</div>
+					<div class="card-body p-3">
+						<div id="cart-area">
+							<table class="table table-sm table-bordered">
+								<thead>
+									<tr>
+										<th>Sản phẩm</th>
+										<th>Số lượng</th>
+										<th>Giảm giá (%)</th>
+										<th>Giá</th>
+										<th></th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="ct : ${gioHang}">
+										<td th:text="${ct.sanPham.tenSanpham}"></td>
+										<td th:text="${ct.soluong}"></td>
+										<td class="discount-cell">0%</td>
+										<td th:text="${#numbers.formatInteger((ct.sanPham.gia * (100 - ct.sanPham.giamgia) / 100) * ct.soluong, 0, 'COMMA')} + '₫'" ></td>
+										<td>
+											<form th:action="@{/giohang/xoa}" method="post">
+												<input type="hidden" name="idSanpham" th:value="${ct.sanPham.idSanpham}">
+												<button class="btn btn-sm btn-danger">
+													<i class="fas fa-trash"></i>
+												</button>
+											</form>
+										</td>
+									</tr>
+									<tr th:if="${!#lists.isEmpty(gioHang)}">
+										<td colspan="3" class="text-end fw-bold">Tổng cộng:</td>
+										<td class="fw-bold text-danger" th:text="${#numbers.formatInteger(tongCong, 0, 'COMMA')} + '₫'" ></td>
+										<td></td>
+									</tr>
+									<!-- Dòng tổng giảm giá và tổng tiền sau giảm sẽ được JS cập nhật động -->
+									<tr id="rowTongGiam">
+										<td colspan="3" class="text-end fw-bold">Tổng giảm giá:</td>
+										<td class="fw-bold text-danger" id="tongGiam">0₫ (0%)</td>
+										<td></td>
+									</tr>
+									<tr id="rowTongTienSauGiam">
+										<td colspan="3" class="text-end fw-bold">Tổng tiền sau giảm:</td>
+										<td class="fw-bold text-success" id="tongTienSauGiam">0₫</td>
+										<td></td>
+									</tr>
+									<tr th:if="${#lists.isEmpty(gioHang)}">
+										<td colspan="4" class="text-center">Chưa có sản phẩm</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+
+						<div class="mb-3">
+							<label class="form-label">Hình thức thanh toán:</label><br />
+							<div class="form-check">
+								<input class="form-check-input" type="radio" id="CASH" name="phuongthuc" value="CASH"
+									checked>
+								<label for="CASH" class="form-check-label">Tiền mặt</label>
+							</div>
+							<div class="form-check">
+								<input class="form-check-input" id="BANK" type="radio" name="phuongthuc" value="BANK">
+								<label for="BANK" class="form-check-label">Chuyển khoản</label>
+							</div>
+						</div>
+
+						<div class="mb-3">
+							<label class="form-label">Khách hàng (tìm theo SĐT):</label>
+							<div class="input-group">
+								<input type="text" class="form-control" id="searchKhachHangInput" placeholder="Nhập số điện thoại...">
+								<button class="btn btn-outline-primary" type="button" id="createKhachHangBtn">Tạo mới</button>
+							</div>
+							<div id="khachHangResult" class="mt-2"></div>
+						</div>
+
+						<div class="mb-3">
+							<label class="form-label">Giảm giá hóa đơn (%):</label>
+							<input type="number" class="form-control" id="adminDiscountInput" name="adminDiscount" min="0" max="100" value="" placeholder="Nhập % giảm giá hoặc để trống để tự động áp dụng theo loại KH">
+						</div>
+
+						<form th:action="@{/banhangtaiquay/thanh-toan}" method="post">
+							<input type="hidden" name="phuongthuc" value="CASH" id="selectedPayment">
+							<input type="hidden" name="khachHangId" id="selectedKhachHangId">
+							<input type="hidden" name="adminDiscount" id="adminDiscountHidden">
+							<button type="submit" class="btn btn-primary w-100">
+								<i class="fas fa-check-circle me-1"></i> Thanh toán
+							</button>
+						</form>
+					</div>
+				</div>
+			</div>
 		</div>
-		
-		<!-- PHÂN TRANG -->
-		<div class="mt-4 d-flex justify-content-center">
-		  <nav th:if="${dsSanPham.totalPages > 1}">
-		    <ul class="pagination">
-		      <li class="page-item" th:classappend="${dsSanPham.first} ? 'disabled'">
-		        <a class="page-link" th:href="@{/banhangtaiquay(page=${dsSanPham.number - 1}, keyword=${keyword}, idLoai=${idLoai})}">«</a>
-		      </li>
-		      <li class="page-item" th:each="i : ${#numbers.sequence(0, dsSanPham.totalPages - 1)}"
-		          th:classappend="${i == dsSanPham.number} ? 'active'">
-		        <a class="page-link" th:href="@{/banhangtaiquay(page=${i}, keyword=${keyword}, idLoai=${idLoai})}"
-		           th:text="${i + 1}"></a>
-		      </li>
-		      <li class="page-item" th:classappend="${dsSanPham.last} ? 'disabled'">
-		        <a class="page-link" th:href="@{/banhangtaiquay(page=${dsSanPham.number + 1}, keyword=${keyword}, idLoai=${idLoai})}">»</a>
-		      </li>
-		    </ul>
-		  </nav>
+	</div>
+
+	<!-- Modal nhập số lượng -->
+	<div class="modal fade" id="quantityModal" tabindex="-1" aria-labelledby="quantityModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="quantityModalLabel">Nhập số lượng</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<input type="number" id="modalQuantity" class="form-control" value="1" min="1" autofocus />
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" id="confirmQuantity">Thêm</button>
+				</div>
+			</div>
 		</div>
+	</div>
 
-    </div>
+	<!-- Modal tạo khách hàng mới -->
+	<div class="modal fade" id="createKhachHangModal" tabindex="-1" aria-labelledby="createKhachHangModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="createKhachHangModalLabel">Tạo khách hàng mới</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<form id="createKhachHangForm">
+						<div class="mb-3">
+							<label class="form-label">Họ tên</label>
+							<input type="text" class="form-control" name="hoten" required>
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Số điện thoại</label>
+							<input type="text" class="form-control" name="sdt" required>
+						</div>
+						<button type="submit" class="btn btn-success">Tạo mới</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
 
-    <!-- Khu hóa đơn -->
-    <div class="col-md-4 mt-3">
-      <div class="card shadow-sm mb-3">
-        <div class="card-header bg-primary text-white">
-          <strong>Hóa đơn tạm</strong>
-        </div>
-        <div class="card-body p-3">
-          <table class="table table-sm table-bordered">
-            <thead>
-              <tr>
-                <th>Sản phẩm</th>
-                <th>Số lượng</th>
-                <th>Giảm giá</th>
-                <th>Giá</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr th:each="ct : ${gioHang}">
-				  <td th:text="${ct.sanPham.tenSanpham}"></td>
-				  <td th:text="${ct.soluong}"></td>
-				  <td th:text="${#numbers.formatInteger(ct.sanPham.giamgia, 0, 'COMMA')} + '%'"></td>
-				  <td th:text="${#numbers.formatInteger((ct.sanPham.gia * (100 - ct.sanPham.giamgia) / 100) * ct.soluong, 0, 'COMMA')} + '₫'"></td>
-				  <td>
-				    <form th:action="@{/giohang/xoa}" method="post">
-				      <input type="hidden" name="idSanpham" th:value="${ct.sanPham.idSanpham}">
-				      <button class="btn btn-sm btn-danger">
-				        <i class="fas fa-trash"></i>
-				      </button>
-				    </form>
-				  </td>
-				</tr>
-				<tr th:if="${!#lists.isEmpty(gioHang)}">
-				  <td colspan="3" class="text-end fw-bold">Tổng cộng:</td>
-				  <td class="fw-bold text-danger" th:text="${#numbers.formatInteger(tongCong, 0, 'COMMA')} + '₫'"></td>
-				  <td></td>
-				</tr>
-              <tr th:if="${#lists.isEmpty(gioHang)}">
-                <td colspan="4" class="text-center">Chưa có sản phẩm</td>
-              </tr>
-            </tbody>
-          </table>
+	<script>
+		const radios = document.querySelectorAll('input[name="phuongthuc"]');
+		const hiddenInput = document.getElementById('selectedPayment');
+		radios.forEach(radio => {
+			radio.addEventListener('change', () => {
+				hiddenInput.value = radio.value;
+			});
+		});
 
-          <div class="mb-3">
-            <label class="form-label">Hình thức thanh toán:</label><br/>
-            <div class="form-check">
-              <input class="form-check-input" type="radio" id="CASH" name="phuongthuc" value="CASH" checked>
-              <label for="CASH" class="form-check-label">Tiền mặt</label>
-            </div>
-            <div class="form-check">
-              <input class="form-check-input" id="BANK" type="radio" name="phuongthuc" value="BANK">
-              <label for="BANK" class="form-check-label">Chuyển khoản</label>
-            </div>
-          </div>
+		// Xử lý click/ double click trên card sản phẩm
+		document.addEventListener('DOMContentLoaded', function () {
+			console.log('DOMContentLoaded');
+			let clickTimer = null;
+			let lastForm = null;
+			let lastProductId = null;
+			const cardBodies = document.querySelectorAll('.clickable-card-body');
+			const quantityModal = new bootstrap.Modal(document.getElementById('quantityModal'));
+			const modalQuantity = document.getElementById('modalQuantity');
+			const confirmQuantity = document.getElementById('confirmQuantity');
 
-          <form th:action="@{/banhangtaiquay/thanh-toan}" method="post">
-            <input type="hidden" name="phuongthuc" value="CASH" id="selectedPayment">
-            <button type="submit" class="btn btn-primary w-100">
-              <i class="fas fa-check-circle me-1"></i> Thanh toán
-            </button>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+			cardBodies.forEach(cardBody => {
+				const card = cardBody.closest('.product-card');
+				cardBody.addEventListener('click', function (e) {
+					const danger = card.querySelector('.text-danger');
+					if (danger && danger.textContent.includes('Hết hàng')) return;
+					if (e.target.closest('form,button,input')) return;
+					if (clickTimer) clearTimeout(clickTimer);
+					clickTimer = setTimeout(() => {
+						console.log('clicked', idSanpham);
+						// Hiệu ứng rung/sáng khi thêm vào giỏ
+						card.classList.add('added-animate');
+						setTimeout(() => card.classList.remove('added-animate'), 500);
+						// Lấy idSanpham từ data attribute
+						const idSanphamForClick = cardBody.getAttribute('data-idsanpham');
+						fetch('/giohang/them', {
+							method: 'POST',
+							headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+							body: `idSanpham=${idSanphamForClick}&soluong=1`
+						})
+						.then(res => {
+							if(res.ok) showErrorToast('Đã thêm vào giỏ!');
+							else showErrorToast('Thêm vào giỏ thất bại!');
+						})
+						.catch(() => showErrorToast('Lỗi kết nối!'));
+					}, 250);
+				});
+				cardBody.addEventListener('dblclick', function (e) {
+					const danger = card.querySelector('.text-danger');
+					if (danger && danger.textContent.includes('Hết hàng')) return;
+					if (e.target.closest('form,button,input')) return;
+					if (clickTimer) clearTimeout(clickTimer);
+					console.log('double clicked', idSanpham);
+					lastForm = form;
+					lastProductId = idSanpham;
+					modalQuantity.value = 1;
+					quantityModal.show();
+					setTimeout(() => { modalQuantity.focus(); }, 300);
+				});
+			});
+			// Xác nhận số lượng trong modal
+			confirmQuantity.addEventListener('click', function () {
+				if (lastForm) {
+					// Lấy tồn kho từ data-tonkho
+					const card = lastForm.closest('.product-card');
+					const cardBody = card.querySelector('.clickable-card-body');
+					const tonkho = parseInt(cardBody.getAttribute('data-tonkho'));
+					const sl = parseInt(modalQuantity.value);
+					if (sl > tonkho) {
+						showErrorToast('Số lượng vượt quá tồn kho!');
+						return;
+					}
+					lastForm.querySelector('input[name="soluong"]').value = sl;
+					lastForm.submit();
+					quantityModal.hide();
+				}
+			});
+			// Enter để xác nhận
+			modalQuantity.addEventListener('keydown', function (e) {
+				if (e.key === 'Enter') {
+					confirmQuantity.click();
+				}
+			});
+		});
 
-<script>
-  const radios = document.querySelectorAll('input[name="phuongthuc"]');
-  const hiddenInput = document.getElementById('selectedPayment');
-  radios.forEach(radio => {
-    radio.addEventListener('change', () => {
-      hiddenInput.value = radio.value;
-    });
-  });
-</script>
+		// Hiệu ứng fade-out khi xóa sản phẩm khỏi giỏ (AJAX, không submit form vật lý)
+		document.addEventListener('DOMContentLoaded', function () {
+			document.querySelectorAll('form[action$="/giohang/xoa"]').forEach(form => {
+				form.addEventListener('submit', function (e) {
+					e.preventDefault();
+					const tr = form.closest('tr');
+					const formData = new FormData(form);
+					fetch(form.action, { method: 'POST', body: formData })
+						.then(res => {
+							if (res.ok) {
+								tr.classList.add('fade-out-row');
+								setTimeout(() => {
+									// Sau khi fade-out, fetch lại fragment giỏ hàng
+									fetch('/banhangtaiquay/cart-fragment')
+										.then(r => r.text())
+										.then(html => {
+											document.getElementById('cart-area').innerHTML = html;
+											rebindCartDeleteEvents();
+											updateDiscountSummary(); 
+										});
+									showErrorToast('Đã xóa khỏi giỏ!');
+								}, 500);
+							} else {
+								showErrorToast('Xóa khỏi giỏ thất bại!');
+							}
+						})
+						.catch(() => showErrorToast('Lỗi kết nối!'));
+				});
+			});
+		});
+
+		// Toast function
+		function showErrorToast(msg) {
+			const toastMsg = document.getElementById('errorToastMsg');
+			toastMsg.textContent = msg;
+			const toastEl = document.getElementById('errorToast');
+			const toast = new bootstrap.Toast(toastEl);
+			toast.show();
+		}
+
+		document.addEventListener('DOMContentLoaded', function () {
+			const productListArea = document.getElementById('product-list-area');
+			if (productListArea) {
+				productListArea.addEventListener('click', function (e) {
+					const link = e.target.closest('a.page-link');
+					if (link && link.getAttribute('href')) {
+						e.preventDefault();
+						// Fade out
+						productListArea.style.transition = 'opacity 0.3s';
+						productListArea.style.opacity = 0;
+						fetch(link.getAttribute('href'))
+							.then(res => res.text())
+							.then(html => {
+								// Tạo DOM tạm để lấy lại #product-list-area mới
+								const temp = document.createElement('div');
+								temp.innerHTML = html;
+								const newArea = temp.querySelector('#product-list-area');
+								setTimeout(() => {
+									if (newArea) {
+										productListArea.innerHTML = newArea.innerHTML;
+										productListArea.style.opacity = 0;
+										setTimeout(() => { productListArea.style.opacity = 1; }, 30);
+										// Gắn lại các sự kiện cần thiết
+										rebindProductListEvents();
+									}
+								}, 300);
+							});
+					}
+				});
+			}
+		});
+
+		function rebindProductListEvents() {
+			// Gắn lại click/dblclick cho card
+			document.querySelectorAll('.clickable-card-body').forEach(cardBody => {
+				const card = cardBody.closest('.product-card');
+				cardBody.onclick = null; cardBody.ondblclick = null;
+				cardBody.addEventListener('click', function(e) {
+					e.preventDefault();
+					e.stopPropagation();
+					const danger = card.querySelector('.text-danger');
+					if(danger && danger.textContent.includes('Hết hàng')) return;
+					if(e.target.closest('form,button,input')) return;
+					if(window.clickTimer) clearTimeout(window.clickTimer);
+					window.clickTimer = setTimeout(() => {
+						card.classList.add('added-animate');
+						setTimeout(() => card.classList.remove('added-animate'), 500);
+						fetch('/giohang/them', {
+							method: 'POST',
+							headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+							body: `idSanpham=${cardBody.getAttribute('data-idsanpham')}&soluong=1`
+						})
+						.then(res => {
+							if(res.ok) {
+								showErrorToast('Đã thêm vào giỏ!');
+								fetch('/banhangtaiquay/cart-fragment')
+									.then(r => r.text())
+									.then(html => {
+										document.getElementById('cart-area').innerHTML = html;
+										document.querySelectorAll('#cart-area tr').forEach(tr => {
+											tr.classList.add('fade-in-row');
+											setTimeout(() => tr.classList.remove('fade-in-row'), 600);
+										});
+										rebindCartDeleteEvents();
+										updateDiscountSummary(); 
+									});
+							} else {
+								showErrorToast('Thêm vào giỏ thất bại!');
+							}
+						})
+						.catch(() => showErrorToast('Lỗi kết nối!'));
+					}, 250);
+				});
+				cardBody.addEventListener('dblclick', function(e) {
+					const danger = card.querySelector('.text-danger');
+					if(danger && danger.textContent.includes('Hết hàng')) return;
+					if(e.target.closest('form,button,input')) return;
+					if(window.clickTimer) clearTimeout(window.clickTimer);
+					window.lastForm = form;
+					window.lastProductId = idSanpham;
+					modalQuantity.value = 1;
+					quantityModal.show();
+					setTimeout(() => { modalQuantity.focus(); }, 300);
+				});
+			});
+			// Gắn lại submit AJAX cho form thêm vào giỏ
+			document.querySelectorAll('.add-to-cart-form').forEach(form => {
+				form.onsubmit = null;
+				form.addEventListener('submit', function(e) {
+					e.preventDefault();
+					console.log('AJAX submit add-to-cart', form);
+					const formData = new FormData(form);
+					fetch(form.action, { method: 'POST', body: formData })
+						.then(res => {
+							if(res.ok) {
+								const card = form.closest('.product-card');
+								card.classList.add('added-animate');
+								setTimeout(() => card.classList.remove('added-animate'), 500);
+								showErrorToast('Đã thêm vào giỏ!');
+								if(window.setTotalCartItemsQuantity) window.setTotalCartItemsQuantity(1);
+							} else {
+								showErrorToast('Thêm vào giỏ thất bại!');
+							}
+						})
+						.catch(() => showErrorToast('Lỗi kết nối!'));
+				});
+			});
+		}
+
+		// Thêm hàm rebindCartDeleteEvents để gắn lại sự kiện xóa sau khi cập nhật cart-area
+		function rebindCartDeleteEvents() {
+			document.querySelectorAll('form[action$="/giohang/xoa"]').forEach(form => {
+				form.onsubmit = null;
+				form.addEventListener('submit', function (e) {
+					e.preventDefault();
+					const tr = form.closest('tr');
+					const formData = new FormData(form);
+					fetch(form.action, { method: 'POST', body: formData })
+						.then(res => {
+							if (res.ok) {
+								tr.classList.add('fade-out-row');
+								setTimeout(() => {
+									fetch('/banhangtaiquay/cart-fragment')
+										.then(r => r.text())
+										.then(html => {
+											document.getElementById('cart-area').innerHTML = html;
+											rebindCartDeleteEvents();
+											updateDiscountSummary(); 
+										});
+									showErrorToast('Đã xóa khỏi giỏ!');
+								}, 500);
+							} else {
+								showErrorToast('Xóa khỏi giỏ thất bại!');
+							}
+						})
+						.catch(() => showErrorToast('Lỗi kết nối!'));
+				});
+			});
+		}
+
+		// Gắn lại sự kiện khi trang vừa load
+		document.addEventListener('DOMContentLoaded', function() {
+			rebindProductListEvents();
+			rebindCartDeleteEvents();
+		});
+
+		// Tìm kiếm khách hàng theo SĐT
+		const searchInput = document.getElementById('searchKhachHangInput');
+		const selectedKhachHangId = document.getElementById('selectedKhachHangId');
+		let khachHangTimeout = null;
+		searchInput.addEventListener('input', function() {
+			clearTimeout(khachHangTimeout);
+			const sdt = searchInput.value.trim();
+			if(!sdt) {
+				khachHangResult.innerHTML = '<span class="text-muted">Khách vãng lai</span>';
+				selectedKhachHangId.value = '';
+				return;
+			}
+			khachHangResult.innerHTML = '<span class="text-info">Đang tìm...</span>';
+			khachHangTimeout = setTimeout(() => {
+				fetch(`/api/khachhang/search?sdt=${encodeURIComponent(sdt)}`)
+					.then(res => res.json())
+					.then(data => {
+						if(data && data.idKhachHang) {
+							khachHangResult.innerHTML = `<div class='alert alert-success p-2 mb-2'>
+								<b>${data.hoten}</b> - ${data.sdt}
+								<button class='btn btn-sm btn-outline-primary ms-2' id='chonKhachHangBtn'>Chọn</button>
+							</div>`;
+							document.getElementById('chonKhachHangBtn').onclick = function() {
+								selectedKhachHangId.value = data.idKhachHang;
+								khachHangResult.innerHTML = `<span class='text-success'>Đã chọn: <b>${data.hoten}</b> - ${data.sdt}</span>`;
+							};
+						} else {
+							khachHangResult.innerHTML = `<span class='text-danger'>Không tìm thấy khách hàng. Bạn có thể tạo mới.</span>`;
+							selectedKhachHangId.value = '';
+						}
+					})
+					.catch(() => {
+						khachHangResult.innerHTML = '<span class="text-danger">Lỗi tìm kiếm!</span>';
+						selectedKhachHangId.value = '';
+					});
+			}, 400);
+		});
+		// Nút tạo khách hàng mới
+		document.getElementById('createKhachHangBtn').onclick = function() {
+			const modal = new bootstrap.Modal(document.getElementById('createKhachHangModal'));
+			document.getElementById('createKhachHangForm').reset();
+			modal.show();
+		};
+		// Submit tạo khách hàng mới
+		document.getElementById('createKhachHangForm').onsubmit = function(e) {
+			e.preventDefault();
+			const formData = new FormData(this);
+			fetch('/api/khachhang/create', {
+				method: 'POST',
+				body: formData
+			})
+			.then(res => res.json())
+			.then(data => {
+				if(data && data.idKhachHang) {
+					selectedKhachHangId.value = data.idKhachHang;
+					khachHangResult.innerHTML = `<span class='text-success'>Đã tạo và chọn: <b>${data.hoten}</b> - ${data.sdt}</span>`;
+					bootstrap.Modal.getInstance(document.getElementById('createKhachHangModal')).hide();
+					searchInput.value = data.sdt;
+				} else {
+					alert('Tạo khách hàng thất bại!');
+				}
+			})
+			.catch(() => alert('Lỗi tạo khách hàng!'));
+		};
+
+		// Đồng bộ giá trị giảm giá admin vào input ẩn khi submit
+		const adminDiscountInput = document.getElementById('adminDiscountInput');
+		const adminDiscountHidden = document.getElementById('adminDiscountHidden');
+		if(adminDiscountInput && adminDiscountHidden) {
+			adminDiscountInput.addEventListener('input', function() {
+				adminDiscountHidden.value = adminDiscountInput.value;
+			});
+			// Đảm bảo giá trị luôn đồng bộ khi submit
+			adminDiscountInput.form && adminDiscountInput.form.addEventListener('submit', function() {
+				adminDiscountHidden.value = adminDiscountInput.value;
+			});
+		}
+
+		// Hàm tính toán và cập nhật giảm giá, tổng tiền
+		function updateDiscountSummary() {
+			// Lấy tổng tiền trước giảm từ DOM
+			let tongTienTruocGiam = 0;
+			document.querySelectorAll('#cart-area tbody tr').forEach(tr => {
+				const td = tr.querySelector('td:nth-child(4)');
+				if(td && td.textContent && td.textContent.includes('₫')) {
+					let val = td.textContent.replace(/[^\d]/g, '');
+					tongTienTruocGiam += parseInt(val || '0');
+				}
+			});
+			// Lấy loại khách hàng
+			let discountPercent = 0;
+			let loaiKh = '';
+			let totalQuantity = 0;
+			document.querySelectorAll('#cart-area tbody tr').forEach(tr => {
+				const tdQty = tr.querySelector('td:nth-child(2)');
+				if(tdQty) totalQuantity += parseInt(tdQty.textContent || '0');
+			});
+			// Lấy loại khách hàng từ kết quả tìm kiếm (nếu có)
+			if(window.khachHangResultData && window.khachHangResultData.phanLoai) {
+				loaiKh = window.khachHangResultData.phanLoai.toLowerCase();
+			}
+			// Lấy giảm giá admin nhập
+			const adminDiscount = parseInt(document.getElementById('adminDiscountInput').value || '0');
+			if(adminDiscount > 0) {
+				discountPercent = adminDiscount;
+			} else if(loaiKh.includes('vip')) {
+				discountPercent = 30;
+			} else if(loaiKh.includes('thường') && totalQuantity > 3) {
+				discountPercent = 10;
+			}
+			const tongGiam = Math.round(tongTienTruocGiam * discountPercent / 100);
+			const tongTienSauGiam = tongTienTruocGiam - tongGiam;
+			// Cập nhật DOM
+			const tongGiamEl = document.getElementById('tongGiam');
+			const tongTienSauGiamEl = document.getElementById('tongTienSauGiam');
+			if (tongGiamEl) tongGiamEl.textContent = tongGiam.toLocaleString() + '₫ (' + discountPercent + '%)';
+			if (tongTienSauGiamEl) tongTienSauGiamEl.textContent = tongTienSauGiam.toLocaleString() + '₫';
+
+			// Cập nhật discount từng sản phẩm
+			document.querySelectorAll('#cart-area tbody tr').forEach(tr => {
+				const discountCell = tr.querySelector('.discount-cell');
+				if(discountCell) {
+					// Animation
+					tr.classList.remove('row-highlight');
+					setTimeout(() => tr.classList.add('row-highlight'), 10);
+					setTimeout(() => tr.classList.remove('row-highlight'), 1200);
+					discountCell.textContent = discountPercent + '%';
+				}
+			});
+		}
+		// Gọi lại hàm này khi thay đổi giỏ, khách hàng, hoặc giảm giá
+		document.getElementById('adminDiscountInput').addEventListener('input', updateDiscountSummary);
+		document.getElementById('cart-area').addEventListener('DOMSubtreeModified', updateDiscountSummary);
+		// Khi chọn khách hàng
+		window.khachHangResultData = {};
+		var khachHangResult = document.getElementById('khachHangResult');
+		if(khachHangResult) {
+			const observer = new MutationObserver(updateDiscountSummary);
+			observer.observe(khachHangResult, { childList: true, subtree: true });
+		}
+		// Gọi lần đầu khi trang load
+		updateDiscountSummary();
+	</script>
+
+	<!-- Toast notification -->
+	<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100">
+		<div id="errorToast" class="toast align-items-center text-white bg-danger border-0" role="alert"
+			aria-live="assertive" aria-atomic="true">
+			<div class="d-flex">
+				<div class="toast-body" id="errorToastMsg">
+					Số lượng vượt quá tồn kho!
+				</div>
+				<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+					aria-label="Close"></button>
+			</div>
+		</div>
+	</div>
 
 </body>
+
 </html>
