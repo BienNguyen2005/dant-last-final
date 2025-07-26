@@ -95,11 +95,22 @@ public class BanHangTaiQuayController {
 
 		List<Loai> dsLoai = loaiService.getAllLoai(0, 100).getContent();
 		GioHang gioHang = gioHangRepository.findByUsers_IdUser(currentUser.getIdUser());
+		
+		// Create cart if it doesn't exist
+		if (gioHang == null) {
+			gioHang = new GioHang();
+			gioHang.setUsers(currentUser);
+			gioHang = gioHangRepository.save(gioHang);
+		}
+		
 		List<GioHangChiTiet> gioHangChiTietList = gioHang.getGioHangChiTiets();
-		int tongCong = gioHangChiTietList.stream().mapToInt(ct -> {
-			int giaSauGiam = ct.getSanPham().getGia() * (100 - ct.getSanPham().getGiamgia()) / 100;
-			return giaSauGiam * ct.getSoluong();
-		}).sum();
+		int tongCong = 0;
+		if (gioHangChiTietList != null && !gioHangChiTietList.isEmpty()) {
+			tongCong = gioHangChiTietList.stream().mapToInt(ct -> {
+				int giaSauGiam = ct.getSanPham().getGia() * (100 - ct.getSanPham().getGiamgia()) / 100;
+				return giaSauGiam * ct.getSoluong();
+			}).sum();
+		}
 
 		model.addAttribute("tongCong", tongCong);
 		model.addAttribute("dsSanPham", dsSanPham);
@@ -125,6 +136,14 @@ public class BanHangTaiQuayController {
 		}
 
 		GioHang gioHang = gioHangRepository.findByUsers_IdUser(currentUser.getIdUser());
+		
+		// Create cart if it doesn't exist
+		if (gioHang == null) {
+			gioHang = new GioHang();
+			gioHang.setUsers(currentUser);
+			gioHang = gioHangRepository.save(gioHang);
+		}
+		
 		SanPham sanPham = sanPhamRepository.findById(idSanpham)
 				.orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm"));
 
@@ -351,11 +370,22 @@ public class BanHangTaiQuayController {
 		Users currentUser = (Users) session.getAttribute("currentUser");
 		if (currentUser == null) return "redirect:/signin";
 		GioHang gioHang = gioHangRepository.findByUsers_IdUser(currentUser.getIdUser());
+		
+		// Create cart if it doesn't exist
+		if (gioHang == null) {
+			gioHang = new GioHang();
+			gioHang.setUsers(currentUser);
+			gioHang = gioHangRepository.save(gioHang);
+		}
+		
 		List<GioHangChiTiet> gioHangChiTietList = gioHang.getGioHangChiTiets();
-		int tongCong = gioHangChiTietList.stream().mapToInt(ct -> {
-			int giaSauGiam = ct.getSanPham().getGia() * (100 - ct.getSanPham().getGiamgia()) / 100;
-			return giaSauGiam * ct.getSoluong();
-		}).sum();
+		int tongCong = 0;
+		if (gioHangChiTietList != null && !gioHangChiTietList.isEmpty()) {
+			tongCong = gioHangChiTietList.stream().mapToInt(ct -> {
+				int giaSauGiam = ct.getSanPham().getGia() * (100 - ct.getSanPham().getGiamgia()) / 100;
+				return giaSauGiam * ct.getSoluong();
+			}).sum();
+		}
 		model.addAttribute("tongCong", tongCong);
 		model.addAttribute("gioHang", gioHangChiTietList);
 		return "admin/banhangtaiquay/cart-fragment :: cartArea";
