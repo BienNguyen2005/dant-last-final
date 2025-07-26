@@ -31,6 +31,15 @@ public class GioHangChiTietService {
 
 	public void add(CartItemRequest itemRequest) throws IllegalArgumentException {
 		GioHang gioHang = gioHangRepository.findByUsers_IdUser(itemRequest.getUserId());
+		
+		// Create cart if it doesn't exist
+		if (gioHang == null) {
+			gioHang = new GioHang();
+			gioHang.setUsers(usersRepository.findById(itemRequest.getUserId())
+					.orElseThrow(() -> new IllegalArgumentException("User not found")));
+			gioHang = gioHangRepository.save(gioHang);
+		}
+		
 		SanPham sanPham = sanPhamService.getSanPhamById(itemRequest.getProductId());
 		Optional<GioHangChiTiet> gioHangChiTietOptional = gioHangChiTietRepository
 				.findById(new GioHangChiTietId(gioHang.getIdGiohang(), sanPham.getIdSanpham()));
