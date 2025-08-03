@@ -1,0 +1,50 @@
+/* Vietnamese Font Support for Printing */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Font stack optimized for Vietnamese text */
+.vietnamese-font {
+  font-family: 'Segoe UI', 'Arial Unicode MS', 'DejaVu Sans', 'Times New Roman', 'Inter', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Print-specific styles for Vietnamese text */
+@media print {
+  body, html {
+    font-family: 'Segoe UI', 'Arial Unicode MS', 'DejaVu Sans', 'Times New Roman', 'Inter', Arial, sans-serif !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  
+  * {
+    -webkit-print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+  
+  /* Ensure Vietnamese characters render properly */
+  .vietnamese-text {
+    font-family: 'Segoe UI', 'Arial Unicode MS', 'DejaVu Sans', 'Times New Roman', 'Inter', Arial, sans-serif !important;
+  }
+}
+
+/* Fallback fonts for different operating systems */
+@supports (font-variant-east-asian: traditional) {
+  .vietnamese-font {
+    font-variant-east-asian: traditional;
+  }
+}
+
+/* Specific styles for invoice printing */
+.invoice-print {
+  font-family: 'Segoe UI', 'Arial Unicode MS', 'DejaVu Sans', 'Times New Roman', 'Inter', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@media print {
+  .invoice-print {
+    font-family: 'Segoe UI', 'Arial Unicode MS', 'DejaVu Sans', 'Times New Roman', 'Inter', Arial, sans-serif !important;
+  }
+} 

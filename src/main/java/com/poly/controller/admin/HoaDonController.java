@@ -86,21 +86,32 @@ public class HoaDonController {
 			AtomicReference<Double> tempPrice = new AtomicReference<>(0.0);
 			List<SanPham> listSanPham = new ArrayList<>();
 			HoaDon hoaDon = hoaDonService.getHoaDonById(Integer.valueOf(id));
-			hoaDon.getHoaDonChiTiets().forEach(item -> {
-				SanPham sanPham = sanPhamService.getSanPhamById(item.getId().getIdSanpham());
-				double price = (item.getGiamgia() == 0) ? item.getGia() * item.getSoluong()
-						: (item.getGia() * (100 - item.getGiamgia()) / 100) * item.getSoluong();
-				tempPrice.updateAndGet(v -> v + price);
-				sanPham.setSoluong(item.getSoluong());
-				sanPham.setGia(item.getGia());
-				sanPham.setGiamgia(item.getGiamgia());
-				listSanPham.add(sanPham);
-			});
+			
+			if (hoaDon != null && hoaDon.getHoaDonChiTiets() != null) {
+				hoaDon.getHoaDonChiTiets().forEach(item -> {
+					SanPham sanPham = sanPhamService.getSanPhamById(item.getId().getIdSanpham());
+					if (sanPham != null) {
+						double price = (item.getGiamgia() == 0) ? item.getGia() * item.getSoluong()
+								: (item.getGia() * (100 - item.getGiamgia()) / 100) * item.getSoluong();
+						tempPrice.updateAndGet(v -> v + price);
+						sanPham.setSoluong(item.getSoluong());
+						sanPham.setGia(item.getGia());
+						sanPham.setGiamgia(item.getGiamgia());
+						listSanPham.add(sanPham);
+					}
+				});
+			}
+			
 			model.addAttribute("tempPrice", tempPrice.get());
 			model.addAttribute("listSanPham", listSanPham);
-			model.addAttribute("deliveryPrice", hoaDon.getGiaohang().equals("Giao hàng nhanh") ? 50000 : 20000);
+			model.addAttribute("deliveryPrice", hoaDon != null && hoaDon.getGiaohang() != null && hoaDon.getGiaohang().equals("Giao hàng nhanh") ? 50000 : 20000);
 			model.addAttribute("order", hoaDon);
 		} catch (Exception e) {
+			// Set default values to prevent template errors
+			model.addAttribute("tempPrice", 0.0);
+			model.addAttribute("listSanPham", new ArrayList<>());
+			model.addAttribute("deliveryPrice", 20000);
+			model.addAttribute("order", null);
 			model.addAttribute("errorMessage", e.getMessage());
 		}
 		return "admin/hoadon/hoadonPrintView";

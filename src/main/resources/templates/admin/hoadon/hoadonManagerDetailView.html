@@ -164,6 +164,8 @@
   </div>
 
   <th:block th:replace="~{admin/_footerAdmin}" />
+  
+  <link rel="stylesheet" href="/static/css/vietnamese-fonts.css">
 
   <script>
     document.getElementById("xuatHoaDon")?.addEventListener("click", function () {
@@ -202,6 +204,9 @@
         background: #fff !important;
         color: #000 !important;
         font-size: 14px;
+        font-family: 'Segoe UI', 'Arial Unicode MS', 'DejaVu Sans', 'Times New Roman', Arial, sans-serif !important;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
       }
       .container-fluid {
         padding: 2rem !important;
@@ -236,6 +241,10 @@
       }
       tfoot td {
         font-weight: bold;
+      }
+      * { 
+        -webkit-print-color-adjust: exact !important;
+        color-adjust: exact !important;
       }
     }
   </style>
