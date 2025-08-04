@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,6 +20,8 @@ import com.poly.repository.HoaDonRepository;
 import com.poly.repository.UsersRepository;
 import com.poly.utils.ImageUtils;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 @Service
@@ -39,6 +42,10 @@ public class UserService {
 	EmailService emailService;
 	@Autowired
 	JWTService jwtService;
+	@Autowired
+	PasswordEncoder passwordEncoder;
+	@Autowired
+	HttpServletResponse response;
 
 	public Users register(Users user) {
 		Optional<Users> existingUserById = usersRepository.findById(user.getIdUser());
@@ -50,6 +57,9 @@ public class UserService {
 		if (existingUserByPhone.isPresent()) {
 			throw new IllegalArgumentException("Số điện thoại đã được sử dụng!");
 		}
+		
+		// Encode password before saving
+		user.setMatkhau(passwordEncoder.encode(user.getMatkhau()));
 		user.setVaitro(false);
 		user.setKichhoat(false);
 		usersRepository.save(user);
@@ -72,6 +82,9 @@ public class UserService {
 		if (existingUserByPhone.isPresent()) {
 			throw new IllegalArgumentException("Số điện thoại đã được sử dụng!");
 		}
+		
+		// Encode password before saving
+		user.setMatkhau(passwordEncoder.encode(user.getMatkhau()));
 		usersRepository.save(user);
 
 		GioHang gioHang = new GioHang();
@@ -90,6 +103,11 @@ public class UserService {
 			user.setHinh(updatedUser.getHinh());
 			user.setVaitro(updatedUser.isVaitro());
 			user.setKichhoat(updatedUser.isKichhoat());
+			
+			// If password is provided, encode and update it
+			if (updatedUser.getMatkhau() != null && !updatedUser.getMatkhau().isEmpty()) {
+				user.setMatkhau(passwordEncoder.encode(updatedUser.getMatkhau()));
+			}
 
 			return usersRepository.save(user);
 		} else {
@@ -97,11 +115,18 @@ public class UserService {
 		}
 	}
 
-	public Users changePassword(String id, String newPassword) {
+	public Users changePassword(String id, String currentPassword, String newPassword) {
 		Optional<Users> optionalUser = usersRepository.findById(id);
 		if (optionalUser.isPresent()) {
 			Users user = optionalUser.get();
-			user.setMatkhau(newPassword);
+			
+			// Verify current password
+			if (!passwordEncoder.matches(currentPassword, user.getMatkhau())) {
+				throw new IllegalArgumentException("Mật khẩu hiện tại không chính xác!");
+			}
+			
+			// Encode and save new password
+			user.setMatkhau(passwordEncoder.encode(newPassword));
 			session.setAttribute("currentUser", usersRepository.save(user));
 			return user;
 		} else {
@@ -113,8 +138,8 @@ public class UserService {
 		Optional<Users> optionalUser = usersRepository.findById(id);
 		if (optionalUser.isPresent()) {
 			Users user = optionalUser.get();
-			if (image.getSize() > 0) {
-				if (Objects.nonNull(user.getHinh()) || user.getHinh() == "") {
+			if (image != null && image.getSize() > 0) {
+				if (Objects.nonNull(user.getHinh()) && !user.getHinh().isEmpty()) {
 					ImageUtils.delete(user.getHinh());
 				}
 				user.setHinh(ImageUtils.upload(image)
@@ -139,14 +164,49 @@ public class UserService {
 		if (!user.isKichhoat()) {
 			throw new IllegalArgumentException("Tài khoản của bạn chưa được kích hoạt!");
 		}
-		if (!user.getMatkhau().equals(users.getMatkhau())) {
+		
+		// Verify password with encoder
+		if (!passwordEncoder.matches(users.getMatkhau(), user.getMatkhau())) {
 			throw new IllegalArgumentException("Tài khoản hoặc mật khẩu không chính xác!");
 		}
+		
+		// Generate JWT token and store in session
+		String accessToken = jwtService.generateAccessToken(user);
+		String refreshToken = jwtService.generateRefreshToken(user);
+		
 		session.setAttribute("currentUser", user);
+		session.setAttribute("jwt_token", accessToken);
+		
+		// Store tokens in cookies
+		Cookie accessTokenCookie = new Cookie("jwt_token", accessToken);
+		accessTokenCookie.setPath("/");
+		accessTokenCookie.setHttpOnly(true);
+		accessTokenCookie.setMaxAge(30 * 60); // 30 minutes
+		response.addCookie(accessTokenCookie);
+		
+		Cookie refreshTokenCookie = new Cookie("jwt_refresh_token", refreshToken);
+		refreshTokenCookie.setPath("/");
+		refreshTokenCookie.setHttpOnly(true);
+		refreshTokenCookie.setMaxAge(7 * 24 * 60 * 60); // 7 days
+		response.addCookie(refreshTokenCookie);
+		
 		return user;
 	}
 
 	public void logout() {
+		// Remove JWT cookies
+		Cookie accessTokenCookie = new Cookie("jwt_token", null);
+		accessTokenCookie.setPath("/");
+		accessTokenCookie.setHttpOnly(true);
+		accessTokenCookie.setMaxAge(0);
+		response.addCookie(accessTokenCookie);
+		
+		Cookie refreshTokenCookie = new Cookie("jwt_refresh_token", null);
+		refreshTokenCookie.setPath("/");
+		refreshTokenCookie.setHttpOnly(true);
+		refreshTokenCookie.setMaxAge(0);
+		response.addCookie(refreshTokenCookie);
+		
 		session.invalidate();
 	}
 
@@ -182,6 +242,10 @@ public class UserService {
 	}
 
 	public void checkToken(String token) {
+		if (!jwtService.validateToken(token)) {
+			throw new IllegalArgumentException("Token không hợp lệ hoặc đã hết hạn!");
+		}
+		
 		String idUser = jwtService.extractUsername(token);
 		Users users = getUserById(idUser);
 		users.setKichhoat(true);
@@ -201,14 +265,48 @@ public class UserService {
 			throw new IllegalArgumentException("Email không tồn tại!");
 		}
 		try {
-			emailService.sendEmailPassword(id, "Thông Báo Gửi Lại Mật Khẩu", userOptional.get());
+			Users user = userOptional.get();
+			String resetToken = jwtService.generatePasswordResetToken(user);
+			emailService.sendPasswordResetEmail(id, "Yêu cầu đặt lại mật khẩu", resetToken);
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Đã xảy ra lỗi trong quá trình gửi email!");
 		}
 	}
 
+	public void resetPassword(String token, String newPassword) {
+		if (!jwtService.validateToken(token)) {
+			throw new IllegalArgumentException("Token không hợp lệ hoặc đã hết hạn!");
+		}
+		
+		String idUser = jwtService.extractUsername(token);
+		Users user = getUserById(idUser);
+		user.setMatkhau(passwordEncoder.encode(newPassword));
+		usersRepository.save(user);
+	}
+
 	public Page<ReportKhachHangVip> getTop10KhachHangVip() {
 		PageRequest pageable = PageRequest.of(0, 10);
 		return usersRepository.getTop10KhachHangVip(pageable);
+	}
+	
+	// Method to refresh tokens
+	public String refreshAccessToken(String refreshToken) {
+		if (!jwtService.validateToken(refreshToken)) {
+			throw new IllegalArgumentException("Refresh token không hợp lệ hoặc đã hết hạn!");
+		}
+		
+		String username = jwtService.extractUsername(refreshToken);
+		Users user = getUserById(username);
+		
+		String newAccessToken = jwtService.generateAccessToken(user);
+		
+		// Update access token cookie
+		Cookie accessTokenCookie = new Cookie("jwt_token", newAccessToken);
+		accessTokenCookie.setPath("/");
+		accessTokenCookie.setHttpOnly(true);
+		accessTokenCookie.setMaxAge(30 * 60); // 30 minutes
+		response.addCookie(accessTokenCookie);
+		
+		return newAccessToken;
 	}
 }

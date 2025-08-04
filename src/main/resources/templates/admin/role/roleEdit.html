@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <th:block th:replace="~{user/_meta}" />
+  <title>Chỉnh sửa quyền hạn</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+
+<body class="bg-light">
+  <th:block th:replace="~{admin/_headerAdmin}" />
+
+  <div class="container-fluid px-4">
+    <!-- Page Header -->
+    <div class="card shadow-sm border-0 mb-4 mt-4">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <h3 class="fw-bold mb-0">Chỉnh sửa quyền hạn</h3>
+            <p class="text-muted mb-0">Phân quyền cho người dùng</p>
+          </div>
+          <a th:href="@{/admin/roles}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Quay lại
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Information -->
+    <div class="card shadow-sm border-0 mb-4">
+      <div class="card-body p-4">
+        <h5 class="card-title mb-4">Thông tin người dùng</h5>
+        <div class="row">
+          <div class="col-md-6">
+            <p><strong>Email:</strong> <span th:text="${user.idUser}"></span></p>
+            <p><strong>Họ tên:</strong> <span th:text="${user.hoten}"></span></p>
+          </div>
+          <div class="col-md-6">
+            <p><strong>Trạng thái:</strong> 
+              <span th:if="${user.kichhoat}" class="badge bg-success">Đã kích hoạt</span>
+              <span th:unless="${user.kichhoat}" class="badge bg-danger">Chưa kích hoạt</span>
+            </p>
+            <p><strong>Vai trò hiện tại:</strong>
+              <span th:if="${user.vaitro}" class="badge bg-primary">ADMIN</span>
+              <span th:unless="${user.vaitro}" class="badge bg-secondary">USER</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Role Form -->
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-4">
+        <h5 class="card-title mb-4">Phân quyền người dùng</h5>
+        <form th:action="@{'/admin/roles/update/' + ${user.idUser}}" method="post">
+          <div class="mb-4">
+            <label class="form-label fw-medium">Vai trò người dùng</label>
+            <div class="d-flex flex-column gap-3">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="vaitro" id="roleAdmin" value="true" th:checked="${user.vaitro}">
+                <label class="form-check-label" for="roleAdmin">
+                  <span class="badge bg-primary me-2">ADMIN</span>
+                  Quản trị viên - Toàn quyền quản lý hệ thống
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="vaitro" id="roleUser" value="false" th:checked="${!user.vaitro}">
+                <label class="form-check-label" for="roleUser">
+                  <span class="badge bg-secondary me-2">USER</span>
+                  Người dùng - Chỉ có quyền truy cập và sử dụng các chức năng cơ bản
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="border-top pt-4">
+            <button type="submit" class="btn btn-primary px-4">
+              <i class="fas fa-save me-2"></i>Lưu thay đổi
+            </button>
+            <a th:href="@{/admin/roles}" class="btn btn-outline-secondary ms-2">Hủy</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .form-check-input:checked {
+      background-color: #0d6efd;
+      border-color: #0d6efd;
+    }
+    
+    .badge {
+      padding: 0.5em 0.75em;
+      font-weight: 500;
+    }
+  </style>
+</body>
+</html>

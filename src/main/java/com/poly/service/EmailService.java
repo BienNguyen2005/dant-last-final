@@ -83,5 +83,38 @@ public class EmailService {
 	        // Gửi email
 	        emailSender.send(message);
 	    }
-
+	 
+	 public void sendPasswordResetEmail(String toEmail, String subject, String token) {
+	        try {
+	            MimeMessage mimeMessage = emailSender.createMimeMessage();
+	            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+	            helper.setTo(toEmail);
+	            helper.setSubject(subject);
+	            
+	            String htmlContent = """
+	                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 5px;">
+	                        <div style="text-align: center; margin-bottom: 20px;">
+	                            <h2 style="color: #4a6ee0;">Đặt Lại Mật Khẩu</h2>
+	                        </div>
+	                        <div style="margin-bottom: 20px;">
+	                            <p>Xin chào,</p>
+	                            <p>Chúng tôi đã nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn. Nhấn vào nút bên dưới để đặt lại mật khẩu:</p>
+	                        </div>
+	                        <div style="text-align: center; margin-bottom: 20px;">
+	                            <a href="http://localhost:8080/reset-password?token=TOKEN" style="display: inline-block; padding: 12px 24px; background-color: #4a6ee0; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">Đặt Lại Mật Khẩu</a>
+	                        </div>
+	                        <div style="margin-bottom: 20px;">
+	                            <p>Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này.</p>
+	                            <p>Liên kết này sẽ hết hạn sau 30 phút.</p>
+	                        </div>
+	                    </div>
+	                    """.replace("TOKEN", token);
+	            
+	            helper.setText(htmlContent, true);
+	            emailSender.send(mimeMessage);
+	            
+	        } catch (Exception e) {
+	            throw new RuntimeException("Lỗi khi gửi email: " + e.getMessage());
+	        }
+	    }
 }

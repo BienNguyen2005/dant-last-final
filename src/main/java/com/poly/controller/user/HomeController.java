@@ -262,17 +262,32 @@ public class HomeController {
 		if (currentUser == null) {
 			return "redirect:/";
 		}
-		boolean currentPasswordEqualsUserPassword = currentPassword.equals(currentUser.getMatkhau());
+		
 		boolean newPasswordEqualsNewPasswordAgain = newPassword.equals(newPasswordAgain);
-		if (currentPasswordEqualsUserPassword && newPasswordEqualsNewPasswordAgain) {
-			userService.changePassword(currentUser.getIdUser(), newPassword);
-			model.addAttribute("successMessage", "Đổi mật khẩu thành công!");
-		} else {
+		if (!newPasswordEqualsNewPasswordAgain) {
 			model.addAttribute("currentPassword", currentPassword);
 			model.addAttribute("newPassword", newPassword);
 			model.addAttribute("newPasswordAgain", newPasswordAgain);
-			model.addAttribute("errorMessage", "Mật khẩu hoặc mật khẩu nhập lại không khớp!");
+			model.addAttribute("errorMessage", "Mật khẩu mới và mật khẩu nhập lại không khớp!");
+			model.addAttribute("loais", loaiService.getAllLoai(0, 5));
+			return "user/changePasswordView";
 		}
+		
+		try {
+			userService.changePassword(currentUser.getIdUser(), currentPassword, newPassword);
+			model.addAttribute("successMessage", "Đổi mật khẩu thành công!");
+		} catch (IllegalArgumentException e) {
+			model.addAttribute("currentPassword", currentPassword);
+			model.addAttribute("newPassword", newPassword);
+			model.addAttribute("newPasswordAgain", newPasswordAgain);
+			model.addAttribute("errorMessage", e.getMessage());
+		} catch (Exception e) {
+			model.addAttribute("currentPassword", currentPassword);
+			model.addAttribute("newPassword", newPassword);
+			model.addAttribute("newPasswordAgain", newPasswordAgain);
+			model.addAttribute("errorMessage", "Lỗi không xác định: " + e.getMessage());
+		}
+		
 		model.addAttribute("loais", loaiService.getAllLoai(0, 5));
 		return "user/changePasswordView";
 	}
