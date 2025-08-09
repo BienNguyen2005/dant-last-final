@@ -725,16 +725,26 @@
       printWindow.document.write(`
         <html>
           <head>
+            <meta charset="UTF-8">
             <title>Hóa đơn</title>
+            <link rel="stylesheet" href="/static/css/vietnamese-fonts.css">
             <style>
-              body { font-family: Arial, sans-serif; font-size: 12px; }
+              body { 
+                font-family: 'Segoe UI', 'Arial Unicode MS', 'DejaVu Sans', Arial, sans-serif; 
+                font-size: 12px; 
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+              }
               table { width: 100%; border-collapse: collapse; }
               th, td { padding: 4px; border-bottom: 1px solid #ddd; }
               .text-center { text-align: center; }
               .text-end { text-align: right; }
+              @media print {
+                body { font-family: 'Segoe UI', 'Arial Unicode MS', 'DejaVu Sans', Arial, sans-serif; }
+              }
             </style>
           </head>
-          <body>${printContent}</body>
+          <body class="vietnamese-font invoice-print">${printContent}</body>
         </html>
       `);
       printWindow.document.close();

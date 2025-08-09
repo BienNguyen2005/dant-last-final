@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <th:block th:replace="~{user/_meta}" />
+  <title>Quản lý phân quyền</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+
+<body class="bg-light">
+  <th:block th:replace="~{admin/_headerAdmin}" />
+
+  <div class="container-fluid px-4">
+    <!-- Page Header -->
+    <div class="card shadow-sm border-0 mb-4 mt-4">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <h3 class="fw-bold mb-0">Quản lý phân quyền</h3>
+            <p class="text-muted mb-0">Quản lý vai trò và quyền hạn người dùng</p>
+          </div>
+          <a th:href="@{/admin}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Quay lại
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alert Messages -->
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+      <i class="fas fa-check-circle me-2"></i>
+      <span th:text="${successMessage}"></span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+      <i class="fas fa-exclamation-circle me-2"></i>
+      <span th:text="${errorMessage}"></span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- User Role Table -->
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead class="bg-light">
+              <tr>
+                <th class="border-0">Email</th>
+                <th class="border-0">Họ tên</th>
+                <th class="border-0">Vai trò</th>
+                <th class="border-0">Trạng thái</th>
+                <th class="border-0 text-center">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="user : ${users}">
+                <td th:text="${user.idUser}"></td>
+                <td th:text="${user.hoten}"></td>
+                <td>
+                  <span th:if="${user.vaitro}" class="badge bg-primary">ADMIN</span>
+                  <span th:unless="${user.vaitro}" class="badge bg-secondary">USER</span>
+                </td>
+                <td>
+                  <span th:if="${user.kichhoat}" class="badge bg-success">Đã kích hoạt</span>
+                  <span th:unless="${user.kichhoat}" class="badge bg-danger">Chưa kích hoạt</span>
+                </td>
+                <td class="text-center">
+                  <a th:href="@{'/admin/roles/' + ${user.idUser}}" class="btn btn-sm btn-outline-primary me-1">
+                    <i class="fas fa-edit"></i> Sửa quyền
+                  </a>
+                  <a th:href="@{'/admin/roles/toggle-status/' + ${user.idUser}}" 
+                     class="btn btn-sm" 
+                     th:classappend="${user.kichhoat ? 'btn-outline-danger' : 'btn-outline-success'}"
+                     onclick="return confirm('Bạn có chắc muốn thay đổi trạng thái người dùng này?')">
+                    <i class="fas" th:classappend="${user.kichhoat ? 'fa-lock' : 'fa-unlock'}"></i>
+                    <span th:text="${user.kichhoat ? 'Vô hiệu hóa' : 'Kích hoạt'}"></span>
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="d-flex justify-content-center mt-4" th:if="${totalPages > 1}">
+      <nav>
+        <ul class="pagination">
+          <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+            <a class="page-link" th:href="@{/admin/roles(page=${currentPage-1})}" aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+          <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages-1)}" th:classappend="${currentPage == i ? 'active' : ''}">
+            <a class="page-link" th:href="@{/admin/roles(page=${i})}" th:text="${i+1}"></a>
+          </li>
+          <li class="page-item" th:classappend="${currentPage == totalPages-1 ? 'disabled' : ''}">
+            <a class="page-link" th:href="@{/admin/roles(page=${currentPage+1})}" aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+
+  <style>
+    .table th {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    
+    .table td {
+      vertical-align: middle;
+    }
+    
+    .badge {
+      padding: 0.5em 0.75em;
+      font-weight: 500;
+    }
+    
+    .pagination .page-link {
+      color: #6c757d;
+      border-radius: 0.25rem;
+      margin: 0 0.15rem;
+    }
+    
+    .pagination .page-item.active .page-link {
+      background-color: #0d6efd;
+      border-color: #0d6efd;
+      color: white;
+    }
+  </style>
+</body>
+</html>

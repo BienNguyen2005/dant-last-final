@@ -3,14 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <title>In hóa đơn #<span th:text="${order.idHoadon}"></span></title>
+  <link rel="stylesheet" href="/static/css/vietnamese-fonts.css">
   <style>
     body {
-      font-family: 'Segoe UI', Arial, 'DejaVu Sans', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Segoe UI', 'Arial Unicode MS', 'DejaVu Sans', 'Times New Roman', Arial, sans-serif;
       background: #fff;
       color: #000;
       font-size: 14px;
       margin: 0;
       padding: 0;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
     .invoice-container {
       max-width: 700px;
@@ -45,29 +48,54 @@
       font-size: 13px;
       color: #888;
     }
+    .alert {
+      padding: 12px;
+      margin-bottom: 16px;
+      border: 1px solid transparent;
+      border-radius: 4px;
+    }
+    .alert-danger {
+      color: #721c24;
+      background-color: #f8d7da;
+      border-color: #f5c6cb;
+    }
     @media print {
       .no-print { display: none !important; }
       .invoice-container { box-shadow: none; border: none; }
+      body { 
+        font-family: 'Segoe UI', 'Arial Unicode MS', 'DejaVu Sans', 'Times New Roman', Arial, sans-serif !important;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      * { 
+        -webkit-print-color-adjust: exact !important;
+        color-adjust: exact !important;
+      }
     }
   </style>
 </head>
-<body>
-  <div class="invoice-container">
-    <div class="text-center mb-3">
+<body class="vietnamese-font">
+  <div class="invoice-container invoice-print">
+    <!-- Error Message Display -->
+    <div th:if="${errorMessage}" class="alert alert-danger mb-3">
+      <strong>Lỗi:</strong> <span th:text="${errorMessage}"></span>
+    </div>
+    
+      <div class="text-center mb-3">
       <img src="/static/img/favicon.ico" alt="Logo" style="height:48px; margin-bottom:8px;"/>
-      <h2 class="mb-2" th:text="${storeName}"></h2>
-      <div th:text="${storeAddress}"></div>
-      <div>ĐT: <span th:text="${storePhone}"></span></div>
+      <h2 class="mb-2">NHÀ THUỐC DANT</h2>
+      <div>123 đường gì đó, tỉnh gì đó, thành phố gì đó</div>
+      <div>ĐT: 0123 456 789</div>
       <hr class="mb-3"/>
     </div>
     <div class="mb-3">
-      <div><span class="fw-bold">Mã hóa đơn:</span> <span th:text="${order.idHoadon}"></span></div>
-      <div><span class="fw-bold">Ngày tạo:</span> <span th:text="${#dates.format(order.ngaytao, 'dd/MM/yyyy HH:mm')}"></span></div>
+      <div><span class="fw-bold">Mã hóa đơn:</span> <span th:text="${order != null ? order.idHoadon : 'N/A'}"></span></div>
+      <div><span class="fw-bold">Ngày tạo:</span> <span th:text="${order.ngaytao != null ? #dates.format(order.ngaytao, 'dd/MM/yyyy HH:mm') : 'N/A'}"></span></div>
       <div><span class="fw-bold">Khách hàng:</span> <span th:text="${order.khachHang != null ? order.khachHang.hoten : 'Khách lẻ'}"></span></div>
-      <div><span class="fw-bold">Người bán:</span> <span th:text="${order.users.hoten}"></span></div>
+      <div><span class="fw-bold">Người bán:</span> <span th:text="${order.users != null ? order.users.hoten : 'N/A'}"></span></div>
       <div><span class="fw-bold">Hình thức thanh toán:</span>
-        <span th:if="${order.trangthai == 'ondelivery'}">Tiền mặt</span>
-        <span th:if="${order.trangthai == 'received'}">Chuyển khoản</span>
+        <span th:if="${order != null && order.trangthai == 'ondelivery'}">Tiền mặt</span>
+        <span th:if="${order != null && order.trangthai == 'received'}">Chuyển khoản</span>
       </div>
     </div>
     <table class="table">
@@ -80,7 +108,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr th:each="sanpham : ${listSanPham}">
+        <tr th:each="sanpham : ${listSanPham != null ? listSanPham : {}}">
           <td th:text="${sanpham.tenSanpham}"></td>
           <td class="right">
             <span th:if="${sanpham.giamgia == 0}" th:text="${#numbers.formatInteger(sanpham.gia, 0, 'COMMA')} + '₫'"></span>
@@ -98,15 +126,15 @@
       <tfoot>
         <tr>
           <td colspan="3" class="right fw-bold">Tạm tính</td>
-          <td class="right" th:text="${#numbers.formatInteger(tempPrice, 0, 'COMMA')} + '₫'"></td>
+          <td class="right" th:text="${tempPrice != null ? #numbers.formatInteger(tempPrice, 0, 'COMMA') + '₫' : '0₫'}"></td>
         </tr>
         <tr>
           <td colspan="3" class="right fw-bold">Tổng giảm giá</td>
-          <td class="right" th:text="${order.discountAmount != null ? #numbers.formatInteger(order.discountAmount, 0, 'COMMA') + '₫' : '-'}"></td>
+          <td class="right" th:text="${order != null && order.discountAmount != null ? #numbers.formatInteger(order.discountAmount, 0, 'COMMA') + '₫' : '-'}"></td>
         </tr>
         <tr>
           <td colspan="3" class="right fw-bold">Tổng tiền sau giảm</td>
-          <td class="right" th:text="${order.discountAmount != null ? #numbers.formatInteger(tempPrice - order.discountAmount, 0, 'COMMA') + '₫' : #numbers.formatInteger(tempPrice, 0, 'COMMA') + '₫'}"></td>
+          <td class="right" th:text="${order != null && order.discountAmount != null && tempPrice != null ? #numbers.formatInteger(tempPrice - order.discountAmount, 0, 'COMMA') + '₫' : (tempPrice != null ? #numbers.formatInteger(tempPrice, 0, 'COMMA') + '₫' : '0₫')}"></td>
         </tr>
       </tfoot>
     </table>
