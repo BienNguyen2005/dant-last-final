@@ -18,12 +18,20 @@ public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
             AccessDeniedException accessDeniedException) throws IOException, ServletException {
         
         // For API requests, return 403 Forbidden
-        if (request.getHeader("Accept") != null && request.getHeader("Accept").contains("application/json")) {
+        boolean isApi = false;
+        String accept = request.getHeader("Accept");
+        String xhr = request.getHeader("X-Requested-With");
+        String path = request.getServletPath();
+        if ((accept != null && accept.contains("application/json")) ||
+            (xhr != null && xhr.equalsIgnoreCase("XMLHttpRequest")) ||
+            path.startsWith("/cart") || path.startsWith("/cartItem")) {
+            isApi = true;
+        }
+        if (isApi) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             response.setContentType("application/json");
             response.getWriter().write("{\"error\": \"Forbidden\", \"message\": \"Bạn không có quyền truy cập tài nguyên này\"}");
         } else {
-            // For browser requests, redirect to error page
             response.sendRedirect("/access-denied");
         }
     }

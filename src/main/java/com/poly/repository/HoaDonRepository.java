@@ -35,4 +35,6 @@ public interface HoaDonRepository extends JpaRepository<HoaDon, Integer> {
 			+ "JOIN sp.loai l "
 			+ "WHERE l.idLoai = :idLoai AND hd.trangthai = 'received'")
 	ReportRevenueStatistics thongKeDoanhThuTheoLoai(@Param("idLoai") Integer loaiId);
+
+	Page<HoaDon> findByKhachHang_IdKhachHang(Long idKhachHang, Pageable pageable);
 }

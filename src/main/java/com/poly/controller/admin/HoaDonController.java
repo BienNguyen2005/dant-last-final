@@ -117,6 +117,7 @@ public class HoaDonController {
 		return "admin/hoadon/hoadonPrintView";
 	}
 
+
 	@PostMapping("/admin/hoadon/update")
 	public String updateUser(RedirectAttributes redirectAttributes, @RequestParam("id") Integer id,
 			@RequestParam("action") String action) {

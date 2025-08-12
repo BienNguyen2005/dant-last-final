@@ -2,6 +2,8 @@ package com.poly.controller.admin;
 
 import com.poly.entity.KhachHang;
 import com.poly.service.KhachHangService;
+import com.poly.repository.HoaDonRepository;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,6 +17,8 @@ import java.util.Optional;
 public class KhachHangController {
     @Autowired
     private KhachHangService khachHangService;
+    @Autowired
+    private HoaDonRepository hoaDonRepository;
 
     @GetMapping("")
     public String listKhachHang(Model model) {
@@ -26,8 +30,48 @@ public class KhachHangController {
     @GetMapping("/view/{id}")
     public String viewKhachHang(@PathVariable String id, Model model) {
         Optional<KhachHang> kh = khachHangService.getKhachHangById(Long.valueOf(id));
-        kh.ifPresent(khachHang -> model.addAttribute("khachHang", khachHang));
+        kh.ifPresent(khachHang -> {
+            model.addAttribute("khachHang", khachHang);
+            // Lấy 10 đơn mới nhất của khách hàng
+            var page = hoaDonRepository.findByKhachHang_IdKhachHang(khachHang.getIdKhachHang(), PageRequest.of(0,10));
+            model.addAttribute("orders", page.getContent());
+        });
         return "admin/khachhang/khachhangDetail";
+    }
+
+    // Trang xem toàn bộ lịch sử đơn của khách hàng (phân trang)
+    @GetMapping("/view/{id}/orders")
+    public String viewAllOrders(@PathVariable String id,
+                                @RequestParam(defaultValue = "0") int page,
+                                @RequestParam(defaultValue = "10") int size,
+                                Model model) {
+        Long cid = Long.valueOf(id);
+        var khOpt = khachHangService.getKhachHangById(cid);
+        if (khOpt.isEmpty()) return "redirect:/admin/khachhang";
+        var p = hoaDonRepository.findByKhachHang_IdKhachHang(cid, PageRequest.of(page, size));
+        model.addAttribute("khachHang", khOpt.get());
+        model.addAttribute("ordersPage", p);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("pageSize", size);
+        return "admin/khachhang/khachhangOrders";
+    }
+
+    // Cập nhật nhanh ghi chú y tế từ trang chi tiết
+    @PostMapping("/view/{id}/medical")
+    public String updateMedical(@PathVariable String id,
+                                 @RequestParam(required = false) String diUng,
+                                 @RequestParam(required = false) String chongChiDinh,
+                                 @RequestParam(required = false) String ghiChuYTe,
+                                 Model model) {
+        Long cid = Long.valueOf(id);
+        KhachHang kh = khachHangService.getKhachHangById(cid).orElse(null);
+        if (kh != null) {
+            if (diUng != null) kh.setDiUng(diUng);
+            if (chongChiDinh != null) kh.setChongChiDinh(chongChiDinh);
+            if (ghiChuYTe != null) kh.setGhiChuYTe(ghiChuYTe);
+            khachHangService.saveKhachHang(kh);
+        }
+        return "redirect:/admin/khachhang/view/"+id;
     }
 
     @GetMapping("/create")

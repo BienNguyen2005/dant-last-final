@@ -29,6 +29,16 @@
         <td class="fw-bold text-danger" th:text="${#numbers.formatInteger(tongCong, 0, 'COMMA')} + '₫'"></td>
         <td></td>
       </tr>
+      <tr id="rowTongGiam" th:if="${!#lists.isEmpty(gioHang)}">
+        <td colspan="3" class="text-end fw-bold">Tổng giảm giá:</td>
+        <td class="fw-bold text-danger"><span id="tongGiam">0₫ (0%)</span></td>
+        <td></td>
+      </tr>
+      <tr id="rowTongTienSauGiam" th:if="${!#lists.isEmpty(gioHang)}">
+        <td colspan="3" class="text-end fw-bold">Tổng tiền sau giảm:</td>
+        <td class="fw-bold text-success"><span id="tongTienSauGiam">0₫</span></td>
+        <td></td>
+      </tr>
       <tr th:if="${#lists.isEmpty(gioHang)}">
         <td colspan="4" class="text-center">Chưa có sản phẩm</td>
       </tr>

@@ -26,7 +26,77 @@
             <dd class="col-sm-9" th:text="${khachHang.phanLoai}"></dd>
             <dt class="col-sm-3">Trạng thái</dt>
             <dd class="col-sm-9" th:text="${khachHang.trangThai} ? 'Hoạt động' : 'Ngưng' "></dd>
+            <dt class="col-sm-3">Dị ứng</dt>
+            <dd class="col-sm-9">
+              <span th:if="${khachHang.diUng}" class="badge text-bg-danger" th:text="${khachHang.diUng}"></span>
+              <span th:if="${khachHang.diUng == null}" class="text-muted">-</span>
+            </dd>
+            <dt class="col-sm-3">Chống chỉ định</dt>
+            <dd class="col-sm-9" th:text="${khachHang.chongChiDinh} ?: '-' "></dd>
+            <dt class="col-sm-3">Ghi chú y tế</dt>
+            <dd class="col-sm-9" th:text="${khachHang.ghiChuYTe} ?: '-' "></dd>
           </dl>
+        </div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <strong>Cập nhật ghi chú y tế</strong>
+        </div>
+        <div class="card-body">
+          <form th:action="@{'/admin/khachhang/view/' + ${khachHang.idKhachHang} + '/medical'}" method="post" class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label">Dị ứng</label>
+              <input type="text" name="diUng" class="form-control" th:value="${khachHang.diUng}" />
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Chống chỉ định</label>
+              <input type="text" name="chongChiDinh" class="form-control" th:value="${khachHang.chongChiDinh}" />
+            </div>
+            <div class="col-md-12">
+              <label class="form-label">Ghi chú y tế</label>
+              <textarea name="ghiChuYTe" rows="3" class="form-control" th:text="${khachHang.ghiChuYTe}"></textarea>
+            </div>
+            <div class="col-12">
+              <button class="btn btn-success">Lưu ghi chú</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+  <div class="card mb-4">
+        <div class="card-header"><strong>Lịch sử đơn gần đây</strong></div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-sm mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Mã</th>
+                  <th>Ngày</th>
+                  <th>Trạng thái</th>
+                  <th>Tạm tính</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="o : ${orders}">
+                  <td th:text="${o.idHoadon}"></td>
+                  <td th:text="${#dates.format(o.ngaytao,'dd/MM/yyyy')}"></td>
+                  <td th:text="${o.trangthai}"></td>
+                  <td>
+                    <span th:text="${#numbers.formatInteger(o.hoaDonChiTiets.stream().mapToInt(ct -> (ct.giamgia == 0 ? ct.gia : (ct.gia * (100-ct.giamgia)/100)) * ct.soluong).sum(),3,'POINT')} + ' đ'"></span>
+                  </td>
+                  <td><a th:href="@{'/admin/hoadon/' + ${o.idHoadon}}" class="btn btn-outline-primary btn-sm">Xem</a></td>
+                </tr>
+                <tr th:if="${orders == null || orders.size() == 0}">
+                  <td colspan="5" class="text-center py-3">Không có đơn hàng</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card-footer text-end">
+          <a th:href="@{'/admin/khachhang/view/' + ${khachHang.idKhachHang} + '/orders'}" class="btn btn-link btn-sm">Xem tất cả &rarr;</a>
         </div>
       </div>
       <a th:href="@{/admin/khachhang}" class="btn btn-secondary">Quay lại</a>

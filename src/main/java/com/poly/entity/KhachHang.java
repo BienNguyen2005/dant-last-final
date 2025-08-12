@@ -29,6 +29,16 @@ public class KhachHang {
     @Column(name = "phan_loai")
     private String phanLoai;
 
+    // Thông tin y tế cơ bản (tùy chọn) - lưu dạng text ngắn
+    @Column(name = "di_ung", length = 255)
+    private String diUng; // dị ứng
+
+    @Column(name = "chong_chi_dinh", length = 255)
+    private String chongChiDinh; // chống chỉ định
+
+    @Column(name = "ghi_chu_y_te", length = 500)
+    private String ghiChuYTe; // ghi chú thêm
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "khachHang")
     private List<HoaDon> hoaDons;
 
@@ -102,4 +112,10 @@ public class KhachHang {
     public void setGioHangs(List<GioHang> gioHangs) {
         this.gioHangs = gioHangs;
     }
+    public String getDiUng() { return diUng; }
+    public void setDiUng(String diUng) { this.diUng = diUng; }
+    public String getChongChiDinh() { return chongChiDinh; }
+    public void setChongChiDinh(String chongChiDinh) { this.chongChiDinh = chongChiDinh; }
+    public String getGhiChuYTe() { return ghiChuYTe; }
+    public void setGhiChuYTe(String ghiChuYTe) { this.ghiChuYTe = ghiChuYTe; }
 } 

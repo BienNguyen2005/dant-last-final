@@ -34,6 +34,9 @@ import com.poly.service.UserService;
 import com.poly.service.KhachHangService;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import jakarta.servlet.http.HttpSession;
 import vn.payos.PayOS;
 import vn.payos.type.CheckoutResponseData;
@@ -75,10 +78,19 @@ public class BanHangTaiQuayController {
 	@GetMapping("/banhangtaiquay")
 	public String banHangTaiQuay(@RequestParam(name = "page", defaultValue = "0") int page,
 			@RequestParam(name = "keyword", required = false) String keyword, HttpSession session,
-			@RequestParam(name = "idLoai", required = false) Integer idLoai, Model model) {
+			@RequestParam(name = "idLoai", required = false) Integer idLoai, Model model, HttpServletRequest request) {
 		Users currentUser = (Users) session.getAttribute("currentUser");
 		if (currentUser == null) {
-			return "redirect:/signin";
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			if (auth != null && auth.isAuthenticated() && auth.getPrincipal() != null && !"anonymousUser".equals(auth.getPrincipal())) {
+				try {
+					currentUser = userService.getUserById(auth.getName());
+					session.setAttribute("currentUser", currentUser);
+				} catch (Exception ignored) {}
+			}
+			if (currentUser == null) {
+				return "redirect:/signin";
+			}
 		}
 
 		Page<SanPham> dsSanPham;
@@ -366,18 +378,34 @@ public class BanHangTaiQuayController {
 	}
 
 	@GetMapping("/banhangtaiquay/cart-fragment")
-	public String getCartFragment(HttpSession session, Model model) {
+	public String getCartFragment(HttpSession session, Model model, HttpServletRequest request, HttpServletResponse response) {
 		Users currentUser = (Users) session.getAttribute("currentUser");
-		if (currentUser == null) return "redirect:/signin";
+		if (currentUser == null) {
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			if (auth != null && auth.isAuthenticated() && auth.getPrincipal() != null && !"anonymousUser".equals(auth.getPrincipal())) {
+				try {
+					currentUser = userService.getUserById(auth.getName());
+					session.setAttribute("currentUser", currentUser);
+				} catch (Exception ignored) {}
+			}
+		}
+		if (currentUser == null) {
+			// AJAX request? return 401-friendly empty fragment instead of redirect.
+			if ("XMLHttpRequest".equalsIgnoreCase(request.getHeader("X-Requested-With"))) {
+				response.setStatus(401);
+				model.addAttribute("tongCong", 0);
+				model.addAttribute("gioHang", List.of());
+				return "admin/banhangtaiquay/cart-fragment :: cartArea";
+			}
+			return "redirect:/signin";
+		}
 		GioHang gioHang = gioHangRepository.findByUsers_IdUser(currentUser.getIdUser());
-		
 		// Create cart if it doesn't exist
 		if (gioHang == null) {
 			gioHang = new GioHang();
 			gioHang.setUsers(currentUser);
 			gioHang = gioHangRepository.save(gioHang);
 		}
-		
 		List<GioHangChiTiet> gioHangChiTietList = gioHang.getGioHangChiTiets();
 		int tongCong = 0;
 		if (gioHangChiTietList != null && !gioHangChiTietList.isEmpty()) {

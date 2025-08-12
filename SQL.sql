@@ -122,7 +122,8 @@ GO
 CREATE TABLE [dbo].[GIOHANG](
 	[id_giohang] [int] IDENTITY(1,1) NOT NULL,
 	[id_user] [varchar](50) NULL,
-	[id_khach_hang] [varchar](50) NULL,
+	-- Sửa thành BIGINT để đồng bộ với KHACH_HANG.id_khach_hang
+	[id_khach_hang] [bigint] NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[id_giohang] ASC
@@ -157,7 +158,7 @@ CREATE TABLE [dbo].[HOADON](
 	[diachi] [nvarchar](50) NOT NULL,
 	[giaohang] [nvarchar](max) NULL,
 	[id_user] [varchar](50) NULL,
-	[id_khach_hang] [varchar](50) NULL,
+	[id_khach_hang] [bigint] NULL,
 	[discount_percent] [int] NULL,
 	[discount_amount] [int] NULL,
 PRIMARY KEY CLUSTERED 
@@ -197,6 +198,9 @@ CREATE TABLE [dbo].[KHACH_HANG](
 	[dia_chi] [varchar](255) NULL,
 	[trang_thai] [bit] NOT NULL,
 	[phan_loai] [nvarchar](255) NULL,
+	[di_ung] [nvarchar](255) NULL,
+	[chong_chi_dinh] [nvarchar](255) NULL,
+	[ghi_chu_y_te] [nvarchar](500) NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[id_khach_hang] ASC
@@ -312,6 +316,9 @@ GO
 ALTER TABLE [dbo].[HOADON]  WITH CHECK ADD FOREIGN KEY([id_user])
 REFERENCES [dbo].[USERS] ([id_user])
 GO
+ALTER TABLE [dbo].[HOADON]  WITH CHECK ADD FOREIGN KEY([id_khach_hang])
+REFERENCES [dbo].[KHACH_HANG] ([id_khach_hang])
+GO
 ALTER TABLE [dbo].[HOADONCHITIET]  WITH CHECK ADD FOREIGN KEY([id_hoadon])
 REFERENCES [dbo].[HOADON] ([id_hoadon])
 GO
@@ -324,6 +331,13 @@ GO
 ALTER TABLE [dbo].[SANPHAM]  WITH CHECK ADD FOREIGN KEY([id_loai])
 REFERENCES [dbo].[LOAI] ([id_loai])
 GO
+ALTER TABLE [dbo].[GIOHANG]  WITH CHECK ADD FOREIGN KEY([id_khach_hang])
+REFERENCES [dbo].[KHACH_HANG] ([id_khach_hang])
+GO
+
+-- Index hỗ trợ tìm kiếm nhanh khách & lịch sử đơn
+CREATE NONCLUSTERED INDEX IX_KHACH_HANG_SDT ON [dbo].[KHACH_HANG]([sdt]);
+CREATE NONCLUSTERED INDEX IX_HOADON_ID_KHACH_HANG ON [dbo].[HOADON]([id_khach_hang]);
 USE [master]
 GO
 ALTER DATABASE [STORE] SET  READ_WRITE 

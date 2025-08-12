@@ -132,9 +132,17 @@ async function _fetchGetCart() {
     headers: {
       "Accept": "application/json",
       "Content-Type": "application/json",
+      "X-Requested-With": "XMLHttpRequest",
     },
+    credentials: "include",
   });
-  return [response.status, await response.json()];
+  if (response.status === 401) {
+    window.location.href = "/signin?redirect=cart";
+    return [response.status, {}];
+  }
+  let body = {};
+  try { body = await response.json(); } catch (e) { /* ignore parse error */ }
+  return [response.status, body];
 }
 
 async function _fetchDeleteCartItem(cartItemId, productId) {
@@ -143,9 +151,17 @@ async function _fetchDeleteCartItem(cartItemId, productId) {
     headers: {
       "Accept": "application/json",
       "Content-Type": "application/json",
+      "X-Requested-With": "XMLHttpRequest",
     },
+    credentials: "include",
   });
-  return [response.status, await response.json()];
+  if (response.status === 401) {
+    window.location.href = "/signin?redirect=cart";
+    return [response.status, {}];
+  }
+  let body = {};
+  try { body = await response.json(); } catch (e) { /* ignore */ }
+  return [response.status, body];
 }
 
 async function _fetchUpdateCartItem(cartItemId, quantity, productId) {
@@ -159,11 +175,18 @@ async function _fetchUpdateCartItem(cartItemId, quantity, productId) {
     headers: {
       "Accept": "application/json",
       "Content-Type": "application/json",
+      "X-Requested-With": "XMLHttpRequest",
     },
+    credentials: "include",
     body: JSON.stringify(cartItemRequest),
   });
-
-  return [response.status, await response.json()];
+  if (response.status === 401) {
+    window.location.href = "/signin?redirect=cart";
+    return [response.status, {}];
+  }
+  let body = {};
+  try { body = await response.json(); } catch (e) { }
+  return [response.status, body];
 }
 
 async function _fetchPostAddOrder() {
@@ -191,11 +214,18 @@ async function _fetchPostAddOrder() {
     headers: {
       "Accept": "application/json",
       "Content-Type": "application/json",
+      "X-Requested-With": "XMLHttpRequest",
     },
+    credentials: "include",
     body: JSON.stringify(orderRequest),
   });
-
-  return [response.status, await response.json()];
+  if (response.status === 401) {
+    window.location.href = "/signin?redirect=cart";
+    return [response.status, {}];
+  }
+  let body = {};
+  try { body = await response.json(); } catch (e) {}
+  return [response.status, body];
 }
 
 function _formatPrice(price) {

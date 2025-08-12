@@ -18,7 +18,16 @@ public class JwtAuthEntryPoint implements AuthenticationEntryPoint {
             AuthenticationException authException) throws IOException, ServletException {
         
         // For API requests, return 401 Unauthorized
-        if (request.getHeader("Accept") != null && request.getHeader("Accept").contains("application/json")) {
+        boolean isApi = false;
+        String accept = request.getHeader("Accept");
+        String xhr = request.getHeader("X-Requested-With");
+        String path = request.getServletPath();
+        if ((accept != null && accept.contains("application/json")) ||
+            (xhr != null && xhr.equalsIgnoreCase("XMLHttpRequest")) ||
+            path.startsWith("/cart") || path.startsWith("/cartItem")) {
+            isApi = true;
+        }
+        if (isApi) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.getWriter().write("{\"error\": \"Unauthorized\", \"message\": \"" + authException.getMessage() + "\"}");
