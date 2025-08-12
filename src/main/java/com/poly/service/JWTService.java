@@ -40,7 +40,7 @@ public class JWTService {
                 .claim("role", user.isVaitro() ? "ADMIN" : "USER")
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(SignatureAlgorithm.HS256, getSignKey())
+                .signWith(getSignKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -68,7 +68,11 @@ public class JWTService {
 
     // Trích xuất thông tin
     private Claims extractAllClaims(String token) {
-        return Jwts.parser().setSigningKey(getSignKey()).parseClaimsJws(token).getBody();
+        return Jwts.parserBuilder()
+                .setSigningKey(getSignKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     // Trích xuất TT cho 1 claims
@@ -108,7 +112,7 @@ public class JWTService {
     // Validate token
     public boolean validateToken(String token) {
         try {
-            Jwts.parser().setSigningKey(getSignKey()).parseClaimsJws(token);
+            Jwts.parserBuilder().setSigningKey(getSignKey()).build().parseClaimsJws(token);
             return true;
         } catch (SignatureException | MalformedJwtException | ExpiredJwtException | UnsupportedJwtException | IllegalArgumentException e) {
             return false;

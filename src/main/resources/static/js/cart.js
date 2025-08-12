@@ -133,6 +133,7 @@ async function _fetchGetCart() {
       "Accept": "application/json",
       "Content-Type": "application/json",
     },
+    credentials: 'same-origin'
   });
   return [response.status, await response.json()];
 }
@@ -144,6 +145,7 @@ async function _fetchDeleteCartItem(cartItemId, productId) {
       "Accept": "application/json",
       "Content-Type": "application/json",
     },
+    credentials: 'same-origin'
   });
   return [response.status, await response.json()];
 }
@@ -161,6 +163,7 @@ async function _fetchUpdateCartItem(cartItemId, quantity, productId) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(cartItemRequest),
+    credentials: 'same-origin'
   });
 
   return [response.status, await response.json()];
@@ -193,6 +196,7 @@ async function _fetchPostAddOrder() {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(orderRequest),
+    credentials: 'same-origin'
   });
 
   return [response.status, await response.json()];

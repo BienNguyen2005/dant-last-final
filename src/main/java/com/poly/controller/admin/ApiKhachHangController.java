@@ -1,7 +1,11 @@
 package com.poly.controller.admin;
 
 import com.poly.entity.KhachHang;
+import com.poly.entity.HoaDon;
 import com.poly.service.KhachHangService;
+import com.poly.repository.HoaDonRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +19,8 @@ import java.util.Map;
 public class ApiKhachHangController {
     @Autowired
     private KhachHangService khachHangService;
+    @Autowired
+    private HoaDonRepository hoaDonRepository;
 
     // Tìm kiếm khách hàng theo SĐT
     @GetMapping("/search")
@@ -46,5 +52,31 @@ public class ApiKhachHangController {
         result.put("hoten", saved.getHoten());
         result.put("sdt", saved.getSdt());
         return ResponseEntity.ok(result);
+    }
+
+    // Cập nhật thông tin y tế cơ bản
+    @PostMapping("/{id}/medical-notes")
+    public ResponseEntity<?> updateMedicalNotes(@PathVariable("id") Long id,
+                                                @RequestParam(value = "diUng", required = false) String diUng,
+                                                @RequestParam(value = "chongChiDinh", required = false) String chongChiDinh,
+                                                @RequestParam(value = "ghiChuYTe", required = false) String ghiChuYTe) {
+        KhachHang kh = khachHangService.getKhachHangById(id).orElse(null);
+        if (kh == null) return ResponseEntity.notFound().build();
+        if (diUng != null) kh.setDiUng(diUng);
+        if (chongChiDinh != null) kh.setChongChiDinh(chongChiDinh);
+        if (ghiChuYTe != null) kh.setGhiChuYTe(ghiChuYTe);
+        khachHangService.saveKhachHang(kh);
+        Map<String,Object> rs = new HashMap<>();
+        rs.put("message", "Cập nhật thành công");
+        return ResponseEntity.ok(rs);
+    }
+
+    // Lịch sử hóa đơn theo khách
+    @GetMapping("/{id}/orders")
+    public ResponseEntity<?> orderHistory(@PathVariable("id") Long id,
+                                          @RequestParam(defaultValue = "0") int page,
+                                          @RequestParam(defaultValue = "10") int size) {
+        Page<HoaDon> p = hoaDonRepository.findByKhachHang_IdKhachHang(id, PageRequest.of(page, size));
+        return ResponseEntity.ok(p);
     }
 } 

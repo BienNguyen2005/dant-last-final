@@ -11,7 +11,9 @@ async function _fetchGetCart() {
     headers: {
       "Accept": "application/json",
       "Content-Type": "application/json",
+      "X-Requested-With": "XMLHttpRequest",
     },
+    credentials: "include",
   });
   return [response.status, await response.json()];
 }

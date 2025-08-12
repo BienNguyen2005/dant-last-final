@@ -78,7 +78,7 @@ public class Users {
 		this.hoten = hoten;
 	}
 
-	@Column(name = "matkhau", nullable = false, length = 50)
+	@Column(name = "matkhau", nullable = false, length = 60)
 	public String getMatkhau() {
 		return this.matkhau;
 	}

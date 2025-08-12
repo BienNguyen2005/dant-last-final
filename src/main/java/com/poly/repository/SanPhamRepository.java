@@ -34,4 +34,15 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
 
 	Page<SanPham> findByTenSanphamContainingIgnoreCaseAndLoai_IdLoai(String keyword, Integer idLoai, Pageable pageable);
 
+	// Gợi ý sản phẩm chăm sóc đi kèm: lấy top sản phẩm cùng loại
+	@Query("SELECT sp2 FROM HoaDonChiTiet hdct1 "
+			+ "JOIN hdct1.sanPham sp1 "
+			+ "JOIN HoaDonChiTiet hdct2 ON hdct2.hoaDon = hdct1.hoaDon "
+			+ "JOIN hdct2.sanPham sp2 "
+			+ "WHERE sp1.idSanpham = :idSanpham AND sp2.idSanpham <> :idSanpham "
+			+ "AND sp2.loai.idLoai = sp1.loai.idLoai "
+			+ "GROUP BY sp2 "
+			+ "ORDER BY COUNT(DISTINCT hdct1.hoaDon) DESC")
+	Page<SanPham> recommendByCoPurchaseSameCategory(@Param("idSanpham") Integer idSanpham, Pageable pageable);
+
 }

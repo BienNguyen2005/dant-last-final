@@ -12,6 +12,7 @@ async function _fetchGetCart() {
       "Accept": "application/json",
       "Content-Type": "application/json",
     },
+    credentials: 'same-origin'
   });
   return [response.status, await response.json()];
 }

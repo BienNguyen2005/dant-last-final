@@ -244,7 +244,6 @@
 		document.addEventListener('DOMContentLoaded', function () {
 			console.log('DOMContentLoaded');
 			let clickTimer = null;
-			let lastForm = null;
 			let lastProductId = null;
 			const cardBodies = document.querySelectorAll('.clickable-card-body');
 			const quantityModal = new bootstrap.Modal(document.getElementById('quantityModal'));
@@ -259,8 +258,7 @@
 					if (e.target.closest('form,button,input')) return;
 					if (clickTimer) clearTimeout(clickTimer);
 					clickTimer = setTimeout(() => {
-						console.log('clicked', idSanpham);
-						// Hiệu ứng rung/sáng khi thêm vào giỏ
+						// Single click: add 1 item
 						card.classList.add('added-animate');
 						setTimeout(() => card.classList.remove('added-animate'), 500);
 						// Lấy idSanpham từ data attribute
@@ -282,9 +280,7 @@
 					if (danger && danger.textContent.includes('Hết hàng')) return;
 					if (e.target.closest('form,button,input')) return;
 					if (clickTimer) clearTimeout(clickTimer);
-					console.log('double clicked', idSanpham);
-					lastForm = form;
-					lastProductId = idSanpham;
+					lastProductId = cardBody.getAttribute('data-idsanpham');
 					modalQuantity.value = 1;
 					quantityModal.show();
 					setTimeout(() => { modalQuantity.focus(); }, 300);
@@ -292,20 +288,23 @@
 			});
 			// Xác nhận số lượng trong modal
 			confirmQuantity.addEventListener('click', function () {
-				if (lastForm) {
-					// Lấy tồn kho từ data-tonkho
-					const card = lastForm.closest('.product-card');
-					const cardBody = card.querySelector('.clickable-card-body');
-					const tonkho = parseInt(cardBody.getAttribute('data-tonkho'));
-					const sl = parseInt(modalQuantity.value);
-					if (sl > tonkho) {
-						showErrorToast('Số lượng vượt quá tồn kho!');
-						return;
-					}
-					lastForm.querySelector('input[name="soluong"]').value = sl;
-					lastForm.submit();
-					quantityModal.hide();
-				}
+				if (!lastProductId) return;
+				const cardBody = document.querySelector(`.clickable-card-body[data-idsanpham="${lastProductId}"]`);
+				if(!cardBody) return;
+				const tonkho = parseInt(cardBody.getAttribute('data-tonkho'));
+				const sl = parseInt(modalQuantity.value);
+				if (sl > tonkho) { showErrorToast('Số lượng vượt quá tồn kho!'); return; }
+				fetch('/giohang/them', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+					body: `idSanpham=${lastProductId}&soluong=${sl}`
+				})
+				.then(res => {
+					if(res.ok){ showErrorToast('Đã thêm vào giỏ!'); reloadCartFragment(); }
+					else showErrorToast('Thêm vào giỏ thất bại!');
+				})
+				.catch(()=>showErrorToast('Lỗi kết nối!'))
+				.finally(()=>{ quantityModal.hide(); lastProductId=null; });
 			});
 			// Enter để xác nhận
 			modalQuantity.addEventListener('keydown', function (e) {
@@ -328,7 +327,7 @@
 								tr.classList.add('fade-out-row');
 								setTimeout(() => {
 									// Sau khi fade-out, fetch lại fragment giỏ hàng
-									fetch('/banhangtaiquay/cart-fragment')
+									fetch('/banhangtaiquay/cart-fragment', {headers:{'X-Requested-With':'XMLHttpRequest'}})
 										.then(r => r.text())
 										.then(html => {
 											document.getElementById('cart-area').innerHTML = html;
@@ -410,17 +409,7 @@
 						.then(res => {
 							if(res.ok) {
 								showErrorToast('Đã thêm vào giỏ!');
-								fetch('/banhangtaiquay/cart-fragment')
-									.then(r => r.text())
-									.then(html => {
-										document.getElementById('cart-area').innerHTML = html;
-										document.querySelectorAll('#cart-area tr').forEach(tr => {
-											tr.classList.add('fade-in-row');
-											setTimeout(() => tr.classList.remove('fade-in-row'), 600);
-										});
-										rebindCartDeleteEvents();
-										updateDiscountSummary(); 
-									});
+								reloadCartFragment(true);
 							} else {
 								showErrorToast('Thêm vào giỏ thất bại!');
 							}
@@ -465,6 +454,24 @@
 		}
 
 		// Thêm hàm rebindCartDeleteEvents để gắn lại sự kiện xóa sau khi cập nhật cart-area
+		function reloadCartFragment(withAnimation=false){
+			fetch('/banhangtaiquay/cart-fragment', {headers:{'X-Requested-With':'XMLHttpRequest'}})
+			.then(r=>r.text())
+			.then(html=>{
+				const area = document.getElementById('cart-area');
+				if(!area) return;
+				area.innerHTML = html;
+				if(withAnimation){
+					area.querySelectorAll('tr').forEach(tr=>{
+						tr.classList.add('fade-in-row');
+						setTimeout(()=>tr.classList.remove('fade-in-row'),600);
+					});
+				}
+				rebindCartDeleteEvents();
+				updateDiscountSummary();
+			});
+		}
+
 		function rebindCartDeleteEvents() {
 			document.querySelectorAll('form[action$="/giohang/xoa"]').forEach(form => {
 				form.onsubmit = null;
@@ -477,13 +484,7 @@
 							if (res.ok) {
 								tr.classList.add('fade-out-row');
 								setTimeout(() => {
-									fetch('/banhangtaiquay/cart-fragment')
-										.then(r => r.text())
-										.then(html => {
-											document.getElementById('cart-area').innerHTML = html;
-											rebindCartDeleteEvents();
-											updateDiscountSummary(); 
-										});
+												reloadCartFragment();
 									showErrorToast('Đã xóa khỏi giỏ!');
 								}, 500);
 							} else {
@@ -633,7 +634,7 @@
 		}
 		// Gọi lại hàm này khi thay đổi giỏ, khách hàng, hoặc giảm giá
 		document.getElementById('adminDiscountInput').addEventListener('input', updateDiscountSummary);
-		document.getElementById('cart-area').addEventListener('DOMSubtreeModified', updateDiscountSummary);
+		// Loại bỏ DOMSubtreeModified (gây mất trạng thái); dùng reloadCartFragment() sau mỗi thao tác
 		// Khi chọn khách hàng
 		window.khachHangResultData = {};
 		var khachHangResult = document.getElementById('khachHangResult');

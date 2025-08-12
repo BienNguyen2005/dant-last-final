@@ -16,7 +16,8 @@ public class ImageUtils {
 	public static Optional<String> upload(MultipartFile multipartFile) {
 		Optional<String> imageName = Optional.empty();
 		try {
-			if (multipartFile.getSize() != 0 && multipartFile.getContentType().startsWith("image")) {
+			String contentType = multipartFile.getContentType();
+			if (multipartFile.getSize() != 0 && contentType != null && contentType.startsWith("image")) {
 				if (!Files.exists(IMAGE_DIR)) {
 					Files.createDirectories(IMAGE_DIR);
 				}

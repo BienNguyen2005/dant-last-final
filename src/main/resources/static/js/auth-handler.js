@@ -60,7 +60,9 @@ class AuthHandler {
             if (!data.success) {
                 console.error('Token refresh failed:', data.message);
                 // If refresh fails, redirect to login
-                window.location.href = '/signin';
+                if (!window.location.pathname.startsWith('/signin')) {
+                    window.location.href = '/signin';
+                }
             } else {
                 console.log('Token refreshed successfully');
             }

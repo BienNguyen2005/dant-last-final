@@ -33,6 +33,7 @@ async function _fetchPostAddCartItem() {
       "Accept": "application/json",
       "Content-Type": "application/json",
     },
+    credentials: 'same-origin',
     body: JSON.stringify(cartItemRequest),
   });
   return [response.status, await response.json()];

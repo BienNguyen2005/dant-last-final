@@ -10,7 +10,7 @@
 </head>
 
 <body class="bg-light">
- <!--  <th:block th:replace="~{user/_header}" /> -->
+  <th:block th:replace="~{user/_header}" />
 
   <section class="section-content py-5">
     <div class="container">
@@ -67,15 +67,15 @@
             <button type="submit" class="btn btn-primary w-100 mb-3">
               <i class="fas fa-sign-in-alt me-2"></i>Đăng nhập
             </button>
+            <a th:href="@{/signup}" class="btn btn-outline-secondary w-100 mb-3">
+              <i class="fas fa-user-plus me-2"></i>Đăng ký
+            </a>
 
             <!-- Links -->
             <div class="text-center">
-              <!-- <p class="mb-3">
-                Không có tài khoản? 
-                <a th:href="@{/signup}" class="text-decoration-none">
-                  <i class="fas fa-user-plus me-1"></i>Đăng ký
-                </a>
-              </p> -->
+              <p class="mb-3 small text-muted">
+                Chưa có tài khoản? Nhấn nút Đăng ký phía trên.
+              </p>
               <a th:href="@{/forgot-password}" class="text-decoration-none">
                 <i class="fas fa-key me-1"></i>Quên mật khẩu?
               </a>
@@ -85,8 +85,7 @@
       </div>
     </div>
   </section>
-
-<!--   <th:block th:replace="~{user/_footer}" /> -->
+  <th:block th:replace="~{user/_footer}" />
 
   <style>
     .form-floating > .form-control {

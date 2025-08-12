@@ -271,6 +271,22 @@
             <span>Giảm giá:</span>
             <span id="discount">0₫</span>
           </div>
+          <div class="mb-2">
+            <div class="input-group input-group-sm">
+              <select id="discount-type" class="form-select" style="max-width:110px">
+                <option value="amount">VNĐ</option>
+                <option value="percent">%</option>
+              </select>
+              <input type="number" class="form-control" id="discount-input" placeholder="Giảm giá" min="0">
+              <button class="btn btn-outline-light" type="button" onclick="applyInvoiceDiscount()">Áp dụng</button>
+              <button class="btn btn-outline-warning" type="button" onclick="clearInvoiceDiscount()">Xóa</button>
+            </div>
+            <small class="text-white-50" id="discount-hint"></small>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span>Sau giảm:</span>
+            <span id="after-discount">0₫</span>
+          </div>
           <div class="d-flex justify-content-between mb-3">
             <span>VAT (0%):</span>
             <span id="tax">0₫</span>
@@ -426,6 +442,7 @@
     let cart = [];
     let currentCustomer = null;
     let selectedPaymentMethod = 'cash';
+  let invoiceDiscount = { type: 'amount', value: 0 }; // type: amount|percent, value: number
 
     // Initialize POS
     document.addEventListener('DOMContentLoaded', function() {
@@ -567,19 +584,65 @@
       `).join('');
     }
 
+    function computeDiscount(subtotal) {
+      if (!invoiceDiscount || !invoiceDiscount.value) return 0;
+      let discount = 0;
+      if (invoiceDiscount.type === 'percent') {
+        const pct = Math.min(100, Math.max(0, invoiceDiscount.value));
+        discount = Math.round(subtotal * pct / 100);
+      } else { // amount
+        discount = Math.min(subtotal, Math.max(0, invoiceDiscount.value));
+      }
+      return discount;
+    }
+
     function updateCartSummary() {
       const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-      const discount = 0;
-      const tax = 0;
-      const total = subtotal - discount + tax;
-      
+      const discount = computeDiscount(subtotal);
+      const afterDiscount = subtotal - discount;
+      const tax = 0; // future: apply VAT on afterDiscount if needed
+      const total = afterDiscount + tax;
+
       document.getElementById('subtotal').textContent = formatPrice(subtotal);
       document.getElementById('discount').textContent = formatPrice(discount);
+      document.getElementById('after-discount').textContent = formatPrice(afterDiscount);
       document.getElementById('tax').textContent = formatPrice(tax);
       document.getElementById('total').textContent = formatPrice(total);
       document.getElementById('modal-total').textContent = formatPrice(total);
       
+      // Hint text
+      const hintEl = document.getElementById('discount-hint');
+      if (invoiceDiscount.value) {
+        if (invoiceDiscount.type === 'percent') {
+          hintEl.textContent = `Đã áp dụng ${invoiceDiscount.value}% (tối đa ${formatPrice(discount)})`;
+        } else {
+          hintEl.textContent = `Đã áp dụng giảm trực tiếp ${formatPrice(discount)}`;
+        }
+      } else {
+        hintEl.textContent = '';
+      }
+
       document.getElementById('checkout-btn').disabled = cart.length === 0;
+    }
+
+    function applyInvoiceDiscount() {
+      const valInput = document.getElementById('discount-input');
+      const typeSelect = document.getElementById('discount-type');
+      let raw = parseFloat(valInput.value);
+      if (isNaN(raw) || raw < 0) {
+        raw = 0;
+      }
+      if (typeSelect.value === 'percent' && raw > 100) raw = 100;
+      invoiceDiscount.type = typeSelect.value;
+      invoiceDiscount.value = raw;
+      updateCartSummary();
+    }
+
+    function clearInvoiceDiscount() {
+      invoiceDiscount = { type: 'amount', value: 0 };
+      document.getElementById('discount-input').value = '';
+      document.getElementById('discount-type').value = 'amount';
+      updateCartSummary();
     }
 
     function processPayment() {
@@ -601,9 +664,10 @@
 
     function calculateChange() {
       const received = parseFloat(document.getElementById('amount-received').value) || 0;
-      const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      const discount = computeDiscount(subtotal);
+      const total = subtotal - discount; // tax = 0 currently
       const change = received - total;
-      
       document.getElementById('change-amount').value = change >= 0 ? change : 0;
     }
 
@@ -635,7 +699,9 @@
     function generateReceipt() {
       const now = new Date();
       const invoiceNo = 'HD' + now.getTime().toString().slice(-6);
-      const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      const discount = computeDiscount(subtotal);
+      const total = subtotal - discount; // tax 0
       const received = parseFloat(document.getElementById('amount-received').value) || 0;
       const change = received - total;
       
@@ -679,6 +745,14 @@
         
         <hr>
         
+        <div class="row">
+          <div class="col-6">Tạm tính:</div>
+          <div class="col-6 text-end">${formatPrice(subtotal)}</div>
+        </div>
+        <div class="row">
+          <div class="col-6">Giảm giá:</div>
+          <div class="col-6 text-end">-${formatPrice(discount)}</div>
+        </div>
         <div class="row">
           <div class="col-6"><strong>Tổng cộng:</strong></div>
           <div class="col-6 text-end"><strong>${formatPrice(total)}</strong></div>

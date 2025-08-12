@@ -33,7 +33,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(
+            @org.springframework.lang.NonNull HttpServletRequest request,
+            @org.springframework.lang.NonNull HttpServletResponse response,
+            @org.springframework.lang.NonNull FilterChain filterChain)
             throws ServletException, IOException {
         
         // Skip JWT filter for public paths
@@ -76,6 +79,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                path.startsWith("/active-account") || 
                path.startsWith("/forgot-password") ||
                path.startsWith("/reset-password") ||
+               path.startsWith("/api/auth/refresh") ||
                path.startsWith("/css/") || 
                path.startsWith("/js/") || 
                path.startsWith("/img/") ||
