@@ -164,10 +164,18 @@ public class UserService {
 		if (!user.isKichhoat()) {
 			throw new IllegalArgumentException("Tài khoản của bạn chưa được kích hoạt!");
 		}
-		
-		// Verify password with encoder
-		if (!passwordEncoder.matches(users.getMatkhau(), user.getMatkhau())) {
+		// --- Password verification (supports legacy plaintext & auto-upgrade) ---
+		String rawPassword = users.getMatkhau();
+		String storedPassword = user.getMatkhau();
+		boolean storedLooksBCrypt = storedPassword != null && (storedPassword.startsWith("$2a$") || storedPassword.startsWith("$2b$") || storedPassword.startsWith("$2y$"));
+		boolean passwordOk = storedLooksBCrypt ? passwordEncoder.matches(rawPassword, storedPassword) : rawPassword.equals(storedPassword);
+		if (!passwordOk) {
 			throw new IllegalArgumentException("Tài khoản hoặc mật khẩu không chính xác!");
+		}
+		// If legacy plaintext password matched, upgrade it to bcrypt
+		if (!storedLooksBCrypt) {
+			user.setMatkhau(passwordEncoder.encode(rawPassword));
+			usersRepository.save(user);
 		}
 		
 		// Generate JWT token and store in session
