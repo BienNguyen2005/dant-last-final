@@ -46,7 +46,7 @@ mvn -version
 - EN: If you already have the folder, skip clone. Otherwise, clone (replace with your real URL):
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/BienNguyen2005/dant-last-final
 cd dant-last-final
 ```
 
