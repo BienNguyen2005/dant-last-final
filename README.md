@@ -75,20 +75,20 @@ CREATE DATABASE [STORE];
 GO
 
 -- 2) Create SQL login
-IF NOT EXISTS (SELECT 1 FROM sys.sql_logins WHERE name = 'bruh')
+IF NOT EXISTS (SELECT 1 FROM sys.sql_logins WHERE name = 'sa')
 BEGIN
-    CREATE LOGIN [bruh] WITH PASSWORD = 'Nhanhtam456', CHECK_POLICY = OFF;
+    CREATE LOGIN [sa] WITH PASSWORD = 'Nhanhtam456', CHECK_POLICY = OFF;
 END;
 GO
 
 -- 3) Map user to db and grant permissions
 USE [STORE];
 GO
-IF NOT EXISTS (SELECT 1 FROM sys.database_principals WHERE name = 'bruh')
+IF NOT EXISTS (SELECT 1 FROM sys.database_principals WHERE name = 'sa')
 BEGIN
-    CREATE USER [bruh] FOR LOGIN [bruh] WITH DEFAULT_SCHEMA = [dbo];
+    CREATE USER [sa] FOR LOGIN [sa] WITH DEFAULT_SCHEMA = [dbo];
 END;
-ALTER ROLE [db_owner] ADD MEMBER [bruh];
+ALTER ROLE [db_owner] ADD MEMBER [sa];
 GO
 ```
 
@@ -106,7 +106,7 @@ Hiện dự án để sẵn cấu hình mẫu. Bạn nên cập nhật như sau 
 server.port=8080
 
 spring.datasource.url=jdbc:sqlserver://localhost:1433;databaseName=STORE;encrypt=true;trustServerCertificate=true;
-spring.datasource.username=bruh
+spring.datasource.username=sa
 spring.datasource.password=<YOUR_DB_PASSWORD>
 
 # SMTP (Gmail): dùng App Password, KHÔNG dùng mật khẩu tài khoản
