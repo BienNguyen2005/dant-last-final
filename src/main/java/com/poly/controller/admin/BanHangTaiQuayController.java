@@ -3,6 +3,7 @@ package com.poly.controller.admin;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -32,12 +33,12 @@ import com.poly.service.LoaiService;
 import com.poly.service.SanPhamService;
 import com.poly.service.UserService;
 import com.poly.service.KhachHangService;
+import com.poly.service.VoucherService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import jakarta.servlet.http.HttpSession;
+import com.poly.service.CurrentUserService;
 import vn.payos.PayOS;
 import vn.payos.type.CheckoutResponseData;
 import vn.payos.type.ItemData;
@@ -54,6 +55,9 @@ public class BanHangTaiQuayController {
 
 	@Autowired
 	UserService userService;
+
+	@Autowired
+	CurrentUserService currentUserService;
 
 	@Autowired
 	private PayOS payOS;
@@ -75,23 +79,15 @@ public class BanHangTaiQuayController {
 	@Autowired
 	private KhachHangService khachHangService;
 
+	@Autowired
+	private VoucherService voucherService;
+
 	@GetMapping("/banhangtaiquay")
 	public String banHangTaiQuay(@RequestParam(name = "page", defaultValue = "0") int page,
 			@RequestParam(name = "keyword", required = false) String keyword, HttpSession session,
 			@RequestParam(name = "idLoai", required = false) Integer idLoai, Model model, HttpServletRequest request) {
-		Users currentUser = (Users) session.getAttribute("currentUser");
-		if (currentUser == null) {
-			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-			if (auth != null && auth.isAuthenticated() && auth.getPrincipal() != null && !"anonymousUser".equals(auth.getPrincipal())) {
-				try {
-					currentUser = userService.getUserById(auth.getName());
-					session.setAttribute("currentUser", currentUser);
-				} catch (Exception ignored) {}
-			}
-			if (currentUser == null) {
-				return "redirect:/signin";
-			}
-		}
+		Users currentUser = currentUserService.getCurrentUser().orElse(null);
+		if (currentUser == null) return "redirect:/signin";
 
 		Page<SanPham> dsSanPham;
 
@@ -127,8 +123,7 @@ public class BanHangTaiQuayController {
 	public ResponseEntity<?> themVaoGio(@RequestParam("idSanpham") Integer idSanpham, HttpSession session,
 			@RequestParam("soluong") Integer soluong, RedirectAttributes redirectAttributes,
 			HttpServletRequest request) {
-
-		Users currentUser = (Users) session.getAttribute("currentUser");
+		Users currentUser = currentUserService.getCurrentUser().orElse(null);
 		if (currentUser == null) {
 			if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With"))) {
 				return ResponseEntity.status(401).body("{\"success\":false, \"message\":\"Chưa đăng nhập\"}");
@@ -163,10 +158,8 @@ public class BanHangTaiQuayController {
 	@PostMapping("/giohang/xoa")
 	public String xoaSanPhamKhoiGioHang(@RequestParam("idSanpham") Integer idSanpham, HttpSession session,
 			HttpServletRequest request) {
-		Users currentUser = (Users) session.getAttribute("currentUser");
-		if (currentUser == null) {
-			return "redirect:/signin";
-		}
+		Users currentUser = currentUserService.getCurrentUser().orElse(null);
+		if (currentUser == null) return "redirect:/signin";
 
 		GioHang gioHang = gioHangRepository.findByUsers_IdUser(currentUser.getIdUser());
 		if (gioHang != null) {
@@ -183,15 +176,15 @@ public class BanHangTaiQuayController {
 
 	@PostMapping("/banhangtaiquay/thanh-toan")
 	public String thanhToan(@RequestParam("phuongthuc") String phuongThuc,
-						   @RequestParam(value = "khachHangId", required = false) String khachHangId,
-						   @RequestParam(value = "adminDiscount", required = false) Integer adminDiscount,
-						   HttpSession session,
-						   RedirectAttributes redirectAttributes,
-						   HttpServletRequest request) {
-		Users currentUser = (Users) session.getAttribute("currentUser");
-		if (currentUser == null) {
-			return "redirect:/signin";
-		}
+					   @RequestParam(value = "khachHangId", required = false) String khachHangId,
+					   @RequestParam(value = "adminDiscount", required = false) Integer adminDiscount,
+					   @RequestParam(value = "voucherCode", required = false) String voucherCode,
+					   @RequestParam(value = "voucherDiscount", required = false) Double voucherDiscountClient,
+					   HttpSession session,
+					   RedirectAttributes redirectAttributes,
+					   HttpServletRequest request) {
+		Users currentUser = currentUserService.getCurrentUser().orElse(null);
+		if (currentUser == null) return "redirect:/signin";
 		GioHang gioHang = gioHangRepository.findByUsers_IdUser(currentUser.getIdUser());
 		if (gioHang == null) {
 			redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy giỏ hàng!");
@@ -234,8 +227,20 @@ public class BanHangTaiQuayController {
 		} else if (loaiKh.contains("thường") && totalQuantity > 3) {
 			discountPercent = 10;
 		}
-		int tongGiam = tongTienTruocGiam * discountPercent / 100;
-		int tongTienSauGiam = tongTienTruocGiam - tongGiam;
+		int tongGiamAdmin = tongTienTruocGiam * discountPercent / 100;
+		double voucherDiscount = 0d;
+		if (voucherCode != null && !voucherCode.isBlank()) {
+			try {
+				Map<String, Object> validation = voucherService.validate(voucherCode, tongTienTruocGiam, currentUser.getIdUser());
+				Object da = validation.get("discountAmount");
+				if (da instanceof Number) voucherDiscount = ((Number) da).doubleValue();
+			} catch (IllegalArgumentException e) {
+				redirectAttributes.addFlashAttribute("errorMessage", "Voucher không hợp lệ: " + e.getMessage());
+				return "redirect:/banhangtaiquay";
+			}
+		}
+		double tongGiam = tongGiamAdmin + voucherDiscount;
+		int tongTienSauGiam = (int) Math.max(0, Math.round(tongTienTruocGiam - tongGiam));
 
 		if ("BANK".equals(phuongThuc)) {
 			String currentTimeString = String.valueOf(new Date().getTime());
@@ -271,7 +276,12 @@ public class BanHangTaiQuayController {
 			hoaDon.setGiaohang("");
 			hoaDon.setTrangthai(phuongThuc.equals("CASH") ? "ondelivery" : "received");
 			hoaDon.setDiscountPercent(discountPercent);
-			hoaDon.setDiscountAmount(tongGiam);
+			hoaDon.setDiscountAmount(tongGiamAdmin);
+			// Set voucher info if applicable
+			if (voucherCode != null && !voucherCode.isBlank() && voucherDiscount > 0) {
+				hoaDon.setVoucherCode(voucherCode.trim());
+				hoaDon.setVoucherDiscountAmount(voucherDiscount);
+			}
 			hoaDonRepository.save(hoaDon);
 
 			for (GioHangChiTiet ct : chiTietList) {
@@ -298,8 +308,18 @@ public class BanHangTaiQuayController {
 			}
 
 			gioHangChiTietRepository.deleteAll(chiTietList);
+			// Increase voucher usage after order persistence
+			if (voucherCode != null && !voucherCode.isBlank()) {
+				try {
+					voucherService.increaseUsageOnOrder(hoaDon, voucherCode, tongTienTruocGiam, currentUser.getIdUser());
+				} catch (IllegalArgumentException ex) {
+					// Race condition / invalid voucher at finalize time; ignore or log.
+				}
+			}
 
-			redirectAttributes.addFlashAttribute("successMessage", "Thanh toán thành công! Tổng tiền: " + tongTienSauGiam + "₫ (Đã giảm " + discountPercent + "%)");
+			String msg = "Thanh toán thành công! Tổng tiền: " + tongTienSauGiam + "₫ (Giảm admin: " + discountPercent + "%;";
+			if (voucherDiscount > 0) msg += " Voucher: -" + ((long) voucherDiscount) + "₫)"; else msg += ")";
+			redirectAttributes.addFlashAttribute("successMessage", msg);
 			redirectAttributes.addFlashAttribute("idHoaDon", hoaDon.getIdHoadon());
 			return "redirect:/banhangtaiquay";
 		}
@@ -360,18 +380,8 @@ public class BanHangTaiQuayController {
 
 	@GetMapping("/banhangtaiquay/cart-fragment")
 	public String getCartFragment(HttpSession session, Model model, HttpServletRequest request, HttpServletResponse response) {
-		Users currentUser = (Users) session.getAttribute("currentUser");
+		Users currentUser = currentUserService.getCurrentUser().orElse(null);
 		if (currentUser == null) {
-			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-			if (auth != null && auth.isAuthenticated() && auth.getPrincipal() != null && !"anonymousUser".equals(auth.getPrincipal())) {
-				try {
-					currentUser = userService.getUserById(auth.getName());
-					session.setAttribute("currentUser", currentUser);
-				} catch (Exception ignored) {}
-			}
-		}
-		if (currentUser == null) {
-			// AJAX request? return 401-friendly empty fragment instead of redirect.
 			if ("XMLHttpRequest".equalsIgnoreCase(request.getHeader("X-Requested-With"))) {
 				response.setStatus(401);
 				model.addAttribute("tongCong", 0);

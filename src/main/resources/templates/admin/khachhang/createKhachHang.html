@@ -4,18 +4,24 @@
   <th:block th:replace="~{user/_meta}" />
   <title>Thêm khách hàng</title>
 </head>
-<body>
+<body class="bg-light">
   <th:block th:replace="~{admin/_headerAdmin}" />
-  <section class="section-content">
-    <div class="container">
-      <h3 class="section-title py-4">Thêm khách hàng</h3>
-      <form th:action="@{/admin/khachhang/create}" th:object="${khachHang}" method="post" class="row g-3">
+  <div class="container-fluid px-4 py-3">
+    <div class="d-flex flex-wrap align-items-center gap-3 mb-4 mt-2">
+      <div>
+        <h5 class="mb-1">Thêm khách hàng</h5>
+        <div class="text-muted-sm">Nhập thông tin khách hàng mới</div>
+      </div>
+      <a th:href="@{/admin/khachhang}" class="btn btn-soft-secondary ms-auto"><i class="fas fa-arrow-left me-1"></i>Quay lại</a>
+    </div>
+    <div class="card-elevated p-4 mb-4">
+      <form th:action="@{/admin/khachhang/create}" th:object="${khachHang}" method="post" class="row g-4">
         <div class="col-md-6">
-          <label for="hoten" class="form-label">Họ tên</label>
+          <label for="hoten" class="form-label">Họ tên <span class="text-danger">*</span></label>
           <input type="text" th:field="*{hoten}" class="form-control" id="hoten" required>
         </div>
         <div class="col-md-6">
-          <label for="sdt" class="form-label">Số điện thoại</label>
+          <label for="sdt" class="form-label">Số điện thoại <span class="text-danger">*</span></label>
           <input type="text" th:field="*{sdt}" class="form-control" id="sdt" required>
         </div>
         <div class="col-md-6">
@@ -42,13 +48,13 @@
             <option th:value="false">Ngưng</option>
           </select>
         </div>
-        <div class="col-12">
-          <button type="submit" class="btn btn-primary">Lưu</button>
-          <a th:href="@{/admin/khachhang}" class="btn btn-secondary ms-2">Quay lại</a>
+        <div class="col-12 d-flex gap-2 pt-2">
+            <button type="submit" class="btn btn-soft-primary"><i class="fas fa-save me-1"></i>Lưu</button>
+            <a th:href="@{/admin/khachhang}" class="btn btn-soft-secondary">Hủy</a>
         </div>
       </form>
     </div>
-  </section>
+  </div>
   <th:block th:replace="~{admin/_footerAdmin}" />
 </body>
 </html> 

@@ -37,6 +37,8 @@ public class HoaDonService {
 	GioHangChiTietService gioHangChiTietService;
 	@Autowired
 	EmailService emailService;
+	@Autowired
+	VoucherService voucherService;
 
 	public void add(OrderRequest orderRequest) throws RuntimeException {
 		try {
@@ -94,6 +96,8 @@ public class HoaDonService {
 			sanPham.setSoluong(sanPham.getSoluong() + item.getSoluong());
 			sanPhamRepository.save(sanPham);
 		});
+		// Rollback voucher usage if any
+		try { voucherService.rollbackUsageOnCancel(hoaDon); } catch (Exception ignored) {}
 	}
 
 	public Page<HoaDon> getAllHoaDon(int pageNumber, int limit) {
@@ -116,6 +120,8 @@ public class HoaDonService {
 				sanPham.setSoluong(sanPham.getSoluong() + item.getSoluong());
 				sanPhamRepository.save(sanPham);
 			});
+			// Rollback voucher usage if any
+			try { voucherService.rollbackUsageOnCancel(hoaDon); } catch (Exception ignored) {}
 			return "Đã hủy đơn hàng #" + id + " thành công!";
 		} else {
 			if (hoaDon.getTrangthai().equals("cancel")) {

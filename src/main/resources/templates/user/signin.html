@@ -1,126 +1,101 @@
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
   <th:block th:replace="~{user/_meta}" />
   <title>Đăng nhập</title>
-  <script th:src="@{/js/toast.js}" type="module"></script>
-  <script th:src="@{/js/home.js}" type="module"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <style>
+    .auth-wrapper { min-height:calc(100vh - 140px); display:flex; align-items:center; }
+    .auth-card { border:0; border-radius:1rem; overflow:hidden; box-shadow:0 8px 32px -8px rgba(0,0,0,.15); }
+    .auth-side { background:linear-gradient(135deg,#0d6efd,#63a3ff); color:#fff; position:relative; }
+    .auth-side::after { content:""; position:absolute; inset:0; background:radial-gradient(circle at 25% 25%,rgba(255,255,255,.25),transparent 60%); }
+    .auth-side-content { position:relative; z-index:2; padding:2.5rem 2rem; }
+    .auth-side h2 { font-weight:600; }
+    .auth-form { padding:2.25rem 2rem; }
+    .auth-form h4 { font-weight:600; }
+    .form-floating>.form-control { padding-left:1rem; }
+    .form-floating>label { padding-left:1rem; }
+    .form-control:focus { border-color:#86b7fe; box-shadow:0 0 0 .25rem rgba(13,110,253,.25); }
+    .btn-primary { padding:.75rem; font-weight:600; border-radius:.75rem; }
+    .toggle-password { position:absolute; top:50%; right:.85rem; transform:translateY(-50%); cursor:pointer; color:#6c757d; }
+    .alert { border:0; border-radius:.75rem; }
+    .divider { text-align:center; position:relative; font-size:.75rem; letter-spacing:1px; text-transform:uppercase; color:#6c757d; margin:1.75rem 0 1rem; }
+    .divider:before,.divider:after { content:""; position:absolute; top:50%; width:42%; height:1px; background:linear-gradient(90deg,transparent,#d8dde4,transparent); }
+    .divider:before { left:0; } .divider:after { right:0; }
+    .social-btns .btn { width:100%; font-weight:500; }
+    @media (max-width:991.98px){ .auth-side { display:none; } .auth-form { padding:2rem 1.5rem; } }
+  </style>
 </head>
-
 <body class="bg-light">
   <th:block th:replace="~{user/_header}" />
-
-  <section class="section-content py-5">
-    <div class="container">
-      <div class="card mx-auto shadow-sm border-0" style="max-width: 380px">
-        <div class="card-body p-4">
-          <!-- Alert Messages -->
-          <div th:if="${successMessage}" class="alert alert-success d-flex align-items-center" role="alert">
-            <i class="fas fa-check-circle me-2"></i>
-            <div th:text="${successMessage}"></div>
-          </div>
-          <div th:if="${errorMessage}" class="alert alert-danger d-flex align-items-center" role="alert">
-            <i class="fas fa-exclamation-circle me-2"></i>
-            <div th:text="${errorMessage}"></div>
-          </div>
-
-          <!-- Login Form -->
-          <div class="text-center mb-4">
-            <i class="fas fa-user-circle fa-3x text-primary mb-3"></i>
-            <h4 class="card-title">Đăng nhập</h4>
-          </div>
-
-          <form th:action="@{/signin}" method="post">
-            <!-- Email Input -->
-            <div class="form-floating mb-3">
-              <input class="form-control"
-                     id="email"
-                     placeholder="Email"
-                     type="email"
-                     autocomplete="off"
-                     th:value="${user.idUser}" 
-                     name="idUser" 
-                     required>
-              <label for="email">
-                <i class="fas fa-envelope me-2"></i>Email
-              </label>
+  <div class="container auth-wrapper py-5">
+    <div class="row justify-content-center w-100">
+      <div class="col-lg-9 col-xl-8">
+        <div class="card auth-card">
+          <div class="row g-0 align-items-stretch">
+            <div class="col-lg-5 auth-side d-flex">
+              <div class="auth-side-content my-auto">
+                <h2 class="mb-4">Chào mừng trở lại!</h2>
+                <p class="mb-4">Đăng nhập để tiếp tục mua sắm, quản lý đơn hàng và nhận ưu đãi dành riêng cho bạn.</p>
+                <ul class="list-unstyled small opacity-75 mb-0">
+                  <li class="mb-2"><i class="fas fa-check-circle me-2"></i>Theo dõi đơn hàng nhanh chóng</li>
+                  <li class="mb-2"><i class="fas fa-check-circle me-2"></i>Lịch sử mua hàng & tái đặt</li>
+                  <li class="mb-2"><i class="fas fa-check-circle me-2"></i>Ưu đãi khách hàng thân thiết</li>
+                </ul>
+              </div>
             </div>
-
-            <!-- Password Input -->
-            <div class="form-floating mb-4">
-              <input name="matkhau"
-                     class="form-control"
-                     id="password"
-                     placeholder="Mật khẩu"
-                     type="password" 
-                     th:value="${user.matkhau}"
-                     autocomplete="off" 
-                     required>
-              <label for="password">
-                <i class="fas fa-lock me-2"></i>Mật khẩu
-              </label>
+            <div class="col-lg-7 bg-white">
+              <div class="auth-form">
+                <div th:if="${successMessage}" class="alert alert-success d-flex align-items-center" role="alert">
+                  <i class="fas fa-check-circle me-2"></i><div th:text="${successMessage}"></div>
+                </div>
+                <div th:if="${errorMessage}" class="alert alert-danger d-flex align-items-center" role="alert">
+                  <i class="fas fa-exclamation-circle me-2"></i><div th:text="${errorMessage}"></div>
+                </div>
+                <h4 class="mb-4">Đăng nhập</h4>
+                <form th:action="@{/signin}" method="post" novalidate>
+                  <div class="form-floating mb-3">
+                    <input class="form-control" id="email" placeholder="Email" type="email" autocomplete="off" th:value="${user.idUser}" name="idUser" required>
+                    <label for="email"><i class="fas fa-envelope me-2"></i>Email</label>
+                  </div>
+                  <div class="form-floating mb-3 position-relative">
+                    <input name="matkhau" class="form-control" id="password" placeholder="Mật khẩu" type="password" th:value="${user.matkhau}" autocomplete="off" required>
+                    <label for="password"><i class="fas fa-lock me-2"></i>Mật khẩu</label>
+                    <span class="toggle-password" data-target="#password"><i class="fas fa-eye"></i></span>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center mb-4 small">
+                    <div class="form-check m-0">
+                      <input class="form-check-input" type="checkbox" value="1" id="rememberMe">
+                      <label class="form-check-label" for="rememberMe">Ghi nhớ</label>
+                    </div>
+                    <a th:href="@{/forgot-password}" class="text-decoration-none">Quên mật khẩu?</a>
+                  </div>
+                  <button type="submit" class="btn btn-primary w-100 mb-3"><i class="fas fa-sign-in-alt me-2"></i>Đăng nhập</button>
+                  <a th:href="@{/signup}" class="btn btn-outline-primary w-100 mb-3"><i class="fas fa-user-plus me-2"></i>Tạo tài khoản</a>
+                  <div class="divider">hoặc</div>
+                  <div class="social-btns d-grid gap-2 mb-2">
+                    <button type="button" class="btn btn-outline-secondary"><i class="fab fa-google me-2 text-danger"></i>Google</button>
+                    <button type="button" class="btn btn-outline-secondary"><i class="fab fa-facebook me-2 text-primary"></i>Facebook</button>
+                  </div>
+                  <p class="mt-4 small text-muted mb-0">Bằng việc đăng nhập bạn đồng ý với <a href="#" class="text-decoration-none">Điều khoản</a> & <a href="#" class="text-decoration-none">Chính sách bảo mật</a>.</p>
+                </form>
+              </div>
             </div>
-
-            <!-- Submit Button -->
-            <button type="submit" class="btn btn-primary w-100 mb-3">
-              <i class="fas fa-sign-in-alt me-2"></i>Đăng nhập
-            </button>
-            <a th:href="@{/signup}" class="btn btn-outline-secondary w-100 mb-3">
-              <i class="fas fa-user-plus me-2"></i>Đăng ký
-            </a>
-
-            <!-- Links -->
-            <div class="text-center">
-              <p class="mb-3 small text-muted">
-                Chưa có tài khoản? Nhấn nút Đăng ký phía trên.
-              </p>
-              <a th:href="@{/forgot-password}" class="text-decoration-none">
-                <i class="fas fa-key me-1"></i>Quên mật khẩu?
-              </a>
-            </div>
-          </form>
+          </div>
         </div>
       </div>
     </div>
-  </section>
+  </div>
   <th:block th:replace="~{user/_footer}" />
-
-  <style>
-    .form-floating > .form-control {
-      padding-left: 1rem;
-    }
-    
-    .form-floating > label {
-      padding-left: 1rem;
-    }
-    
-    .form-control:focus {
-      border-color: #86b7fe;
-      box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-    }
-    
-    .btn-primary {
-      padding: 0.75rem;
-      font-weight: 500;
-    }
-    
-    .card {
-      border-radius: 0.5rem;
-    }
-    
-    .alert {
-      border: none;
-      border-radius: 0.375rem;
-    }
-    
-    @media (max-width: 767.98px) {
-      .card {
-        margin: 0 1rem;
-      }
-    }
-  </style>
+  <script>
+    document.addEventListener('click', function(e){
+      const toggle = e.target.closest('.toggle-password');
+      if(!toggle) return;
+      const input = document.querySelector(toggle.getAttribute('data-target'));
+      if(!input) return;
+      if(input.type === 'password') { input.type='text'; toggle.innerHTML='<i class="fas fa-eye-slash"></i>'; }
+      else { input.type='password'; toggle.innerHTML='<i class="fas fa-eye"></i>'; }
+    });
+  </script>
 </body>
-
 </html>

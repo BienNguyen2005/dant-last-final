@@ -15,29 +15,22 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.poly.entity.SanPham;
-import com.poly.entity.Users;
+import org.springframework.security.access.prepost.PreAuthorize;
 import com.poly.service.LoaiService;
 import com.poly.service.SanPhamService;
-
-import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class SanPhamController {
 	@Autowired
 	SanPhamService sanPhamService;
 	@Autowired
-	private HttpSession session;
-	@Autowired
 	LoaiService loaiService;
 
 	@GetMapping("/admin/sanpham/search")
+	@PreAuthorize("hasRole('ADMIN')")
 	public String search(Model model, @RequestParam(name = "q", required = false) String q,
 			@RequestParam(defaultValue = "0", name = "page") int page) {
-		Users currentUser = (Users) session.getAttribute("currentUser");
-		if (currentUser == null || !currentUser.isVaitro()) {
-			return "redirect:/";
-		}
-		
+
 		Optional<String> query = Optional.ofNullable(q).filter(s -> !s.trim().isEmpty());
 		if (query.isPresent()) {
 			String queryStr = query.get();
@@ -53,11 +46,8 @@ public class SanPhamController {
 	}
 
 	@GetMapping("/admin/sanpham")
+	@PreAuthorize("hasRole('ADMIN')")
 	public String sanPhamManager(Model model, @RequestParam(defaultValue = "0", name = "page") int page) {
-		Users currentUser = (Users) session.getAttribute("currentUser");
-		if (currentUser == null || !currentUser.isVaitro()) {
-			return "redirect:/";
-		}
 
 		Page<SanPham> sanPhamPage = sanPhamService.getAllSanPham(page, 8);
 
@@ -68,23 +58,17 @@ public class SanPhamController {
 	}
 
 	@GetMapping("/admin/sanpham/create")
+	@PreAuthorize("hasRole('ADMIN')")
 	public String userCreate(Model model, @ModelAttribute("sanpham") SanPham sanPham) {
-		Users currentUser = (Users) session.getAttribute("currentUser");
-		if (currentUser == null || !currentUser.isVaitro()) {
-			return "redirect:/";
-		}
 		model.addAttribute("loais", loaiService.getAllLoai(0, 100));
 		return "admin/sanpham/createSanPham";
 	}
 
 	@PostMapping("/admin/sanpham/create")
+	@PreAuthorize("hasRole('ADMIN')")
 	public String sanphamInsert(Model model, @ModelAttribute("sanpham") SanPham sanPham,
 			@RequestParam("image") MultipartFile image) {
 		try {
-			Users currentUser = (Users) session.getAttribute("currentUser");
-			if (currentUser == null || !currentUser.isVaitro()) {
-				return "redirect:/";
-			}
 			sanPhamService.create(sanPham, image);
 			model.addAttribute("successMessage", "Tạo sản phẩm thành công");
 		} catch (Exception e) {
@@ -95,11 +79,8 @@ public class SanPhamController {
 	}
 
 	@GetMapping("/admin/sanpham/edit/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
 	public String showUpdateForm(@PathVariable("id") Integer id, Model model) {
-		Users currentUser = (Users) session.getAttribute("currentUser");
-		if (currentUser == null || !currentUser.isVaitro()) {
-			return "redirect:/";
-		}
 		try {
 			SanPham sanPham = sanPhamService.getSanPhamById(id);
 			model.addAttribute("sanpham", sanPham);
@@ -111,14 +92,11 @@ public class SanPhamController {
 	}
 
 	@PostMapping("/admin/sanpham/update/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
 	public String updateUser(Model model, @PathVariable("id") Integer id,
 			@ModelAttribute("sanpham") SanPham updatedSanPham,
 			@RequestParam(name = "image", required = false) MultipartFile image) {
 		try {
-			Users currentUser = (Users) session.getAttribute("currentUser");
-			if (currentUser == null || !currentUser.isVaitro()) {
-				return "redirect:/";
-			}
 			model.addAttribute("sanpham", sanPhamService.updateSanPham(id, updatedSanPham, image));
 			model.addAttribute("successMessage", "Cập nhật sản phẩm thành công");
 		} catch (Exception e) {
@@ -129,6 +107,7 @@ public class SanPhamController {
 	}
 
 	@GetMapping("/admin/sanpham/delete/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
 	public String deleteSanPham(RedirectAttributes redirectAttributes, @PathVariable("id") Integer id) {
 		try {
 			sanPhamService.deleteSanPham(id);

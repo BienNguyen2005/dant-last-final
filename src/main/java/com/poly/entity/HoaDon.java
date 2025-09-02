@@ -30,6 +30,9 @@ public class HoaDon {
 	private KhachHang khachHang;
 	private Integer discountPercent;
 	private Integer discountAmount;
+	private String voucherCode;
+	private Double voucherDiscountAmount;
+	private Voucher voucher; // optional relation
 
 	public HoaDon() {
 	}
@@ -133,5 +136,18 @@ public class HoaDon {
 	@Column(name = "discount_amount")
 	public Integer getDiscountAmount() { return discountAmount; }
 	public void setDiscountAmount(Integer discountAmount) { this.discountAmount = discountAmount; }
+
+	@Column(name = "voucher_code")
+	public String getVoucherCode() { return voucherCode; }
+	public void setVoucherCode(String voucherCode) { this.voucherCode = voucherCode; }
+
+	@Column(name = "voucher_discount_amount")
+	public Double getVoucherDiscountAmount() { return voucherDiscountAmount; }
+	public void setVoucherDiscountAmount(Double voucherDiscountAmount) { this.voucherDiscountAmount = voucherDiscountAmount; }
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "id_voucher")
+	public Voucher getVoucher() { return voucher; }
+	public void setVoucher(Voucher voucher) { this.voucher = voucher; }
 
 }

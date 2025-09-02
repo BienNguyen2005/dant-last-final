@@ -1,152 +1,398 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
-  <title>In hóa đơn #<span th:text="${order.idHoadon}"></span></title>
+  <title th:text="'Hóa đơn #' + (order != null ? order.idHoadon : 'N/A')"></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="/static/css/vietnamese-fonts.css">
   <style>
+    :root {
+      --ink: #222;
+      --ink-light: #555;
+      --border: #d9d9d9;
+      --bg-soft: #f7f9fa;
+      --accent: #0a7;
+      --danger: #d23;
+      --spacing-xs: 4px;
+      --spacing-sm: 8px;
+      --spacing: 16px;
+      --radius: 6px;
+      --radius-sm: 4px;
+      --font-sm: 12px;
+      --font: 13px;
+      --font-lg: 18px;
+      --shadow: 0 2px 4px rgba(0, 0, 0, .06);
+    }
+
+    html,
     body {
-      font-family: 'Segoe UI', 'Arial Unicode MS', 'DejaVu Sans', 'Times New Roman', Arial, sans-serif;
-      background: #fff;
-      color: #000;
-      font-size: 14px;
       margin: 0;
       padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', 'Arial Unicode MS', 'DejaVu Sans', Arial, sans-serif;
+      background: #fff;
+      color: var(--ink);
+      font-size: var(--font);
+      line-height: 1.35;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
-    .invoice-container {
-      max-width: 700px;
+
+    .invoice-shell {
+      max-width: 780px;
       margin: 0 auto;
-      padding: 24px;
-      border: 1px solid #ccc;
+      padding: 32px 32px 40px;
+    }
+
+    .brand-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .brand-header .logo {
+      width: 56px;
+      height: 56px;
+      object-fit: contain;
+    }
+
+    .brand-text h1 {
+      font-size: 24px;
+      line-height: 1.1;
+      margin: 0 0 6px;
+      letter-spacing: .5px;
+    }
+
+    .brand-text .meta {
+      font-size: 12px;
+      color: var(--ink-light);
+    }
+
+    .invoice-title {
+      margin: 0 0 24px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--ink);
+      font-size: 20px;
+      letter-spacing: .5px;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px 24px;
+      margin-bottom: 24px;
+    }
+
+    .meta-item {
+      background: var(--bg-soft);
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+    }
+
+    .meta-label {
+      font-size: 11px;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .meta-value {
+      font-weight: 600;
+    }
+
+    table.invoice-lines {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin-bottom: 8px;
+    }
+
+    table.invoice-lines thead th {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      font-weight: 600;
+      padding: 10px 8px;
+      background: var(--ink);
+      color: #fff;
+      border: 1px solid var(--ink);
+    }
+
+    table.invoice-lines tbody td {
+      padding: 8px 8px;
+      border: 1px solid var(--border);
+      vertical-align: top;
       background: #fff;
     }
-    .text-center { text-align: center; }
-    .mb-2 { margin-bottom: 8px; }
-    .mb-3 { margin-bottom: 16px; }
-    .mb-4 { margin-bottom: 24px; }
-    .fw-bold { font-weight: bold; }
-    .table {
+
+    table.invoice-lines tbody tr:nth-child(even) td {
+      background: #fcfcfc;
+    }
+
+    table.invoice-lines tfoot td {
+      padding: 8px 8px;
+      border: 1px solid var(--border);
+      background: #fff;
+    }
+
+    .text-right {
+      text-align: right;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    .discount {
+      color: var(--danger);
+      font-weight: 600;
+    }
+
+    .muted {
+      color: var(--ink-light);
+    }
+
+    .totals-wrapper {
+      margin-top: 12px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .totals-card {
+      width: 320px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 16px 8px;
+      background: #fff;
+      box-shadow: var(--shadow);
+    }
+
+    .totals-card table {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 16px;
     }
-    .table th, .table td {
-      border: 1px solid #dee2e6;
-      padding: 8px;
-      text-align: left;
-    }
-    .table th {
-      background: #f8f9fa;
-    }
-    .right { text-align: right; }
-    .center { text-align: center; }
-    .footer {
-      margin-top: 32px;
-      text-align: center;
+
+    .totals-card td {
+      padding: 6px 0;
       font-size: 13px;
-      color: #888;
     }
+
+    .totals-card tr.separator td {
+      padding: 4px 0 2px;
+    }
+
+    .totals-card tr.separator td div {
+      height: 1px;
+      background: var(--border);
+      margin: 2px 0 4px;
+    }
+
+    .totals-card tr.grand td {
+      font-size: 15px;
+      font-weight: 600;
+      padding-top: 6px;
+      border-top: 2px solid var(--ink);
+    }
+
+    .footer-note {
+      margin-top: 40px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--ink-light);
+    }
+
+    .terms {
+      margin-top: 28px;
+      font-size: 11px;
+      line-height: 1.4;
+      color: var(--ink-light);
+    }
+
+    .qr-box {
+      position: absolute;
+      top: 32px;
+      right: 32px;
+      text-align: center;
+      font-size: 10px;
+      color: var(--ink-light);
+    }
+
+    .qr-box .qr-placeholder {
+      width: 90px;
+      height: 90px;
+      border: 1px dashed var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      border-radius: 6px;
+    }
+
     .alert {
-      padding: 12px;
-      margin-bottom: 16px;
-      border: 1px solid transparent;
-      border-radius: 4px;
-    }
-    .alert-danger {
+      padding: 10px 12px;
+      border: 1px solid #f5c6cb;
+      background: #f8d7da;
       color: #721c24;
-      background-color: #f8d7da;
-      border-color: #f5c6cb;
+      border-radius: var(--radius-sm);
+      margin-bottom: 16px;
     }
+
     @media print {
-      .no-print { display: none !important; }
-      .invoice-container { box-shadow: none; border: none; }
-      body { 
-        font-family: 'Segoe UI', 'Arial Unicode MS', 'DejaVu Sans', 'Times New Roman', Arial, sans-serif !important;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
+      body {
+        background: #fff;
       }
-      * { 
-        -webkit-print-color-adjust: exact !important;
-        color-adjust: exact !important;
+
+      .no-print {
+        display: none !important;
+      }
+
+      .invoice-shell {
+        padding: 24px 24px 32px;
+        box-shadow: none;
+      }
+
+      .qr-box {
+        position: fixed;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      @page {
+        margin: 14mm 10mm 16mm;
       }
     }
   </style>
 </head>
+
 <body class="vietnamese-font">
-  <div class="invoice-container invoice-print">
-    <!-- Error Message Display -->
-    <div th:if="${errorMessage}" class="alert alert-danger mb-3">
-      <strong>Lỗi:</strong> <span th:text="${errorMessage}"></span>
+  <div class="invoice-shell"
+    th:with="effectiveDiscountPercent=${derivedDiscountPercent != null ? derivedDiscountPercent : (order != null ? order.discountPercent : null)}">
+    <div th:if="${errorMessage}" class="alert"><strong>Lỗi:</strong> <span th:text="${errorMessage}"></span></div>
+    <div class="qr-box" aria-hidden="true">
+      <div class="qr-placeholder">QR</div>
     </div>
-    
-      <div class="text-center mb-3">
-      <img src="/static/img/favicon.ico" alt="Logo" style="height:48px; margin-bottom:8px;"/>
-      <h2 class="mb-2">NHÀ THUỐC DANT</h2>
-      <div>123 đường gì đó, tỉnh gì đó, thành phố gì đó</div>
-      <div>ĐT: 0123 456 789</div>
-      <hr class="mb-3"/>
-    </div>
-    <div class="mb-3">
-      <div><span class="fw-bold">Mã hóa đơn:</span> <span th:text="${order != null ? order.idHoadon : 'N/A'}"></span></div>
-      <div><span class="fw-bold">Ngày tạo:</span> <span th:text="${order.ngaytao != null ? #dates.format(order.ngaytao, 'dd/MM/yyyy HH:mm') : 'N/A'}"></span></div>
-      <div><span class="fw-bold">Khách hàng:</span> <span th:text="${order.khachHang != null ? order.khachHang.hoten : 'Khách lẻ'}"></span></div>
-      <div><span class="fw-bold">Người bán:</span> <span th:text="${order.users != null ? order.users.hoten : 'N/A'}"></span></div>
-      <div><span class="fw-bold">Hình thức thanh toán:</span>
-        <span th:if="${order != null && order.trangthai == 'ondelivery'}">Tiền mặt</span>
-        <span th:if="${order != null && order.trangthai == 'received'}">Chuyển khoản</span>
+    <div class="brand-header">
+      <img src="/static/img/favicon.ico" alt="Logo" class="logo" />
+      <div class="brand-text">
+        <h1>NHÀ THUỐC DANT</h1>
+        <div class="meta">123 đường gì đó, tỉnh gì đó, thành phố gì đó · ĐT: 0123 456 789</div>
       </div>
     </div>
-    <table class="table">
+    <h2 class="invoice-title" th:text="'HÓA ĐƠN BÁN HÀNG'">HÓA ĐƠN BÁN HÀNG</h2>
+    <div class="meta-grid">
+      <div class="meta-item">
+        <span class="meta-label">Mã hóa đơn</span>
+        <span class="meta-value" th:text="${order != null ? order.idHoadon : 'N/A'}"></span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Ngày tạo</span>
+        <span class="meta-value"
+          th:text="${order.ngaytao != null ? #dates.format(order.ngaytao, 'dd/MM/yyyy HH:mm') : 'N/A'}"></span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Khách hàng</span>
+        <span class="meta-value" th:text="${order.khachHang != null ? order.khachHang.hoten : 'Khách lẻ'}"></span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Người bán</span>
+        <span class="meta-value" th:text="${order.users != null ? order.users.hoten : 'N/A'}"></span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Thanh toán</span>
+        <span class="meta-value">
+          <span th:if="${order != null && order.trangthai == 'ondelivery'}">Tiền mặt</span>
+          <span th:if="${order != null && order.trangthai == 'received'}">Chuyển khoản</span>
+          <span th:if="${order == null || (order.trangthai != 'ondelivery' && order.trangthai != 'received')}">-</span>
+        </span>
+      </div>
+    </div>
+    <table class="invoice-lines">
       <thead>
         <tr>
           <th>Sản phẩm</th>
-          <th class="right">Đơn giá</th>
-          <th class="center">SL</th>
-          <th class="right">Thành tiền</th>
+          <th class="text-right">Đơn giá</th>
+          <th class="text-center" style="width:60px;">SL</th>
+          <th class="text-right" style="width:80px;">Giảm %</th>
+          <th class="text-right">Thành tiền</th>
         </tr>
       </thead>
       <tbody>
-        <tr th:each="sanpham : ${listSanPham != null ? listSanPham : {}}">
-          <td th:text="${sanpham.tenSanpham}"></td>
-          <td class="right">
-            <span th:if="${sanpham.giamgia == 0}" th:text="${#numbers.formatInteger(sanpham.gia, 0, 'COMMA')} + '₫'"></span>
-            <span th:if="${sanpham.giamgia > 0}">
-              <span th:text="${#numbers.formatInteger(sanpham.gia * (100 - sanpham.giamgia) / 100, 0, 'COMMA')} + '₫'"></span>
-              <br/>
-              <small style="text-decoration: line-through; color: #888;" th:text="${#numbers.formatInteger(sanpham.gia, 0, 'COMMA')} + '₫'"></small>
-              <span style="color: #d00; font-size: 12px;" th:text="'-' + ${sanpham.giamgia} + '%'"/>
-            </span>
+        <tr th:each="sanpham : ${listSanPham != null ? listSanPham : {}}"
+          th:with="unitPrice=${sanpham.gia * (100 - sanpham.giamgia)/100}">
+          <td>
+            <div style="font-weight:500;" th:text="${sanpham.tenSanpham}"></div>
           </td>
-          <td class="center" th:text="${sanpham.soluong}"></td>
-          <td class="right" th:text="${#numbers.formatInteger((sanpham.gia * (100 - sanpham.giamgia) / 100) * sanpham.soluong, 0, 'COMMA')} + '₫'"></td>
+          <td class="text-right">
+            <span th:text="${#numbers.formatInteger(sanpham.gia,0,'COMMA')}"></span><span>₫</span>
+            <div th:if="${sanpham.giamgia > 0}" class="muted" style="text-decoration:line-through; font-size:11px;">
+              <span th:text="${#numbers.formatInteger(sanpham.gia,0,'COMMA')}"></span><span>₫</span>
+            </div>
+          </td>
+          <td class="text-center" th:text="${sanpham.soluong}"></td>
+          <td class="text-right">
+            <span th:if="${sanpham.giamgia > 0}" th:text="${sanpham.giamgia + '%'}" class="discount"></span>
+            <span th:if="${sanpham.giamgia == 0}" class="muted">-</span>
+          </td>
+          <td class="text-right"><span
+              th:text="${#numbers.formatInteger(unitPrice * sanpham.soluong,0,'COMMA')}"></span><span>₫</span></td>
         </tr>
       </tbody>
-      <tfoot>
-        <tr>
-          <td colspan="3" class="right fw-bold">Tạm tính</td>
-          <td class="right" th:text="${tempPrice != null ? #numbers.formatInteger(tempPrice, 0, 'COMMA') + '₫' : '0₫'}"></td>
-        </tr>
-        <tr>
-          <td colspan="3" class="right fw-bold">Tổng giảm giá</td>
-          <td class="right" th:text="${order != null && order.discountAmount != null ? #numbers.formatInteger(order.discountAmount, 0, 'COMMA') + '₫' : '-'}"></td>
-        </tr>
-        <tr>
-          <td colspan="3" class="right fw-bold">Tổng tiền sau giảm</td>
-          <td class="right" th:text="${order != null && order.discountAmount != null && tempPrice != null ? #numbers.formatInteger(tempPrice - order.discountAmount, 0, 'COMMA') + '₫' : (tempPrice != null ? #numbers.formatInteger(tempPrice, 0, 'COMMA') + '₫' : '0₫')}"></td>
-        </tr>
-      </tfoot>
     </table>
-    <div class="footer">
-      Cảm ơn quý khách đã mua hàng!<br/>
-      Hẹn gặp lại quý khách!
+    <div class="totals-wrapper">
+      <div class="totals-card">
+        <table>
+          <tr>
+            <td style="width:60%;">Tạm tính</td>
+            <td class="text-right"><span
+                th:text="${tempPrice != null ? #numbers.formatInteger(tempPrice,0,'COMMA') : 0}"></span><span>₫</span>
+            </td>
+          </tr>
+          <tr>
+            <td>Giảm giá</td>
+            <td class="text-right">
+              <span th:if="${order != null && order.discountAmount != null}" class="discount">-</span>
+              <span th:if="${order != null && order.discountAmount != null}"
+                th:text="${#numbers.formatInteger(order.discountAmount,0,'COMMA')}"></span>
+              <span th:if="${order != null && order.discountAmount != null}">₫</span>
+              <span th:if="${order == null || order.discountAmount == null}" class="muted">-</span>
+            </td>
+          </tr>
+          <tr class="separator">
+            <td colspan="2">
+              <div></div>
+            </td>
+          </tr>
+          <tr class="grand">
+            <td>Tổng thanh toán</td>
+            <td class="text-right">
+              <span
+                th:text="${order != null && order.discountAmount != null && tempPrice != null ? #numbers.formatInteger(tempPrice - order.discountAmount,0,'COMMA') : (tempPrice != null ? #numbers.formatInteger(tempPrice,0,'COMMA') : 0)}"></span><span>₫</span>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <div class="terms">
+      Giá đã bao gồm VAT (nếu có). Vui lòng kiểm tra kỹ sản phẩm trước khi rời quầy. Hóa đơn có giá trị đổi trả theo
+      chính sách hiện hành trong vòng 7 ngày.
+    </div>
+    <div class="footer-note">
+      Cảm ơn quý khách đã mua hàng · Hẹn gặp lại!
     </div>
   </div>
   <script>
-    window.onload = function() {
-      window.print();
-    };
+    window.onload = function () { window.print(); };
   </script>
 </body>
-</html> 
+
+</html>

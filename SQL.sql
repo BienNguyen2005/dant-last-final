@@ -347,3 +347,56 @@ USE [master]
 GO
 ALTER DATABASE [STORE] SET  READ_WRITE 
 GO
+
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[VOUCHER]') AND type in (N'U'))
+BEGIN
+	CREATE TABLE [dbo].[VOUCHER](
+		[id_voucher] INT IDENTITY(1,1) NOT NULL,
+		[code] VARCHAR(50) NOT NULL,
+		[type] VARCHAR(20) NOT NULL, -- PERCENT or FIXED
+		[value] DECIMAL(18,2) NOT NULL,
+		[max_discount] DECIMAL(18,2) NULL,
+		[min_order_value] DECIMAL(18,2) NULL,
+		[usage_limit] INT NULL,
+		[usage_per_user] INT NULL,
+		[total_used] INT NOT NULL DEFAULT 0,
+		[start_date] DATETIME NULL,
+		[end_date] DATETIME NULL,
+		[active] BIT NOT NULL DEFAULT 1,
+		CONSTRAINT PK_VOUCHER PRIMARY KEY CLUSTERED ([id_voucher] ASC)
+	);
+	CREATE UNIQUE INDEX UX_VOUCHER_CODE ON [dbo].[VOUCHER]([code]);
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[VOUCHER_USAGE]') AND type in (N'U'))
+BEGIN
+	CREATE TABLE [dbo].[VOUCHER_USAGE](
+		[id_usage] INT IDENTITY(1,1) NOT NULL,
+		[id_voucher] INT NOT NULL,
+		[id_user] VARCHAR(50) NOT NULL,
+		[id_hoadon] INT NULL,
+		[used_at] DATETIME NOT NULL DEFAULT GETDATE(),
+		CONSTRAINT PK_VOUCHER_USAGE PRIMARY KEY CLUSTERED ([id_usage] ASC)
+	);
+	CREATE INDEX IX_VOUCHER_USAGE_VOUCHER_USER ON [dbo].[VOUCHER_USAGE]([id_voucher],[id_user]);
+	ALTER TABLE [dbo].[VOUCHER_USAGE]  WITH CHECK ADD  CONSTRAINT FK_VOUCHER_USAGE_VOUCHER FOREIGN KEY([id_voucher]) REFERENCES [dbo].[VOUCHER] ([id_voucher]);
+	ALTER TABLE [dbo].[VOUCHER_USAGE]  WITH CHECK ADD  CONSTRAINT FK_VOUCHER_USAGE_USERS FOREIGN KEY([id_user]) REFERENCES [dbo].[USERS] ([id_user]);
+	ALTER TABLE [dbo].[VOUCHER_USAGE]  WITH CHECK ADD  CONSTRAINT FK_VOUCHER_USAGE_HOADON FOREIGN KEY([id_hoadon]) REFERENCES [dbo].[HOADON] ([id_hoadon]);
+END
+GO
+
+/* Extend HOADON for voucher linkage if columns not present */
+IF COL_LENGTH('dbo.HOADON','voucher_code') IS NULL
+	ALTER TABLE [dbo].[HOADON] ADD [voucher_code] VARCHAR(50) NULL;
+GO
+IF COL_LENGTH('dbo.HOADON','voucher_discount_amount') IS NULL
+	ALTER TABLE [dbo].[HOADON] ADD [voucher_discount_amount] DECIMAL(18,2) NULL;
+GO
+IF COL_LENGTH('dbo.HOADON','id_voucher') IS NULL
+BEGIN
+	ALTER TABLE [dbo].[HOADON] ADD [id_voucher] INT NULL;
+	ALTER TABLE [dbo].[HOADON]  WITH CHECK ADD  CONSTRAINT FK_HOADON_VOUCHER FOREIGN KEY([id_voucher]) REFERENCES [dbo].[VOUCHER] ([id_voucher]);
+END
+GO
+

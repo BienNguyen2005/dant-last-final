@@ -1,0 +1,6 @@
+<!-- Cart Indicator Fragment -->
+<th:block th:fragment="cartIndicator(cartCount)">
+  <span id="cartBadge"
+        class="cart-count position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+        th:text="${cartCount != null ? cartCount : 0}">0</span>
+</th:block>

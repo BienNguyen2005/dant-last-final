@@ -1,176 +1,443 @@
-<!-- Top Bar -->
-<div class="top-bar bg-primary text-white py-2">
-  <div class="container">
-    <div class="row align-items-center">
-      <div class="col-lg-6 d-none d-lg-block">
-        <div class="d-flex gap-4">
-          <span><i class="fas fa-phone-alt me-2"></i>0931418748</span>
-          <span><i class="fas fa-envelope me-2"></i>support@medisale.com</span>
-        </div>
+<!-- Unified Super Header + Main Navigation -->
+<header class="site-header shadow-sm sticky-top">
+  <!-- Superbar -->
+  <div class="superbar bg-primary text-white small py-1 d-none d-lg-block">
+    <div class="container d-flex align-items-center justify-content-between">
+      <div class="d-flex gap-4 align-items-center">
+        <span class="d-inline-flex align-items-center"><i class="fas fa-phone-alt me-2"></i>0931418748</span>
+        <span class="d-inline-flex align-items-center"><i class="fas fa-envelope me-2"></i>support@medisale.com</span>
+        <span class="d-inline-flex align-items-center text-white-50"><i class="fas fa-shipping-fast me-2"></i>Giao nhanh
+          2H</span>
       </div>
-      <div class="col-lg-6">
-        <div class="text-end">
-          <a href="#" class="text-white me-3"><i class="fab fa-facebook-f"></i></a>
-          <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
-          <a href="#" class="text-white me-3"><i class="fab fa-instagram"></i></a>
-          <a href="#" class="text-white"><i class="fab fa-linkedin-in"></i></a>
+      <div class="d-flex align-items-center gap-3 social-bar">
+        <a href="#" class="text-white opacity-75 hover-bright"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" class="text-white opacity-75 hover-bright"><i class="fab fa-instagram"></i></a>
+        <a href="#" class="text-white opacity-75 hover-bright"><i class="fab fa-twitter"></i></a>
+        <a href="#" class="text-white opacity-75 hover-bright"><i class="fab fa-linkedin-in"></i></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main bar -->
+  <div class="mainbar bg-white border-bottom">
+    <div class="container d-flex align-items-stretch">
+      <div class="d-flex align-items-center">
+        <button class="btn btn-icon d-lg-none me-2" type="button" data-bs-toggle="offcanvas"
+          data-bs-target="#offcanvasMenu" aria-label="Menu">
+          <i class="fas fa-bars"></i>
+        </button>
+        <a class="navbar-brand d-flex align-items-center py-2 me-3" th:href="@{/}">
+          <i class="fas fa-clinic-medical text-primary me-2 brand-icon"></i>
+          <span class="fw-bold h5 mb-0 brand-text">MEDISALE</span>
+        </a>
+      </div>
+
+      <!-- Search (flex grow) -->
+      <div class="flex-grow-1 d-flex align-items-center">
+        <form th:action="@{/search}" method="get" class="search flex-grow-1" autocomplete="off">
+          <div class="search-wrapper d-flex align-items-center">
+            <input class="form-control search-input" type="text"
+              placeholder="Tìm kiếm thuốc, vitamin, thực phẩm chức năng..." name="q" th:value="${query}">
+            <button class="btn btn-primary search-btn" type="submit" aria-label="Tìm kiếm"><i
+                class="fas fa-search"></i></button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Right actions -->
+      <div class="actions d-flex align-items-center ms-3 gap-3">
+        <div class="dropdown d-none d-lg-block">
+          <div class="dropdown-menu p-0 shadow mega-cat">
+            <div class="py-2" style="max-height:360px;overflow:auto;">
+              <a class="dropdown-item" th:each="loai : ${loais}" th:href="@{/loai(id=${loai.idLoai})}"
+                th:text="${loai.tenLoai}"></a>
+            </div>
+            <div class="border-top text-center py-2">
+              <a th:href="@{/loai-all}" class="small text-decoration-none fw-medium"><i class="fas fa-list me-1"></i>Tất
+                cả danh mục</a>
+            </div>
+          </div>
         </div>
+
+        <!-- Auth (guest) -->
+        <div th:if="${currentUser == null}" class="d-none d-lg-flex gap-2 align-items-center">
+          <a th:href="@{/signin}" class="btn btn-outline-primary btn-sm"><i class="fas fa-sign-in-alt me-1"></i>Đăng
+            nhập</a>
+          <a th:href="@{/signup}" class="btn btn-primary btn-sm"><i class="fas fa-user-plus me-1"></i>Đăng ký</a>
+        </div>
+
+        <!-- User dropdown -->
+        <div th:if="${currentUser != null}" class="dropdown">
+          <a href="#" class="user-link d-inline-flex align-items-center text-decoration-none" data-bs-toggle="dropdown"
+            aria-expanded="false">
+            <span class="avatar flex-center me-2"><i class="fas fa-user"></i></span>
+            <span class="d-none d-xl-inline text-truncate" style="max-width:140px;" th:text="${currentUser.hoten}">Tài
+              khoản</span>
+            <i class="fas fa-chevron-down ms-1 text-muted small"></i>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+            <li th:if="${currentUser.vaitro}"><a class="dropdown-item" th:href="@{/admin}"><i
+                  class="fas fa-cog me-2"></i>Admin</a></li>
+            <li><a class="dropdown-item" th:href="@{/setting}"><i class="fas fa-user-cog me-2"></i>Tài khoản</a></li>
+            <li><a class="dropdown-item" th:href="@{/order}"><i class="fas fa-clipboard-list me-2"></i>Đơn hàng</a></li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li>
+              <form th:action="@{/signout}" method="get" class="m-0 p-0">
+                <button type="submit" class="dropdown-item" data-logout="user-dropdown"><i
+                    class="fas fa-sign-out-alt me-2"></i>Đăng xuất</button>
+              </form>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Cart -->
+        <a th:href="@{/cart}" class="cart-link position-relative text-decoration-none" aria-label="Giỏ hàng">
+          <span class="cart-icon flex-center"><i class="fas fa-shopping-cart"></i></span>
+          <th:block th:replace="~{fragments/_cartIndicator :: cartIndicator(cartCount=${session.cartCount})}">
+          </th:block>
+        </a>
+
+        <!-- Mobile auth/cart quick (guest) -->
+        <a th:if="${currentUser == null}" th:href="@{/signin}" class="d-lg-none btn btn-outline-primary btn-sm"
+          aria-label="Đăng nhập"><i class="fas fa-user"></i></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Secondary nav (desktop) -->
+  <div class="nav-strip bg-white d-none d-lg-block">
+    <div class="container">
+      <ul class="menu list-unstyled d-flex mb-0">
+        <li><a href="#" class="menu-link">Sản phẩm mới</a></li>
+        <li><a href="#" class="menu-link">Khuyến mãi</a></li>
+        <li><a href="#" class="menu-link">Tin tức</a></li>
+        <li><a href="#" class="menu-link">Liên hệ</a></li>
+      </ul>
+    </div>
+  </div>
+</header>
+
+<!-- Offcanvas (mobile) -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasMenu" aria-labelledby="offcanvasMenuLabel">
+  <div class="offcanvas-header border-bottom">
+    <h6 class="offcanvas-title mb-0" id="offcanvasMenuLabel">Menu</h6>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body d-flex flex-column">
+    <div class="mb-3">
+      <form th:action="@{/search}" method="get" class="" autocomplete="off">
+        <div class="input-group input-group-sm">
+          <input type="text" class="form-control" placeholder="Tìm kiếm..." name="q" th:value="${query}">
+          <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i></button>
+        </div>
+      </form>
+    </div>
+    <div class="mb-4">
+      <h6 class="text-uppercase small fw-bold text-muted mb-2">Danh mục</h6>
+      <div class="list-group list-group-flush small cat-list-mobile">
+        <a class="list-group-item list-group-item-action" th:each="loai : ${loais}"
+          th:href="@{/loai(id=${loai.idLoai})}" th:text="${loai.tenLoai}"></a>
+        <a class="list-group-item list-group-item-action text-primary fw-semibold" th:href="@{/loai-all}"><i
+            class="fas fa-th-list me-1"></i>Tất cả</a>
+      </div>
+    </div>
+    <div class="mt-auto pt-3 border-top small">
+      <div th:if="${currentUser == null}">
+        <a th:href="@{/signin}" class="btn btn-primary w-100 mb-2">Đăng nhập</a>
+        <a th:href="@{/signup}" class="btn btn-outline-primary w-100">Đăng ký</a>
+      </div>
+      <div th:if="${currentUser != null}" class="list-group list-group-flush">
+        <span class="list-group-item disabled" th:text="${currentUser.hoten}">Tài khoản</span>
+        <a class="list-group-item" th:if="${currentUser.vaitro}" th:href="@{/admin}"><i
+            class="fas fa-cog me-2"></i>Admin</a>
+        <a class="list-group-item" th:href="@{/setting}"><i class="fas fa-user-cog me-2"></i>Cài đặt</a>
+        <a class="list-group-item" th:href="@{/order}"><i class="fas fa-clipboard-list me-2"></i>Đơn hàng</a>
+        <form th:action="@{/signout}" method="get" class="list-group-item p-0 border-0">
+          <button class="btn w-100 text-start px-3 py-2"><i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</button>
+        </form>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Main Header -->
-<header class="header-main border-bottom shadow-sm sticky-top bg-white">
-  <div class="container">
-    <div class="row py-3 align-items-center">
-      <!-- Logo -->
-      <div class="col-lg-2 col-sm-4 col-6">
-        <a class="navbar-brand d-flex align-items-center" th:href="@{/}">
-          <i class="fas fa-clinic-medical text-primary me-2" style="font-size: 1.8rem;"></i>
-          <h1 class="mb-0 h4 fw-bold">MEDISALE</h1>
-        </a>
-      </div>
-      
-      <!-- Search -->
-      <div class="col-lg-5 col-sm-8 col-6 order-lg-0 order-3">
-        <form th:action="@{/search}" method="get" class="search-form" autocomplete="off">
-          <div class="input-group">
-            <input type="text" class="form-control" placeholder="Tìm kiếm sản phẩm..." name="q" th:value="${query}">
-            <button class="btn btn-primary" type="submit">
-              <i class="fas fa-search"></i>
-            </button>
-          </div>
-        </form>
-      </div>
-
-      <!-- User Actions -->
-      <div class="col-lg-5 d-none d-lg-block">
-        <div class="d-flex justify-content-end align-items-center gap-4">
-          <div th:if="${session.currentUser == null}" class="d-flex gap-2">
-            <a class="btn btn-outline-primary" th:href="@{/signin}">
-              <i class="fas fa-sign-in-alt me-2"></i>Đăng nhập
-            </a>
-            <a class="btn btn-primary" th:href="@{/signup}">
-              <i class="fas fa-user-plus me-2"></i>Đăng ký
-            </a>
-          </div>
-          
-          <div th:if="${session.currentUser != null}" class="d-flex align-items-center gap-4">
-            <a th:if="${session.currentUser.vaitro}" th:href="@{/admin}" 
-               class="text-dark text-decoration-none">
-              <i class="fas fa-cog fs-5"></i>
-              <span class="ms-2">Admin</span>
-            </a>
-            
-            <div class="dropdown">
-              <a href="#" class="text-dark text-decoration-none dropdown-toggle" 
-                 data-bs-toggle="dropdown">
-                <i class="fas fa-user-circle fs-5"></i>
-                <span class="ms-2" th:text="${session.currentUser.hoten}">Tài khoản</span>
-              </a>
-              <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" th:href="@{/setting}">
-                  <i class="fas fa-user-cog me-2"></i>Cài đặt tài khoản
-                </a></li>
-                <li><a class="dropdown-item" th:href="@{/order}">
-                  <i class="fas fa-clipboard-list me-2"></i>Đơn hàng
-                </a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" th:href="@{/signout}">
-                  <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
-                </a></li>
-              </ul>
-            </div>
-            
-            <a th:href="@{/cart}" class="text-dark text-decoration-none position-relative">
-              <i class="fas fa-shopping-cart fs-5"></i>
-              <span class="cart-count position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" 
-                    th:text="${session.cartCount ?: 0}">0</span>
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</header>
-
-<!-- Navigation -->
-<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
-  <div class="container">
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
-            data-bs-target="#navbarMain" aria-expanded="false">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    
-    <div class="collapse navbar-collapse" id="navbarMain">
-      <ul class="navbar-nav">
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle fw-bold" href="#" 
-             data-bs-toggle="dropdown">
-            <i class="fas fa-bars me-2"></i>Danh mục sản phẩm
-          </a>
-          <ul class="dropdown-menu">
-            <li th:each="loai : ${loais}">
-              <a class="dropdown-item" th:href="@{/loai(id=${loai.idLoai})}" 
-                 th:text="${loai.tenLoai}"></a>
-            </li>
-            <li><hr class="dropdown-divider"></li>
-            <li>
-              <a class="dropdown-item" th:href="@{/loai-all}">
-                <i class="fas fa-th-list me-2"></i>Tất cả danh mục
-              </a>
-            </li>
-          </ul>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Sản phẩm mới</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Khuyến mãi</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Tin tức</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Liên hệ</a>
-        </li>
-      </ul>
-    </div>
-  </div>
-</nav>
-
 <style>
-.top-bar {
-  font-size: 0.9rem;
-}
-.top-bar a:hover {
-  opacity: 0.8;
-}
-.header-main {
-  z-index: 1020;
-}
-.search-form .form-control {
-  border-radius: 20px 0 0 20px;
-  border-right: none;
-}
-.search-form .btn {
-  border-radius: 0 20px 20px 0;
-}
-.navbar .nav-link {
-  padding: 1rem 1.2rem;
-  color: #333;
-}
-.navbar .nav-link:hover {
-  color: var(--bs-primary);
-}
-.dropdown-menu {
-  border: none;
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-}
-@media (max-width: 991.98px) {
-  .search-form {
-    margin: 1rem 0;
+  /* Layout */
+  .site-header {
+    z-index: 1030;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   }
-}
+
+  .superbar .hover-bright:hover {
+    opacity: 1 !important;
+  }
+
+  .mainbar {
+    min-height: 64px;
+    display: flex;
+    align-items: center;
+  }
+
+  .brand-icon {
+    font-size: 1.9rem;
+  }
+
+  .brand-text {
+    letter-spacing: .5px;
+  }
+
+  /* Search */
+  .search-wrapper {
+    position: relative;
+    background: #f3f6f8;
+    border-radius: 40px;
+    padding: .35rem .6rem .35rem 1rem;
+    width: 100%;
+    transition: background .25s;
+  }
+
+  .search-wrapper:focus-within {
+    background: #e9eef2;
+    box-shadow: 0 0 0 2px rgba(13, 110, 253, .15);
+  }
+
+  .search-input {
+    background: transparent;
+    border: none;
+    box-shadow: none !important;
+    font-size: .95rem;
+    padding: .45rem .75rem .45rem 0;
+  }
+
+  .search-input:focus {
+    outline: 0;
+  }
+
+  .search-btn {
+    border-radius: 30px !important;
+    padding: .55rem .95rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Buttons / Icons */
+  .btn-icon {
+    background: #f1f4f7;
+    border: 1px solid #e1e5ea;
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+  }
+
+  .btn-icon:active,
+  .btn-icon:hover {
+    background: #e3e9ef;
+  }
+
+  .btn-cat {
+    background: #fff;
+    border-color: #dfe4ea !important;
+  }
+
+  .btn-cat:hover {
+    background: #f6f9fb;
+  }
+
+  /* User / Cart */
+  .avatar {
+    width: 38px;
+    height: 38px;
+    background: #f1f4f7;
+    border-radius: 50%;
+  }
+
+  .avatar i {
+    font-size: 1rem;
+  }
+
+  .user-link {
+    color: #212529;
+    font-weight: 500;
+  }
+
+  .user-link:hover {
+    color: #0d6efd;
+  }
+
+  .cart-link {
+    color: #212529;
+  }
+
+  .cart-link:hover .cart-icon {
+    background: #0d6efd;
+    color: #fff;
+  }
+
+  .cart-icon {
+    width: 42px;
+    height: 42px;
+    background: #f1f4f7;
+    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.05rem;
+    transition: .25s;
+  }
+
+  /* Menu strip */
+  .nav-strip {
+    border-bottom: 1px solid #e5e9ec;
+  }
+
+  .menu {
+    gap: 1.25rem;
+  }
+
+  .menu-link {
+    display: inline-block;
+    padding: .85rem .25rem;
+    color: #495057;
+    font-weight: 500;
+    position: relative;
+  }
+
+  .menu-link:after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: .4rem;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #0d6efd, #20c997);
+    border-radius: 2px;
+    transition: .3s;
+  }
+
+  .menu-link:hover {
+    color: #0d6efd;
+  }
+
+  .menu-link:hover:after {
+    width: 60%;
+    left: 20%;
+  }
+
+  /* Mega category */
+  .mega-cat {
+    min-width: 240px;
+  }
+
+  .mega-cat .dropdown-item {
+    padding: .55rem 1rem;
+    font-size: .9rem;
+  }
+
+  .mega-cat .dropdown-item:hover {
+    background: #f3f7fb;
+  }
+
+  /* Helpers */
+  .flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .opacity-75 {
+    opacity: .75 !important;
+  }
+
+  .hover-bright {
+    transition: opacity .25s, transform .25s;
+  }
+
+  .hover-bright:hover {
+    transform: translateY(-1px);
+  }
+
+  /* Offcanvas */
+  #offcanvasMenu .list-group-item {
+    border: none;
+    border-bottom: 1px solid #f1f2f4;
+    padding: .65rem .75rem;
+  }
+
+  #offcanvasMenu .list-group-item:last-child {
+    border-bottom: none;
+  }
+
+  #offcanvasMenu .list-group-item:hover {
+    background: #f5f9fc;
+  }
+
+  #offcanvasMenu .btn {
+    font-size: .9rem;
+  }
+
+  /* Scrollbars for category list */
+  .mega-cat .py-2::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .mega-cat .py-2::-webkit-scrollbar-thumb {
+    background: #ced4da;
+    border-radius: 3px;
+  }
+
+  /* Responsive */
+  @media (max-width:1199.98px) {
+    .search-input {
+      font-size: .9rem;
+    }
+  }
+
+  @media (max-width:991.98px) {
+    .mainbar {
+      padding: .25rem 0;
+    }
+
+    .search-wrapper {
+      padding: .3rem .5rem .3rem .85rem;
+    }
+
+    .search-btn {
+      padding: .5rem .75rem;
+    }
+
+    .cart-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+    }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+    }
+
+    .brand-text {
+      font-size: 1.1rem;
+    }
+  }
+
+  @media (max-width:575.98px) {
+    .brand-text {
+      display: none;
+    }
+
+    .mainbar {
+      min-height: 56px;
+    }
+
+    .cart-icon {
+      width: 38px;
+      height: 38px;
+    }
+  }
 </style>

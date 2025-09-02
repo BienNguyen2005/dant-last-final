@@ -10,231 +10,275 @@
 
 <body class="bg-light">
   <th:block th:replace="~{admin/_headerAdmin}" />
-  
-    <!-- Dashboard Stats -->
 
-    <!-- Main Content -->
+  <div class="container-fluid px-4 py-3">
+    <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
+      <div>
+        <h5 class="mb-1">Dashboard</h5>
+        <div class="text-muted-sm">Tổng quan hiệu suất & số liệu</div>
+      </div>
+      <div class="ms-auto"></div>
+    </div>
+
+    <!-- Metrics Row -->
+    <div class="row g-3 mb-3">
+      <div class="col-6 col-md-3" th:if="${reportRevenueStatistics != null}">
+        <div class="card-elevated p-3 h-100 d-flex flex-column">
+          <div class="text-muted-sm mb-1">Doanh thu</div>
+          <div class="fw-bold" style="font-size:1.05rem;"
+            th:text="${#numbers.formatInteger(reportRevenueStatistics.tongDoanhThu,0,'COMMA')} + '₫'"></div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3" th:if="${reportRevenueStatistics != null}">
+        <div class="card-elevated p-3 h-100 d-flex flex-column">
+          <div class="text-muted-sm mb-1">Số lượng bán</div>
+          <div class="fw-bold" style="font-size:1.05rem;"
+            th:text="${#numbers.formatInteger(reportRevenueStatistics.tongSoLuong,0,'COMMA')}"></div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3" th:if="${reportRevenueStatistics != null}">
+        <div class="card-elevated p-3 h-100 d-flex flex-column">
+          <div class="text-muted-sm mb-1">Giá cao nhất</div>
+          <div class="fw-bold" style="font-size:1.05rem;"
+            th:text="${#numbers.formatInteger(reportRevenueStatistics.giaCaoNhat,0,'COMMA')} + '₫'"></div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3" th:if="${reportRevenueStatistics != null}">
+        <div class="card-elevated p-3 h-100 d-flex flex-column">
+          <div class="text-muted-sm mb-1">Giá trung bình</div>
+          <div class="fw-bold" style="font-size:1.05rem;"
+            th:text="${#numbers.formatInteger(reportRevenueStatistics.giaTrungBinh,0,'COMMA')} + '₫'"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chart + Side -->
     <div class="row g-4">
-      <!-- Revenue Chart -->
       <div class="col-lg-8">
-        <div class="card border-0 shadow-sm">
-          <div class="card-header bg-white border-0 py-3">
-            <div class="d-flex justify-content-between align-items-center">
-              <h5 class="card-title mb-0">Thống kê doanh thu</h5>
+        <div class="card-elevated p-3 h-100 d-flex flex-column chart-card">
+          <div class="d-flex align-items-center gap-3 mb-2 flex-wrap">
+            <div class="form-section-title mb-0 d-flex align-items-center gap-2">
+              <i class="fas fa-chart-line text-primary"></i>
+              <span>Thống kê doanh thu</span>
             </div>
-          </div>
-          <div class="card-body">
-            <form id="statsForm" class="mb-4">
-              <div class="row g-3">
-                <div class="col-md-4">
-                  <select id="categorySelect" name="idLoai" class="form-select" onchange="submitForm()">
-                    <option disabled selected>Chọn loại hàng</option>
-                    <option th:each="item : ${loais}" 
-                            th:selected="${idLoai == item.idLoai}" 
-                            th:value="${item.idLoai}" 
-                            th:text="${item.tenLoai}">
-                    </option>
-                  </select>
-                </div>
-              </div>
+            <form id="statsForm" class="ms-auto d-flex align-items-center gap-2">
+              <select id="categorySelect" name="idLoai" class="form-select form-select-sm" onchange="submitForm()"
+                aria-label="Chọn loại hàng">
+                <option disabled selected>Chọn loại hàng</option>
+                <option th:each="item : ${loais}" th:selected="${idLoai == item.idLoai}" th:value="${item.idLoai}"
+                  th:text="${item.tenLoai}"></option>
+              </select>
             </form>
-            <canvas id="revenueChart" height="300"></canvas>
+          </div>
+          <div id="chartContainer" class="chart-container flex-grow-1 position-relative">
+            <div id="chartEmptyState" class="empty-state d-none">
+              <div class="empty-icon mb-2"><i class="fas fa-signal"></i></div>
+              <div class="fw-semibold mb-1">Chưa có dữ liệu</div>
+              <div class="text-muted-sm">Chọn một loại hàng để xem thống kê</div>
+            </div>
+            <canvas id="revenueChart" aria-label="Biểu đồ doanh thu" role="img"></canvas>
           </div>
         </div>
       </div>
-
-      <!-- Top Customers -->
-      <!-- <div class="col-lg-4">
-        <div class="card border-0 shadow-sm">
-          <div class="card-header bg-white border-0 py-3">
-            <h5 class="card-title mb-0">Top khách hàng VIP</h5>
+      <div class="col-lg-4">
+        <div class="card-elevated p-0 h-100 d-flex flex-column">
+          <div class="p-3 pb-2 d-flex align-items-center justify-content-between">
+            <div class="form-section-title mb-0">Top khách hàng VIP</div>
           </div>
-          <div class="card-body p-0">
-            <div class="table-responsive">
-              <table class="table table-hover mb-0">
-                <thead class="table-light">
-                  <tr>
-                    <th>Khách hàng</th>
-                    <th>Tổng chi tiêu</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <th:block th:if="${reportKhachHangVip != null}">
-                    <tr th:each="item : ${reportKhachHangVip}">
-                      <td>
-                        <div class="d-flex align-items-center">
-                          <img th:if="${item.hinh == null}" th:src="@{img/280px.png}" alt="Avatar" id="avatarPreview" class="rounded-circle me-2" width="32" height="32" th:alt="${item.tenKhachHang}">
-				    	  <img th:if="${item.hinh != null}" th:src="@{/image/{url}(url=${item.hinh})}" id="avatarPreview" class="rounded-circle me-2" width="32" height="32" th:alt="${item.tenKhachHang}">
-                          <div>
-                            <h6 class="mb-0" th:text="${item.tenKhachHang}"></h6>
-                            <small class="text-muted" th:text="${#dates.format(item.ngayMuaDauTien, 'dd/MM/yyyy')}"></small>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <span class="fw-bold" th:text="${#numbers.formatInteger(item.tongTienDaMua, 3, 'POINT')}">₫</span>
-                      </td>
-                    </tr>
-                  </th:block>
-                  <tr th:if="${reportKhachHangVip == null}">
-                    <td colspan="2" class="text-center py-4">Không có dữ liệu</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+          <div class="table-responsive" style="max-height:340px;">
+            <table class="table table-modern table-compact mb-0">
+              <thead>
+                <tr>
+                  <th>Khách hàng</th>
+                  <th class="text-end">Chi tiêu</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="item : ${reportKhachHangVip}" th:if="${reportKhachHangVip != null}">
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      <img th:if="${item.hinh == null}" th:src="@{img/280px.png}" width="36" height="36"
+                        class="rounded-circle" alt="Avatar" loading="lazy" />
+                      <img th:if="${item.hinh != null}" th:src="@{/image/{url}(url=${item.hinh})}" width="36"
+                        height="36" class="rounded-circle" th:alt="${item.tenKhachHang}" loading="lazy" />
+                      <div>
+                        <div class="fw-semibold" th:text="${item.tenKhachHang}"></div>
+                        <div class="text-muted-sm" th:text="${#dates.format(item.ngayMuaDauTien,'dd/MM/yyyy')}"></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="text-end" th:text="${#numbers.formatInteger(item.tongTienDaMua,3,'POINT')}"></td>
+                </tr>
+                <tr th:if="${reportKhachHangVip == null || #lists.isEmpty(reportKhachHangVip)}">
+                  <td colspan="2" class="text-center text-muted py-4">Không có dữ liệu</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
-      </div> -->
+      </div>
     </div>
   </div>
 
-<!--   <th:block th:replace="~{admin/_footerAdmin}" /> -->
+  <!--   <th:block th:replace="~{admin/_footerAdmin}" /> -->
 
   <script th:inline="javascript">
     /*<![CDATA[*/
-    var reportData = {
-      tongDoanhThu: [[${reportRevenueStatistics?.tongDoanhThu}]] || 0,
-      tongSoLuong: [[${reportRevenueStatistics?.tongSoLuong}]] || 0,
-      giaCaoNhat: [[${reportRevenueStatistics?.giaCaoNhat}]] || 0,
-      giaThapNhat: [[${reportRevenueStatistics?.giaThapNhat}]] || 0,
-      giaTrungBinh: [[${reportRevenueStatistics?.giaTrungBinh}]] || 0
+    const reportData = {
+      tongDoanhThu: /*[[${reportRevenueStatistics != null ? reportRevenueStatistics.tongDoanhThu : null}]]*/ null,
+      tongSoLuong: /*[[${reportRevenueStatistics != null ? reportRevenueStatistics.tongSoLuong : null}]]*/ null,
+      giaCaoNhat: /*[[${reportRevenueStatistics != null ? reportRevenueStatistics.giaCaoNhat : null}]]*/ null,
+      giaThapNhat: /*[[${reportRevenueStatistics != null ? reportRevenueStatistics.giaThapNhat : null}]]*/ null,
+      giaTrungBinh: /*[[${reportRevenueStatistics != null ? reportRevenueStatistics.giaTrungBinh : null}]]*/ null
     };
 
-    var ctx = document.getElementById('revenueChart').getContext('2d');
-    var revenueChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['Giá thấp nhất', 'Giá trung bình', 'Giá cao nhất', 'Tổng doanh thu', 'Tổng số lượng'],
-        datasets: [{
-          label: 'Thống kê giá & doanh thu',
-          data: [
-            reportData.giaThapNhat,
-            reportData.giaTrungBinh,
-            reportData.giaCaoNhat,
-            reportData.tongDoanhThu,
-            null
-          ],
-          backgroundColor: [
-            'rgba(255, 206, 86, 0.6)',  // Vàng
-            'rgba(153, 102, 255, 0.6)',  // Tím
-            'rgba(255, 99, 132, 0.6)',   // Đỏ
-            'rgba(54, 162, 235, 0.6)'    // Xanh dương
-          ],
-          borderColor: [
-            'rgba(255, 206, 86, 1)',
-            'rgba(153, 102, 255, 1)',
-            'rgba(255, 99, 132, 1)',
-            'rgba(54, 162, 235, 1)'
-          ],
-          borderWidth: 1,
-          yAxisID: 'y-axis-1'
-        },
-        {
-          label: 'Tổng số lượng',
-          data: [
-            null,
-            null,
-            null,
-            null,
-            reportData.tongSoLuong
-          ],
-          backgroundColor: 'rgba(75, 192, 192, 0.6)',  // Xanh lá
-          borderColor: 'rgba(75, 192, 192, 1)',
-          borderWidth: 1,
-          yAxisID: 'y-axis-2'
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: true,
-        aspectRatio: 2,
-        interaction: {
-          intersect: false,
-          mode: 'index'
-        },
-        scales: {
-          'y-axis-1': {
-            type: 'linear',
-            display: true,
-            position: 'left',
-            beginAtZero: true,
-            title: {
-              display: true,
-              text: 'Giá & Doanh thu (VNĐ)'
+    function hasData(obj) { return obj && Object.values(obj).some(v => v !== null && v !== 0); }
+    function formatCurrency(v) {
+      return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(v || 0);
+    }
+    function formatNumber(v) { return new Intl.NumberFormat('vi-VN').format(v || 0); }
+
+    const canvas = document.getElementById('revenueChart');
+    const emptyStateEl = document.getElementById('chartEmptyState');
+    const chartWrapper = document.getElementById('chartContainer');
+
+    if (!hasData(reportData)) {
+      emptyStateEl.classList.remove('d-none');
+      canvas.classList.add('d-none');
+    } else {
+      canvas.classList.remove('d-none');
+      emptyStateEl.classList.add('d-none');
+
+      const ctx = canvas.getContext('2d');
+      const lightPalette = {
+        revenue: 'rgba(54, 162, 235, 0.65)',
+        min: 'rgba(255, 206, 86, 0.65)',
+        avg: 'rgba(153, 102, 255, 0.65)',
+        max: 'rgba(255, 99, 132, 0.65)',
+        qty: 'rgba(75, 192, 192, 0.65)'
+      };
+      const darkPalette = {
+        revenue: 'rgba(54, 162, 235, 0.5)',
+        min: 'rgba(255, 206, 86, 0.5)',
+        avg: 'rgba(153, 102, 255, 0.5)',
+        max: 'rgba(255, 99, 132, 0.5)',
+        qty: 'rgba(75, 192, 192, 0.5)'
+      };
+      function isDark() { return document.documentElement.classList.contains('dark'); }
+      function palette() { return isDark() ? darkPalette : lightPalette; }
+
+      const chartConfig = {
+        type: 'bar',
+        data: {
+          labels: ['Giá thấp nhất', 'Giá trung bình', 'Giá cao nhất', 'Tổng doanh thu', 'Tổng số lượng'],
+          datasets: [
+            {
+              label: 'Giá & Doanh thu',
+              data: [reportData.giaThapNhat, reportData.giaTrungBinh, reportData.giaCaoNhat, reportData.tongDoanhThu, null],
+              backgroundColor: () => [palette().min, palette().avg, palette().max, palette().revenue],
+              borderWidth: 0,
+              yAxisID: 'y1',
+              maxBarThickness: 46
             },
-            ticks: {
-              callback: function(value) {
-                return new Intl.NumberFormat('vi-VN', {
-                  style: 'currency',
-                  currency: 'VND'
-                }).format(value);
-              }
+            {
+              type: 'line',
+              label: 'Tổng số lượng',
+              data: [null, null, null, null, reportData.tongSoLuong],
+              borderColor: palette().qty,
+              backgroundColor: palette().qty,
+              tension: .3,
+              fill: false,
+              pointRadius: 5,
+              yAxisID: 'y2'
             }
-          },
-          'y-axis-2': {
-            type: 'linear',
-            display: true,
-            position: 'right',
-            beginAtZero: true,
-            title: {
-              display: true,
-              text: 'Số lượng (sản phẩm)'
-            },
-            grid: {
-              drawOnChartArea: false
-            }
-          },
-          x: {
-            grid: {
-              display: false
-            }
-          }
+          ]
         },
-        plugins: {
-          legend: {
-            display: true,
-            position: 'top'
+        options: {
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          scales: {
+            y1: {
+              beginAtZero: true,
+              grid: { color: isDark() ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.08)' },
+              ticks: { callback: v => formatCurrency(v) }
+            },
+            y2: {
+              beginAtZero: true,
+              position: 'right',
+              grid: { drawOnChartArea: false },
+              ticks: { callback: v => formatNumber(v) }
+            },
+            x: { grid: { display: false } }
           },
-          tooltip: {
-            callbacks: {
-              label: function(context) {
-                let value = context.raw;
-                if (!value) return '';
-                
-                if (context.datasetIndex === 0) {
-                  return 'Giá trị: ' + new Intl.NumberFormat('vi-VN', {
-                    style: 'currency',
-                    currency: 'VND'
-                  }).format(value);
-                } else {
-                  return 'Số lượng: ' + value + ' sản phẩm';
+          plugins: {
+            legend: { display: true, labels: { usePointStyle: true, boxWidth: 8 } },
+            tooltip: {
+              callbacks: {
+                label: ctx => {
+                  const v = ctx.raw;
+                  if (v == null) return '';
+                  return ctx.dataset.yAxisID === 'y2' ? 'Số lượng: ' + formatNumber(v) : 'Giá trị: ' + formatCurrency(v);
                 }
               }
             }
           }
         }
-      }
-    });
+      };
 
-    function submitForm() {
-      document.getElementById("statsForm").submit();
+      let revenueChart = new Chart(ctx, chartConfig);
+
+      // Responsive resize (Chart.js v4 handles, but ensure container sizing)
+      new ResizeObserver(() => revenueChart.resize()).observe(chartWrapper);
+
+      // Re-theme on dark mode toggle (if a toggle adds/removes .dark class)
+      const observer = new MutationObserver(() => {
+        const pal = palette();
+        revenueChart.data.datasets[0].backgroundColor = [pal.min, pal.avg, pal.max, pal.revenue];
+        revenueChart.data.datasets[1].borderColor = pal.qty;
+        revenueChart.data.datasets[1].backgroundColor = pal.qty;
+        revenueChart.options.scales.y1.grid.color = isDark() ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.08)';
+        revenueChart.update('none');
+      });
+      observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
     }
+
+    function submitForm() { document.getElementById('statsForm').submit(); }
     /*]]>*/
   </script>
 
   <style>
-    .card {
-      transition: transform 0.2s ease-in-out;
+    .chart-card {
+      min-height: 380px;
     }
-    .card:hover {
-      transform: translateY(-5px);
+
+    .chart-container {
+      min-height: 300px;
     }
-    .table > :not(caption) > * > * {
+
+    .chart-container canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    .empty-state {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
       padding: 1rem;
+      color: var(--color-muted-text, #6c757d);
     }
-    .dropdown-menu {
-      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-      border: none;
+
+    .empty-state .empty-icon {
+      font-size: 2rem;
+      opacity: .35;
+    }
+
+    html.dark .empty-state {
+      color: var(--color-muted-text, #adb5bd);
     }
   </style>
 </body>

@@ -19,7 +19,7 @@ import com.poly.service.LoaiService;
 import com.poly.service.SanPhamService;
 import com.poly.service.UserService;
 
-import jakarta.servlet.http.HttpSession;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @Controller
 public class AdminController {
@@ -31,15 +31,10 @@ public class AdminController {
 	SanPhamService sanPhamService;
 	@Autowired
 	HoaDonService hoaDonService;
-	@Autowired
-	private HttpSession session;
 
 	@GetMapping("/admin")
+	@PreAuthorize("hasRole('ADMIN')")
 	public String home(@RequestParam(defaultValue = "0", name = "idLoai") int idLoai, Model model) {
-		Users currentUser = (Users) session.getAttribute("currentUser");
-		if (currentUser == null || !currentUser.isVaitro()) {
-			return "redirect:/signin";
-		}
 		ReportRevenueStatistics reportRevenueStatistics = hoaDonService.thongKeDoanhThuTheoLoai(idLoai);
 		if (reportRevenueStatistics.getTongDoanhThu() != 0L) {
 			model.addAttribute("reportRevenueStatistics", reportRevenueStatistics);
@@ -55,11 +50,8 @@ public class AdminController {
 	}
 
 	@GetMapping("/admin/user")
+	@PreAuthorize("hasRole('ADMIN')")
 	public String userManager(Model model, @RequestParam(defaultValue = "0", name = "page") int page) {
-		Users currentUser = (Users) session.getAttribute("currentUser");
-		if (currentUser == null || !currentUser.isVaitro()) {
-			return "redirect:/signin";
-		}
 
 		Page<Users> userPage = userService.getAllUsers(page, 8);
 
@@ -70,21 +62,15 @@ public class AdminController {
 	}
 
 	@GetMapping("/admin/user/create")
+	@PreAuthorize("hasRole('ADMIN')")
 	public String userCreate(Model model, @ModelAttribute("user") Users user) {
-		Users currentUser = (Users) session.getAttribute("currentUser");
-		if (currentUser == null || !currentUser.isVaitro()) {
-			return "redirect:/signin";
-		}
 		return "admin/user/createUser";
 	}
 
 	@PostMapping("/admin/user/create")
+	@PreAuthorize("hasRole('ADMIN')")
 	public String userInsert(Model model, @ModelAttribute("user") Users user) {
 		try {
-			Users currentUser = (Users) session.getAttribute("currentUser");
-			if (currentUser == null || !currentUser.isVaitro()) {
-				return "redirect:/signin";
-			}
 			userService.create(user);
 			model.addAttribute("successMessage", "Tạo tài khoản thành công");
 		} catch (Exception e) {
@@ -94,11 +80,8 @@ public class AdminController {
 	}
 
 	@GetMapping("/admin/user/edit/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
 	public String showUpdateForm(@PathVariable("id") String id, Model model) {
-		Users currentUser = (Users) session.getAttribute("currentUser");
-		if (currentUser == null || !currentUser.isVaitro()) {
-			return "redirect:/signin";
-		}
 		try {
 			Users user = userService.getUserById(id);
 			model.addAttribute("user", user);
@@ -109,12 +92,9 @@ public class AdminController {
 	}
 
 	@PostMapping("/admin/user/update/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
 	public String updateUser(Model model, @PathVariable("id") String id, @ModelAttribute("user") Users updatedUser) {
 		try {
-			Users currentUser = (Users) session.getAttribute("currentUser");
-			if (currentUser == null || !currentUser.isVaitro()) {
-				return "redirect:/signin";
-			}
 			userService.updateUser(id, updatedUser);
 			model.addAttribute("successMessage", "Cập nhật tài khoản thành công");
 		} catch (Exception e) {
@@ -124,6 +104,7 @@ public class AdminController {
 	}
 
 	@GetMapping("/admin/user/delete/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
 	public String deleteUser(Model model, @PathVariable("id") String id, RedirectAttributes redirectAttributes) {
 		try {
 			userService.deleteUser(id);
