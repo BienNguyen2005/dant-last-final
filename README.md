@@ -1,4 +1,4 @@
-## DANT Pharmacy — Hướng dẫn cài đặt và chạy (VI/EN)
+## DANT Pharmacy — Hướng dẫn cài đặt và chạy
 
 > Spring Boot 3.3 (Java 17), SQL Server, Thymeleaf, Spring Security, JPA, Mail, PayOS.
 

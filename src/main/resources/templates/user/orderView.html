@@ -10,89 +10,89 @@
 </head>
 
 <body>
-<th:block th:replace="~{user/_header}" />
+  <th:block th:replace="~{user/_header}" />
 
-<section class="section-pagetop bg-light">
-  <div class="container">
-    <h2 class="title-page">Đơn hàng</h2>
-  </div> <!-- container.// -->
-</section> <!-- section-pagetop.// -->
+  <section class="section-pagetop bg-light">
+    <div class="container">
+      <h2 class="title-page">Đơn hàng</h2>
+    </div>
+  </section>
 
-<section class="section-content padding-y">
-  <div class="container">
-    <div class="row">
-       <th:block th:if="${session.currentUser != null}">
-         <th:block th:insert="~{user/navPanel :: nav(active='ORDER')}"></th:block>
+  <section class="section-content padding-y">
+    <div class="container">
+      <div class="row">
+        <th:block th:if="${currentUser != null}">
+          <th:block th:insert="~{user/navPanel :: nav(active='ORDER')}"></th:block>
 
-         <main class="col-md-9">
+          <main class="col-md-9">
 
-           <div class="table-responsive-xxl">
-             <table class="table table-bordered table-striped table-hover align-middle">
-               <thead>
-               <tr>
-                 <th scope="col" style="min-width: 125px;">Mã đơn hàng</th>
-                 <th scope="col" style="min-width: 100px;">Ngày mua</th>
-                 <th scope="col" style="min-width: 100px;">Giao hàng</th>
-                 <th scope="col" style="min-width: 175px;">Trạng thái đơn hàng</th>
-                 <th scope="col">Thao tác</th>
-               </tr>
-               </thead>
-               <tbody>
-               <th:block th:each="order:${orders}">
-                 <tr>
-                   <th scope="row" th:text="${order.idHoadon}"></th>
-                   <td th:text="${#dates.format(order.ngaytao, 'dd/MM/yyyy')}"></td>
-                   <td th:text="${order.giaohang == 'Giao hàng nhanh'?'Giao hàng nhanh (+50.000₫)':'Giao hàng tiêu chuẩn (+20.000₫)'}"></td>
-                   <td>
-                      <th:block th:if="${order.trangthai == 'ondelivery'}">
-                        <span class="badge bg-warning text-dark">Đang giao hàng</span>
-                      </th:block>
-                      <th:block th:if="${order.trangthai == 'received'}">
-                        <span class="badge bg-success">Giao hàng thành công</span>
-                      </th:block>
-                      <th:block th:if="${order.trangthai == 'cancel'}">
-                        <span class="badge bg-danger">Hủy đơn hàng</span>
-                      </th:block>
-                   </td>
-                   <td class="text-center text-nowrap">
-                     <a class="btn btn-primary me-2"
-                        th:href="@{/orderDetail(id=${order.idHoadon})}"
-                        role="button">
-                       Xem đơn hàng
-                     </a>
-                   </td>
-                 </tr>
-               </th:block>
-               </tbody>
-             </table>
-           </div>
+            <div class="table-responsive-xxl">
+              <table class="table table-bordered table-striped table-hover align-middle">
+                <thead>
+                  <tr>
+                    <th scope="col" style="min-width: 125px;">Mã đơn hàng</th>
+                    <th scope="col" style="min-width: 100px;">Ngày mua</th>
+                    <th scope="col" style="min-width: 100px;">Giao hàng</th>
+                    <th scope="col" style="min-width: 175px;">Trạng thái đơn hàng</th>
+                    <th scope="col">Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <th:block th:each="order:${orders}">
+                    <tr>
+                      <th scope="row" th:text="${order.idHoadon}"></th>
+                      <td th:text="${#dates.format(order.ngaytao, 'dd/MM/yyyy')}"></td>
+                      <td
+                        th:text="${order.giaohang == 'Giao hàng nhanh'?'Giao hàng nhanh (+50.000₫)':'Giao hàng tiêu chuẩn (+20.000₫)'}">
+                      </td>
+                      <td>
+                        <th:block th:if="${order.trangthai == 'ondelivery'}">
+                          <span class="badge bg-warning text-dark">Đang giao hàng</span>
+                        </th:block>
+                        <th:block th:if="${order.trangthai == 'received'}">
+                          <span class="badge bg-success">Giao hàng thành công</span>
+                        </th:block>
+                        <th:block th:if="${order.trangthai == 'cancel'}">
+                          <span class="badge bg-danger">Hủy đơn hàng</span>
+                        </th:block>
+                      </td>
+                      <td class="text-center text-nowrap">
+                        <a class="btn btn-primary me-2" th:href="@{/orderDetail(id=${order.idHoadon})}" role="button">
+                          Xem đơn hàng
+                        </a>
+                      </td>
+                    </tr>
+                  </th:block>
+                </tbody>
+              </table>
+            </div>
 
-           <div th:if="${totalPages > 0}">
-	        <nav class="mt-4 d-flex justify-content-center">
-	          <ul class="pagination">
-	            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-	              <a class="page-link" th:href="@{/order(page=${currentPage - 1})}">Trang trước</a>
-	            </li>
-	
-	            <li th:each="i : ${#numbers.sequence(1, totalPages)}"
-	                class="page-item"  th:classappend="${currentPage == i - 1} ? 'active'">
-	              <a class="page-link" th:href="@{/order(page=${i - 1})}" th:text="${i}"></a>
-	            </li>
-	
-	            <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
-	              <a class="page-link" th:href="@{/order(page=${currentPage + 1})}">Trang sau</a>
-	            </li>
-	          </ul>
-	        </nav>
-	      </div>
+            <div th:if="${totalPages > 0}">
+              <nav class="mt-4 d-flex justify-content-center">
+                <ul class="pagination">
+                  <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                    <a class="page-link" th:href="@{/order(page=${currentPage - 1})}">Trang trước</a>
+                  </li>
 
-         </main> <!-- col.// -->
-       </th:block>
-    </div> <!-- row.// -->
-  </div> <!-- container.// -->
-</section> <!-- section-content.// -->
+                  <li th:each="i : ${#numbers.sequence(1, totalPages)}" class="page-item"
+                    th:classappend="${currentPage == i - 1} ? 'active'">
+                    <a class="page-link" th:href="@{/order(page=${i - 1})}" th:text="${i}"></a>
+                  </li>
 
-<th:block th:replace="~{user/_footer}" />
+                  <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                    <a class="page-link" th:href="@{/order(page=${currentPage + 1})}">Trang sau</a>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+
+          </main>
+        </th:block>
+      </div>
+    </div>
+  </section>
+
+  <th:block th:replace="~{user/_footer}" />
 </body>
 
 </html>

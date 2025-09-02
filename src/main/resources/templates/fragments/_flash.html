@@ -1,0 +1,18 @@
+<div th:fragment="flashMessages">
+  <div th:if="${success}" class="alert alert-success d-flex align-items-center py-2 px-3 mb-2" role="alert">
+    <i class="fas fa-check-circle me-2"></i>
+    <span th:text="${success}"></span>
+  </div>
+  <div th:if="${error}" class="alert alert-danger d-flex align-items-center py-2 px-3 mb-2" role="alert">
+    <i class="fas fa-exclamation-triangle me-2"></i>
+    <span th:text="${error}"></span>
+  </div>
+  <div th:if="${warning}" class="alert alert-warning d-flex align-items-center py-2 px-3 mb-2" role="alert">
+    <i class="fas fa-info-circle me-2"></i>
+    <span th:text="${warning}"></span>
+  </div>
+  <div th:if="${info}" class="alert alert-info d-flex align-items-center py-2 px-3 mb-2" role="alert">
+    <i class="fas fa-info-circle me-2"></i>
+    <span th:text="${info}"></span>
+  </div>
+</div>

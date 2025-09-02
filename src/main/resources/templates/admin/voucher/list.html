@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:replace="~{user/_meta}" />
+    <title>Voucher - MEDISALE Admin</title>
+</head>
+
+<body class="bg-light">
+    <th:block th:replace="~{admin/_headerAdmin}" />
+
+    <div class="container-fluid px-4">
+        <div class="d-flex flex-wrap gap-3 justify-content-between align-items-center mb-3">
+            <div>
+                <h2 class="h4 mb-0">Voucher</h2>
+                <div class="text-muted-sm">Quản lý mã khuyến mãi & giới hạn sử dụng</div>
+            </div>
+            <div class="d-flex gap-2">
+                <button id="btnRefresh" class="btn btn-soft-secondary"><i class="fas fa-sync-alt me-2"></i>Tải
+                    lại</button>
+                <a class="btn btn-primary" th:href="@{/admin/vouchers/create}"><i class="fas fa-plus me-2"></i>Tạo
+                    voucher</a>
+            </div>
+        </div>
+
+        <div class="flash-container" th:replace="~{fragments/_flash :: flashMessages}"></div>
+
+        <!-- Filters -->
+        <div class="card-elevated mb-3 p-3">
+            <form id="filterForm" class="row g-2 align-items-end">
+                <div class="col-sm-4 col-md-3">
+                    <label class="form-section-title">Tìm kiếm</label>
+                    <input type="text" class="form-control" id="searchInput" placeholder="Mã hoặc loại...">
+                </div>
+                <div class="col-sm-4 col-md-3">
+                    <label class="form-section-title">Trạng thái</label>
+                    <select class="form-select" id="statusFilter">
+                        <option value="">Tất cả</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                        <option value="upcoming">Chưa bắt đầu</option>
+                        <option value="expired">Hết hạn</option>
+                    </select>
+                </div>
+                <div class="col-sm-4 col-md-3">
+                    <label class="form-section-title">Loại</label>
+                    <select class="form-select" id="typeFilter">
+                        <option value="">Tất cả</option>
+                        <option value="PERCENT">PERCENT</option>
+                        <option value="FIXED">FIXED</option>
+                    </select>
+                </div>
+                <div class="col-sm-4 col-md-3 text-sm-end">
+                    <label class="form-section-title d-block">&nbsp;</label>
+                    <button type="button" id="btnClearFilters" class="btn btn-sm btn-outline-secondary">Xóa lọc</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card-elevated overflow-hidden">
+            <div class="table-responsive">
+                <table class="table-modern table table-sm mb-0 align-middle" id="voucherTable">
+                    <thead>
+                        <tr class="bg-light">
+                            <th class="sticky-head">Mã</th>
+                            <th class="sticky-head hide-md">Loại</th>
+                            <th class="sticky-head">Giá trị</th>
+                            <th class="sticky-head hide-md">Điều kiện</th>
+                            <th class="sticky-head">Giới hạn</th>
+                            <th class="sticky-head">Đã dùng</th>
+                            <th class="sticky-head hide-md">Khoảng thời gian</th>
+                            <th class="sticky-head text-end">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="v : ${vouchers}"
+                            th:with="now=${#dates.createNow()},
+                                     s=${v.startDate},
+                                     e=${v.endDate},
+                                     active=${v.active},
+                                     statusText=${(!active) ? 'Inactive' : ((s != null and now.before(s)) ? 'Upcoming' : ((e != null and now.after(e)) ? 'Expired' : 'Active'))},
+                                     statusClass=${(!active) ? 'status-inactive' : ((s != null and now.before(s)) ? 'status-upcoming' : ((e != null and now.after(e)) ? 'status-expired' : 'status-active'))}"
+                            th:data-code="${v.code}" th:data-type="${v.type}" th:data-active="${v.active}"
+                            th:data-start="${v.startDate}" th:data-end="${v.endDate}" th:data-used="${v.totalUsed}"
+                            th:data-usage-limit="${v.usageLimit}">
+                            <td class="fw-semibold">
+                                <div class="d-flex flex-column">
+                                    <span class="code-preview" th:text="${v.code}"></span>
+                                    <div class="mt-1 d-flex flex-wrap gap-1">
+                                        <span class="badge badge-soft-primary" th:text="${v.type}"></span>
+                                        <span th:if="${v.usagePerUser != null}" class="badge badge-soft-secondary"
+                                            th:text="'PerUser:'+${v.usagePerUser}"></span>
+                                        <span th:if="${v.maxDiscount != null}" class="badge badge-soft-warning"
+                                            th:text="'Max '+${v.maxDiscount}"></span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="hide-md" th:text="${v.type}"></td>
+                            <td th:text="${v.type == 'PERCENT' ? v.value + '%' : #numbers.formatDecimal(v.value,1,0)}">
+                            </td>
+                            <td class="hide-md">
+                                <div class="text-muted-sm" th:if="${v.minOrderValue != null}"
+                                    th:text="'ĐH ≥ '+${#numbers.formatDecimal(v.minOrderValue,1,0)}"></div>
+                                <div class="text-muted-sm" th:if="${v.maxDiscount != null}"
+                                    th:text="'Giảm tối đa '+${v.maxDiscount}"></div>
+                            </td>
+                            <td>
+                                <div th:if="${v.usageLimit != null}" class="text-muted-sm">
+                                    <span th:text="${v.totalUsed != null ? v.totalUsed : 0}"></span>/<span
+                                        th:text="${v.usageLimit}"></span>
+                                    <div class="usage-bar mt-1"><span
+                                            th:style="${v.totalUsed != null && v.usageLimit != null && v.usageLimit>0 ? 'width:' + (v.totalUsed * 100 / v.usageLimit) + '%' : 'width:0%'}"></span>
+                                    </div>
+                                </div>
+                                <div th:if="${v.usageLimit == null}" class="text-muted-sm">∞</div>
+                            </td>
+                            <td>
+                                <span class="status-badge" th:classappend=" ' ' + ${statusClass}"
+                                    th:text="${statusText}"></span>
+                            </td>
+                            <td class="hide-md"
+                                th:text="${(v.startDate != null ? #dates.format(v.startDate, 'dd/MM HH:mm') : '') + (v.endDate != null ? ' → ' + #dates.format(v.endDate, 'dd/MM HH:mm') : '')}">
+                            </td>
+                            <td class="text-end">
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                                        data-bs-toggle="dropdown">Chọn</button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li><a class="dropdown-item"
+                                                th:href="@{'/admin/vouchers/' + ${v.id} + '/edit'}"><i
+                                                    class="fas fa-edit me-2"></i>Sửa</a></li>
+                                        <li>
+                                            <form th:action="@{'/admin/vouchers/' + ${v.id} + '/delete'}" method="post"
+                                                th:onsubmit="return confirm('Xóa voucher?');">
+                                                <button type="submit" class="dropdown-item text-danger"><i
+                                                        class="fas fa-trash me-2"></i>Xóa</button>
+                                            </form>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(vouchers)}">
+                            <td colspan="8" class="text-center py-4 text-muted">Chưa có voucher nào</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const searchInput = document.getElementById('searchInput');
+        const statusFilter = document.getElementById('statusFilter');
+        const typeFilter = document.getElementById('typeFilter');
+        const table = document.getElementById('voucherTable').querySelector('tbody');
+        document.getElementById('btnClearFilters').addEventListener('click', () => { searchInput.value = ''; statusFilter.value = ''; typeFilter.value = ''; filterRows(); });
+        ;['input', 'change'].forEach(ev => { searchInput.addEventListener(ev, filterRows); statusFilter.addEventListener(ev, filterRows); typeFilter.addEventListener(ev, filterRows); });
+        function statusOf(row) {
+            const active = row.dataset.active === 'true';
+            const start = row.dataset.start ? new Date(row.dataset.start) : null;
+            const end = row.dataset.end ? new Date(row.dataset.end) : null;
+            const now = new Date();
+            if (!active) return 'inactive';
+            if (start && now < start) return 'upcoming';
+            if (end && now > end) return 'expired';
+            return 'active';
+        }
+        function filterRows() {
+            const q = searchInput.value.trim().toLowerCase();
+            const st = statusFilter.value;
+            const tp = typeFilter.value;
+            table.querySelectorAll('tr').forEach(tr => {
+                if (!tr.dataset.code) return; // skip empty row
+                const code = tr.dataset.code.toLowerCase();
+                const type = tr.dataset.type;
+                const stRow = statusOf(tr);
+                const matchQ = !q || code.includes(q) || type.toLowerCase().includes(q);
+                const matchSt = !st || st === stRow;
+                const matchTp = !tp || tp === type;
+                tr.style.display = (matchQ && matchSt && matchTp) ? '' : 'none';
+            });
+        }
+        document.getElementById('btnRefresh').addEventListener('click', () => location.reload());
+        /*]]>*/
+    </script>
+
+    <style>
+        /* Local adjustments; consider moving to global styles if reused */
+        #voucherTable tbody tr {
+            transition: background .15s;
+        }
+
+        #voucherTable tbody tr:hover {
+            background: var(--color-table-row-hover, var(--bs-light-bg-subtle, #f5f7fa));
+        }
+
+        .dropdown-menu .dropdown-item i {
+            width: 16px;
+        }
+
+        .usage-bar {
+            background: var(--color-border-soft, #e5e9ef);
+            height: 4px;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .usage-bar span {
+            display: block;
+            height: 100%;
+            background: var(--color-accent, var(--bs-primary));
+        }
+
+        .status-badge {
+            font-size: .65rem;
+            letter-spacing: .5px;
+            font-weight: 500;
+        }
+
+        .status-badge.status-active {
+            background: var(--color-accent, #0d6efd);
+            color: #fff;
+        }
+
+        .status-badge.status-upcoming {
+            background: var(--color-info-soft, #e0f4ff);
+            color: var(--color-info-text, #055160);
+        }
+
+        .status-badge.status-expired {
+            background: var(--color-danger-soft, #ffe0e0);
+            color: var(--color-danger-text, #6a1010);
+        }
+
+        .status-badge.status-inactive {
+            background: var(--color-muted-soft, #e2e5e9);
+            color: var(--color-muted-text, #495057);
+        }
+
+        html.dark .status-badge.status-upcoming {
+            background: #05374a;
+            color: #8dd7ff;
+        }
+
+        html.dark #voucherTable tbody tr:hover {
+            background: rgba(255, 255, 255, .05);
+        }
+
+        html.dark .usage-bar {
+            background: rgba(255, 255, 255, .12);
+        }
+
+        html.dark .usage-bar span {
+            background: var(--color-accent, #3d8bfd);
+        }
+    </style>
+
+</body>
+
+</html>

@@ -1,125 +1,190 @@
-<header class="header-admin fixed-top">
-  <!-- Top Navigation -->
-  <nav class="navbar navbar-expand navbar-dark bg-primary px-3">
-    <div class="container-fluid">
-      <!-- Brand -->
-      <a class="navbar-brand d-flex align-items-center" th:href="@{/admin}">
+<header class="admin-shell">
+  <div class="admin-topbar d-flex align-items-center px-3 flex-wrap">
+    <div class="brand d-flex align-items-center me-3">
+      <a class="d-flex align-items-center text-white text-decoration-none" th:href="@{/admin}">
         <i class="fas fa-clinic-medical me-2"></i>
         <span class="fw-bold">MEDISALE ADMIN</span>
       </a>
-
-      <!-- Top Right Menu -->
-      <ul class="navbar-nav ms-auto d-flex align-items-center">
-        <!-- Client Site Link -->
-        <!-- <li class="nav-item me-3">
-          <a th:href="@{/}" class="nav-link" target="_blank">
-            <i class="fas fa-external-link-alt me-1"></i>
-            Xem trang chủ
-          </a>
-        </li> -->
-
-        <!-- User Menu -->
-        <li class="nav-item">
-          <a class="nav-link d-flex align-items-center" th:href="@{/signout}">
-            <i class="fas fa-sign-out-alt me-2"></i>
-            <span>Đăng xuất</span>
-          </a>
-        </li>
-      </ul>
     </div>
-  </nav>
-
-  <!-- Main Navigation -->
-  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-3">
-    <div class="container-fluid">
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <div class="collapse navbar-collapse" id="adminNavbar">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a th:if="${session.currentUser.vaitro}"  class="nav-link" th:href="@{/admin}">
-              <i class="fas fa-tachometer-alt me-2"></i>Dashboard
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" th:href="@{/banhangtaiquay}">
-              <i class="fas fa-shopping-bag me-2"></i>Bán Hàng
-            </a>
-          </li>
-          <li class="nav-item">
-            <a th:if="${session.currentUser.vaitro}" class="nav-link" th:href="@{/admin/user}">
-              <i class="fas fa-users me-2"></i>Quản lý nhân viên
-            </a>
-          </li>
-          <li class="nav-item">
-            <a th:if="${session.currentUser.vaitro}" class="nav-link" th:href="@{/admin/khachhang}">
-              <i class="fas fa-users me-2"></i>Quản lý khách hàng
-            </a>
-          </li>
-          <li th:if="${session.currentUser.vaitro}" class="nav-item">
-            <a class="nav-link" th:href="@{/admin/loai}">
-              <i class="fas fa-tags me-2"></i>Quản lý thể loại
-            </a>
-          </li>
-          <li th:if="${session.currentUser.vaitro}" class="nav-item">
-            <a class="nav-link" th:href="@{/admin/sanpham}">
-              <i class="fas fa-box me-2"></i>Quản lý sản phẩm
-            </a>
-          </li>
-          <li th:if="${session.currentUser.vaitro}" class="nav-item">
-            <a class="nav-link" th:href="@{/admin/hoadon}">
-              <i class="fas fa-file-invoice me-2"></i>Quản lý đơn hàng
-            </a>
-          </li>
-        </ul>
-      </div>
+    <button class="btn btn-sm btn-outline-light d-lg-none me-2" id="navToggle" type="button"
+      aria-label="Toggle navigation">
+      <i class="fas fa-bars"></i>
+    </button>
+    <div class="ms-auto d-flex align-items-center gap-3 flex-wrap topbar-actions">
+      <a class="text-white text-decoration-none small d-none d-md-inline external-link" th:href="@{/}"
+        target="_blank"><i class="fas fa-external-link-alt me-1"></i>Trang người dùng</a>
+      <form th:action="@{/signout}" method="get" class="m-0 p-0 d-inline" id="logoutFormFull">
+        <button type="submit" class="btn btn-outline-light logout-btn logout-full" data-logout="full">
+          <i class="fas fa-sign-out-alt me-1"></i>Đăng xuất
+        </button>
+      </form>
+      <form th:action="@{/signout}" method="get" class="m-0 p-0 d-inline" id="logoutFormIcon">
+        <button type="submit" class="btn btn-sm btn-outline-light logout-btn logout-icon d-none" aria-label="Đăng xuất" data-logout="icon">
+          <i class="fas fa-sign-out-alt"></i>
+        </button>
+      </form>
     </div>
+  </div>
+  <nav id="adminNav" class="admin-nav border-top">
+    <ul class="nav-scroll list-unstyled mb-0 d-flex flex-nowrap">
+      <li th:if="${currentUser != null and currentUser.vaitro}"><a th:href="@{/admin}" data-path="/admin"
+          class="nav-link-item"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
+      <li><a th:href="@{/banhangtaiquay}" data-path="/banhangtaiquay" class="nav-link-item"><i
+            class="fas fa-shopping-bag me-2"></i>Bán Hàng</a></li>
+      <li th:if="${currentUser != null and currentUser.vaitro}"><a th:href="@{/admin/user}" data-path="/admin/user"
+          class="nav-link-item"><i class="fas fa-users me-2"></i>Nhân viên</a></li>
+      <li th:if="${currentUser != null and currentUser.vaitro}"><a th:href="@{/admin/khachhang}"
+          data-path="/admin/khachhang" class="nav-link-item"><i class="fas fa-user-friends me-2"></i>Khách hàng</a></li>
+      <li th:if="${currentUser != null and currentUser.vaitro}"><a th:href="@{/admin/loai}" data-path="/admin/loai"
+          class="nav-link-item"><i class="fas fa-tags me-2"></i>Thể loại</a></li>
+      <li th:if="${currentUser != null and currentUser.vaitro}"><a th:href="@{/admin/sanpham}"
+          data-path="/admin/sanpham" class="nav-link-item"><i class="fas fa-box me-2"></i>Sản phẩm</a></li>
+      <li th:if="${currentUser != null and currentUser.vaitro}"><a th:href="@{/admin/hoadon}" data-path="/admin/hoadon"
+          class="nav-link-item"><i class="fas fa-file-invoice me-2"></i>Đơn hàng</a></li>
+      <li th:if="${currentUser != null and currentUser.vaitro}"><a th:href="@{/admin/vouchers}"
+          data-path="/admin/vouchers" class="nav-link-item"><i class="fas fa-ticket-alt me-2"></i>Voucher</a></li>
+    </ul>
   </nav>
 </header>
-
-<!-- Spacer to prevent content from hiding under fixed header -->
-<div style="margin-top: 120px;"></div>
-
+<div class="admin-offset"></div>
 <style>
-.header-admin {
-  z-index: 1030;
-}
-
-.navbar-dark .navbar-nav .nav-link {
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.navbar-dark .navbar-nav .nav-link:hover {
-  color: #fff;
-}
-
-.navbar-light .navbar-nav .nav-link {
-  color: #495057;
-  padding: 1rem 1.5rem;
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
-
-.navbar-light .navbar-nav .nav-link:hover {
-  color: var(--bs-primary);
-  background-color: rgba(13, 110, 253, 0.1);
-}
-
-.navbar-light .navbar-nav .nav-link.active {
-  color: var(--bs-primary);
-  background-color: rgba(13, 110, 253, 0.1);
-}
-
-@media (max-width: 991.98px) {
-  .navbar-light .navbar-nav .nav-link {
-    padding: 0.5rem 1rem;
+  .admin-shell {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1030;
+    background: var(--color-primary);
+    color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, .15);
   }
-  
-  /* Spacer adjustment for mobile */
-  div[style*="margin-top: 120px"] {
-    margin-top: 110px !important;
+
+  .admin-topbar {
+    min-height: 52px;
   }
-}
+
+  .admin-nav {
+    background: #fff;
+    padding: .35rem .5rem;
+  }
+
+  .admin-offset {
+    height: 102px;
+  }
+
+  @media (max-width: 991.98px) {
+    .admin-offset {
+      height: 110px;
+    }
+  }
+
+  .admin-nav .nav-link-item {
+    display: inline-flex;
+    align-items: center;
+    padding: .65rem 1rem;
+    margin-right: .25rem;
+    font-size: .85rem;
+    font-weight: 500;
+    border-radius: var(--radius-pill);
+    color: #495057;
+    text-decoration: none;
+    position: relative;
+  }
+
+  .admin-nav .nav-link-item:hover {
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+  }
+
+  .admin-nav .nav-link-item.active {
+    background: var(--color-primary);
+    color: #fff;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .nav-scroll {
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+
+  .nav-scroll::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .nav-scroll::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, .2);
+    border-radius: 10px;
+  }
+
+  #adminNav {
+    transition: max-height .3s ease;
+  }
+
+  @media (max-width: 767.98px) {
+    #adminNav {
+      max-height: 0;
+      overflow: hidden;
+    }
+
+    #adminNav.open {
+      max-height: 300px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, .15);
+    }
+
+    .admin-nav .nav-link-item {
+      width: 100%;
+      margin: 0 0 .25rem 0;
+    }
+
+    .nav-scroll {
+      flex-direction: column !important;
+      display: flex;
+    }
+  }
+
+  /* Small breakpoint adjustments */
+  @media (max-width: 575.98px) {
+    .admin-topbar .topbar-actions {
+      gap: .4rem !important;
+      width: 100%;
+      justify-content: flex-start;
+    }
+
+    .admin-topbar .topbar-actions a {
+      white-space: nowrap;
+    }
+
+    .admin-topbar .topbar-actions .btn {
+      flex: 0 0 auto;
+    }
+
+    .admin-topbar {
+      row-gap: .35rem;
+    }
+
+  }
+
+  @media (max-width: 440px) {
+    .admin-topbar .topbar-actions .external-link { display: none !important; }
+    .admin-topbar .topbar-actions .logout-full { display: none !important; }
+    .admin-topbar .topbar-actions .logout-icon { display: inline-flex !important; }
+  }
 </style>
+<script th:inline="javascript">
+  const toggle = document.getElementById('navToggle');
+  const nav = document.getElementById('adminNav');
+  if (toggle) { toggle.addEventListener('click', () => nav.classList.toggle('open')); }
+  const path = window.location.pathname;
+  document.querySelectorAll('#adminNav .nav-link-item').forEach(a => {
+    const p = a.getAttribute('data-path');
+    if (path === p || (p !== '/admin' && path.startsWith(p))) { a.classList.add('active'); }
+  });
+  // Logout graceful fallback (prevent double clicks)
+  document.querySelectorAll('form button.logout-btn').forEach(btn => {
+    btn.addEventListener('click', function(e){
+      const form = this.closest('form');
+      if(form.dataset.submitted){ e.preventDefault(); return; }
+      form.dataset.submitted = 'true';
+    });
+  });
+</script>

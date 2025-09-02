@@ -29,7 +29,7 @@ public class UserService {
 	@Autowired
 	UsersRepository usersRepository;
 	@Autowired
-	private HttpSession session;
+	HttpSession session; // only used for invalidate in logout, no user storage
 	@Autowired
 	GioHangRepository gioHangRepository;
 	@Autowired
@@ -78,12 +78,11 @@ public class UserService {
 			throw new IllegalArgumentException("Email người dùng đã tồn tại!");
 		}
 
-		Optional<Users> existingUserByPhone = usersRepository.findBySdt(user.getSdt());
-		if (existingUserByPhone.isPresent()) {
-			throw new IllegalArgumentException("Số điện thoại đã được sử dụng!");
-		}
-		
-		// Encode password before saving
+        Optional<Users> existingUserByPhone2 = usersRepository.findBySdt(user.getSdt());
+        if (existingUserByPhone2.isPresent()) {
+            throw new IllegalArgumentException("Số điện thoại đã được sử dụng!");
+        }
+		// Encode password before saving (admin creating user)
 		user.setMatkhau(passwordEncoder.encode(user.getMatkhau()));
 		usersRepository.save(user);
 
@@ -127,7 +126,7 @@ public class UserService {
 			
 			// Encode and save new password
 			user.setMatkhau(passwordEncoder.encode(newPassword));
-			session.setAttribute("currentUser", usersRepository.save(user));
+			usersRepository.save(user);
 			return user;
 		} else {
 			throw new RuntimeException("Không tìm thấy người dùng!");
@@ -147,7 +146,7 @@ public class UserService {
 			}
 			user.setHoten(updatedUser.getHoten());
 			user.setSdt(updatedUser.getSdt());
-			session.setAttribute("currentUser", usersRepository.save(user));
+			usersRepository.save(user);
 			return user;
 		} else {
 			throw new RuntimeException("Không tìm thấy người dùng!");
@@ -178,12 +177,10 @@ public class UserService {
 			usersRepository.save(user);
 		}
 		
-		// Generate JWT token and store in session
+		// Generate JWT tokens (stateless)
 		String accessToken = jwtService.generateAccessToken(user);
 		String refreshToken = jwtService.generateRefreshToken(user);
-		
-		session.setAttribute("currentUser", user);
-		session.setAttribute("jwt_token", accessToken);
+		// (No storing user or token in session anymore)
 		
 		// Store tokens in cookies
 		Cookie accessTokenCookie = new Cookie("jwt_token", accessToken);

@@ -10,119 +10,99 @@
 <body class="bg-light">
   <th:block th:replace="~{admin/_headerAdmin}" />
 
-  <div class="container-fluid px-4">
-    <!-- Alerts -->
-    <div class="position-fixed top-0 end-0 p-3" style="z-index: 1100">
-      <div th:if="${successMessage}" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="d-flex">
-          <div class="toast-body" th:text="${successMessage}"></div>
-          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-        </div>
-      </div>
-      <div th:if="${errorMessage}" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="d-flex">
-          <div class="toast-body" th:text="${errorMessage}"></div>
-          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-        </div>
-      </div>
+  <div class="container-fluid px-4 py-3">
+    <!-- Flash Messages -->
+    <div class="flash-container" th:if="${successMessage != null || errorMessage != null}">
+      <div th:if="${successMessage}" class="flash flash-success" th:text="${successMessage}"></div>
+      <div th:if="${errorMessage}" class="flash flash-danger" th:text="${errorMessage}"></div>
     </div>
 
-    <!-- Page Header -->
-    <div class="card shadow-sm border-0 mb-4 mt-4">
-      <div class="card-body p-4">
-        <div class="row align-items-center">
-          <div class="col">
-            <h3 class="fw-bold mb-0">Quản lý sản phẩm</h3>
-            <p class="text-muted mb-0">Quản lý danh sách sản phẩm của cửa hàng</p>
-          </div>
-          <div class="col-auto d-flex gap-2">
-            <div class="search-box">
-              <form th:action="@{/admin/sanpham/search}" method="get" class="position-relative">
-                <input type="text" 
-                       class="form-control pe-5" 
-                       placeholder="Tìm kiếm sản phẩm..." 
-                       name="q" 
-                       th:value="${query}">
-                <button class="btn position-absolute end-0 top-0 h-100 px-3" type="submit">
-                  <i class="fas fa-search"></i>
-                </button>
-              </form>
-            </div>
-            <a class="btn btn-primary d-flex align-items-center" th:href="@{/admin/sanpham/create}">
-              <i class="fas fa-plus me-2"></i>Thêm sản phẩm
-            </a>
-          </div>
-        </div>
+    <!-- Header / Actions -->
+    <div class="d-flex flex-wrap align-items-center gap-3 mb-3 mt-2">
+      <div>
+        <h5 class="mb-1">Quản lý sản phẩm</h5>
+        <div class="text-muted-sm">Danh sách & thao tác nhanh</div>
       </div>
+      <form th:action="@{/admin/sanpham/search}" method="get"
+        class="ms-auto d-flex align-items-center gap-2 position-relative" style="max-width:320px;">
+        <div class="flex-grow-1 position-relative">
+          <input type="text" class="form-control ps-3" placeholder="Tìm kiếm..." name="q" th:value="${query}"
+            aria-label="Tìm kiếm sản phẩm">
+          <button class="btn btn-soft-primary position-absolute top-0 end-0 h-100 px-3" type="submit" aria-label="Tìm">
+            <i class="fas fa-search"></i>
+          </button>
+        </div>
+      </form>
+      <a class="btn btn-soft-success d-flex align-items-center" th:href="@{/admin/sanpham/create}">
+        <i class="fas fa-plus me-2"></i><span>Thêm sản phẩm</span>
+      </a>
     </div>
 
     <!-- Products Table -->
-    <div class="card shadow-sm border-0">
-      <div class="card-body p-0">
-        <div class="table-responsive">
-          <table class="table table-hover mb-0" id="productsTable">
-            <thead class="bg-light">
-              <tr>
-                <th scope="col" class="ps-4">#</th>
-                <th>Sản phẩm</th>
-                <th>Tồn kho</th>
-                <th>Giá bán</th>
-                <th>Giảm giá</th>
-                <th>Loại</th>
-                <th>Ngày tạo</th>
-                <th class="text-end pe-4">Thao tác</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr th:each="sanpham, loop : ${sanphams}">
-                <td class="ps-4" th:text="${loop.index + 1}"></td>
-                <td>
-                  <div class="d-flex align-items-center">
-                    <img class="rounded me-3" width="60" height="60" 
-                         th:src="@{/image/{url}(url=${sanpham.hinh})}" 
-                         th:alt="${sanpham.tenSanpham}"
-                         style="object-fit: cover">
-                    <div>
-                      <h6 class="mb-0" th:text="${sanpham.tenSanpham}"></h6>
-                      <small class="text-muted" th:text="${sanpham.loai.tenLoai}"></small>
-                    </div>
+    <div class="card-elevated p-0">
+      <div class="table-responsive">
+        <table class="table table-modern table-compact align-middle" id="productsTable">
+          <thead>
+            <tr>
+              <th style="width:56px;">#</th>
+              <th>Sản phẩm</th>
+              <th class="text-center">Tồn kho</th>
+              <th>Giá bán</th>
+              <th>Giảm giá</th>
+              <th>Loại</th>
+              <th>Ngày tạo</th>
+              <th class="text-end" style="width:110px;">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:if="${#lists.isEmpty(sanphams)}" class="table-empty">
+              <td colspan="8">Không có sản phẩm</td>
+            </tr>
+            <tr th:each="sanpham, loop : ${sanphams}" th:with="price=${sanpham.gia}">
+              <td th:text="${loop.index + 1}" data-label="#"></td>
+              <td>
+                <div class="d-flex align-items-center gap-3">
+                  <div class="ratio ratio-1x1 rounded overflow-hidden" style="width:54px;">
+                    <img th:src="@{/image/{url}(url=${sanpham.hinh})}" th:alt="${sanpham.tenSanpham}"
+                      class="w-100 h-100 object-fit-cover" loading="lazy" />
                   </div>
-                </td>
-                <td>
-                  <span th:class="${sanpham.soluong < 10 ? 'text-danger' : ''}" 
-                        th:text="${sanpham.soluong}">
-                  </span>
-                </td>
-                <td th:text="${#numbers.formatInteger(sanpham.gia, 3, 'POINT') + '₫'}"></td>
-                <td>
-                  <span th:if="${sanpham.giamgia != null}" 
-                        class="badge bg-success" 
-                        th:text="${sanpham.giamgia + '%'}">
-                  </span>
-                  <span th:unless="${sanpham.giamgia != null}" class="text-muted">-</span>
-                </td>
-                <td th:text="${sanpham.loai.tenLoai}"></td>
-                <td th:text="${#dates.format(sanpham.ngaytao, 'dd/MM/yyyy')}"></td>
-                <td class="text-end pe-4">
-                  <div class="d-flex gap-2 justify-content-end">
-                    <a class="btn btn-sm btn-primary" 
-                       data-bs-toggle="tooltip" 
-                       data-bs-title="Chỉnh sửa"
-                       th:href="@{/admin/sanpham/edit/{id}(id=${sanpham.idSanpham})}">
-                      <i class="fas fa-edit"></i>
-                    </a>
-                    <button class="btn btn-sm btn-danger" 
-                            data-bs-toggle="tooltip" 
-                            data-bs-title="Xóa"
-                            th:onclick="confirmDelete([[${sanpham.idSanpham}]], [[${sanpham.tenSanpham}]])">
-                      <i class="fas fa-trash"></i>
-                    </button>
+                  <div>
+                    <div class="fw-semibold" th:text="${sanpham.tenSanpham}"></div>
+                    <div class="text-muted-sm" th:text="${sanpham.loai.tenLoai}"></div>
                   </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+                </div>
+              </td>
+              <td class="text-center" data-label="Tồn kho">
+                <span th:if="${sanpham.soluong <= 5}" class="badge-soft-danger" th:text="${sanpham.soluong}"></span>
+                <span th:if="${sanpham.soluong > 5 && sanpham.soluong <= 20}" class="badge-soft-warning"
+                  th:text="${sanpham.soluong}"></span>
+                <span th:if="${sanpham.soluong > 20}" class="badge-soft-success" th:text="${sanpham.soluong}"></span>
+              </td>
+              <td class="td-price" data-label="Giá bán">
+                <span th:text="${#numbers.formatInteger(price,0,'COMMA')}"></span><span class="currency-symbol">₫</span>
+              </td>
+              <td data-label="Giảm giá">
+                <span th:if="${sanpham.giamgia != null}" class="percent-badge"
+                  th:text="${sanpham.giamgia + '%'}"></span>
+                <span th:if="${sanpham.giamgia == null}" class="text-muted">—</span>
+              </td>
+              <td th:text="${sanpham.loai.tenLoai}" data-label="Loại"></td>
+              <td th:text="${#dates.format(sanpham.ngaytao,'dd/MM/yyyy')}" data-label="Ngày tạo"></td>
+              <td class="text-end cell-actions" data-label="Thao tác">
+                <div class="d-flex gap-1 justify-content-end flex-nowrap">
+                  <a class="btn btn-sm btn-soft-primary" th:href="@{/admin/sanpham/edit/{id}(id=${sanpham.idSanpham})}"
+                    aria-label="Chỉnh sửa">
+                    <i class="fas fa-edit"></i>
+                  </a>
+                  <button type="button" class="btn btn-sm btn-soft-danger"
+                    th:onclick="confirmDelete([[${sanpham.idSanpham}]], [[${sanpham.tenSanpham}]])" aria-label="Xóa">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
@@ -134,9 +114,8 @@
             <i class="fas fa-chevron-left"></i>
           </a>
         </li>
-        <li class="page-item" 
-            th:each="i : ${#numbers.sequence(1, totalPages)}"
-            th:classappend="${currentPage == i - 1} ? 'active'">
+        <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}"
+          th:classappend="${currentPage == i - 1} ? 'active'">
           <a class="page-link" th:href="@{/admin/sanpham(page=${i - 1})}" th:text="${i}"></a>
         </li>
         <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
@@ -152,11 +131,11 @@
 
   <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
-  
+
   <script>
     // Initialize toasts
     var toastElList = [].slice.call(document.querySelectorAll('.toast'))
-    var toastList = toastElList.map(function(toastEl) {
+    var toastList = toastElList.map(function (toastEl) {
       return new bootstrap.Toast(toastEl, {
         autohide: true,
         delay: 3000
@@ -185,84 +164,6 @@
     })
   </script>
 
-  <style>
-    .search-box .form-control {
-      border-radius: 20px;
-      padding-right: 40px;
-    }
-    .search-box .btn {
-      border: none;
-      background: none;
-      color: #6c757d;
-    }
-    .search-box .btn:hover {
-      color: var(--bs-primary);
-    }
-    .table > :not(caption) > * > * {
-      padding: 1rem;
-    }
-    .page-link {
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50% !important;
-      margin: 0 3px;
-    }
-    .btn-light {
-      background-color: #f8f9fa;
-      border-color: #f8f9fa;
-    }
-    .btn-light:hover {
-      background-color: #e9ecef;
-      border-color: #e9ecef;
-    }
-    .btn-sm {
-      width: 32px;
-      height: 32px;
-      padding: 0;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 6px;
-    }
-    .btn-primary {
-      background-color: #0d6efd;
-      border-color: #0d6efd;
-    }
-    .btn-primary:hover {
-      background-color: #0b5ed7;
-      border-color: #0a58ca;
-    }
-    .btn-danger {
-      background-color: #dc3545;
-      border-color: #dc3545;
-    }
-    .btn-danger:hover {
-      background-color: #bb2d3b;
-      border-color: #b02a37;
-    }
-    .modal-content {
-      border: none;
-      border-radius: 12px;
-      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-    }
-    .modal-header {
-      padding: 1.5rem;
-    }
-    .modal-body {
-      padding: 1.5rem;
-      text-align: center;
-    }
-    .modal-footer {
-      padding: 1.5rem;
-      gap: 0.5rem;
-    }
-    .tooltip {
-      font-size: 0.875rem;
-    }
-  </style>
 
   <!-- Thêm modal xác nhận xóa -->
   <div class="modal fade" id="deleteModal" tabindex="-1">

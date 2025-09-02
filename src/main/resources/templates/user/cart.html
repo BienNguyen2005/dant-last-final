@@ -29,7 +29,7 @@
   <section class="section-content py-5">
     <div class="container">
       <!-- Not Logged In -->
-      <div th:if="${session.currentUser == null}" class="col-12 text-center py-5">
+      <div th:if="${currentUser == null}" class="col-12 text-center py-5">
         <div class="card shadow-sm border-0">
           <div class="card-body p-5">
             <i class="fas fa-user-lock fa-4x text-muted mb-4"></i>
@@ -42,7 +42,7 @@
       </div>
 
       <!-- Cart Content -->
-      <th:block th:if="${session.currentUser != null}">
+      <th:block th:if="${currentUser != null}">
         <div class="row">
           <main class="col-lg-9 mb-lg-0 mb-4">
             <div class="card shadow-sm border-0 mb-4">
@@ -52,8 +52,8 @@
                   <label for="diachi" class="form-label fw-medium">
                     <i class="fas fa-map-marker-alt me-2"></i>Địa chỉ giao hàng
                   </label>
-                  <textarea rows="2" id="diachi" class="form-control" 
-                            placeholder="Nhập địa chỉ giao hàng của bạn"></textarea>
+                  <textarea rows="2" id="diachi" class="form-control"
+                    placeholder="Nhập địa chỉ giao hàng của bạn"></textarea>
                 </div>
 
                 <!-- Cart Table -->
@@ -84,15 +84,15 @@
                 </h5>
                 <form>
                   <div class="form-check mb-3">
-                    <input class="form-check-input" type="radio" name="delivery-method"
-                           id="delivery-method-1" value="1" disabled>
+                    <input class="form-check-input" type="radio" name="delivery-method" id="delivery-method-1" value="1"
+                      disabled>
                     <label class="form-check-label" for="delivery-method-1">
                       <i class="fas fa-truck me-2 text-muted"></i>Giao tiêu chuẩn
                     </label>
                   </div>
                   <div class="form-check">
-                    <input class="form-check-input" type="radio" name="delivery-method"
-                           id="delivery-method-2" value="2" disabled>
+                    <input class="form-check-input" type="radio" name="delivery-method" id="delivery-method-2" value="2"
+                      disabled>
                     <label class="form-check-label" for="delivery-method-2">
                       <i class="fas fa-shipping-fast me-2 text-muted"></i>Giao nhanh
                     </label>
@@ -170,6 +170,7 @@
       .col-lg-9 {
         order: 2;
       }
+
       .col-lg-3 {
         order: 1;
         margin-bottom: 1.5rem;
@@ -178,32 +179,32 @@
   </style>
 
   <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    // Cập nhật số lượng giỏ hàng khi thay đổi số lượng sản phẩm
-    document.querySelectorAll('.cart-quantity').forEach(input => {
-      input.addEventListener('change', function() {
-        const productId = this.dataset.id;
-        const quantity = this.value;
-        
-        fetch(`/cart/update?id=${productId}&quantity=${quantity}`, {
-          method: 'POST'
-        })
-        .then(response => response.json())
-        .then(data => {
-          if(data.success) {
-            // Cập nhật số lượng trong giỏ hàng
-            const cartCount = document.querySelector('.cart-count');
-            if(cartCount) {
-              cartCount.textContent = data.cartCount;
-            }
-            
-            // Cập nhật tổng tiền
-            updateTotalPrice();
-          }
+    document.addEventListener('DOMContentLoaded', function () {
+      // Cập nhật số lượng giỏ hàng khi thay đổi số lượng sản phẩm
+      document.querySelectorAll('.cart-quantity').forEach(input => {
+        input.addEventListener('change', function () {
+          const productId = this.dataset.id;
+          const quantity = this.value;
+
+          fetch(`/cart/update?id=${productId}&quantity=${quantity}`, {
+            method: 'POST'
+          })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                // Cập nhật số lượng trong giỏ hàng
+                const cartCount = document.querySelector('.cart-count');
+                if (cartCount) {
+                  cartCount.textContent = data.cartCount;
+                }
+
+                // Cập nhật tổng tiền
+                updateTotalPrice();
+              }
+            });
         });
       });
     });
-  });
   </script>
 </body>
 

@@ -8,17 +8,18 @@
 
 <!-- Custom Styles -->
 <link th:href="@{/css/styles.css}" type="text/css" rel="stylesheet">
+<link th:href="@{/css/theme.css}" type="text/css" rel="stylesheet">
 
 <!-- cloudflare -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 <!-- Header Script -->
 <script th:src="@{/js/header.js}" type="module"></script>
-<script th:if="${session.currentUser}" th:src="@{/js/auth-handler.js}" defer></script>
-<th:block th:if="${session.currentUser}">
-  <meta name="currentUserId" th:content="${session.currentUser.idUser}"/>
+<script th:if="${currentUser}" th:src="@{/js/auth-handler.js}" defer></script>
+<th:block th:if="${currentUser}">
+  <meta name="currentUserId" th:content="${currentUser.idUser}" />
 </th:block>
 <th:block th:if="${sanpham != null}">
-  <meta name="productId" th:content="${sanpham.idSanpham}"/>
+  <meta name="productId" th:content="${sanpham.idSanpham}" />
 </th:block>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>

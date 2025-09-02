@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:replace="~{user/_meta}" />
+    <title>Sửa Voucher - MEDISALE Admin</title>
+</head>
+
+<body class="bg-light">
+    <th:block th:replace="~{admin/_headerAdmin}" />
+
+    <div class="container container-narrow">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="h4 mb-1">Chỉnh sửa Voucher</h2>
+                <div class="text-muted-sm">Cập nhật thuộc tính và điều kiện áp dụng</div>
+            </div>
+            <a class="btn btn-soft-secondary" th:href="@{/admin/vouchers}"><i class="fas fa-arrow-left me-2"></i>Quay
+                lại</a>
+        </div>
+
+        <form th:action="@{'/admin/vouchers/' + ${voucher.id}}" method="post" th:object="${voucher}" id="voucherForm">
+            <div class="card-elevated p-4 mb-3">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-section-title">Mã *</label>
+                        <input type="text" class="form-control" th:field="*{code}" required maxlength="30"
+                            id="codeField">
+                        <div class="field-hint">Chỉ chữ số, gạch dưới, gạch nối.</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-section-title">Loại *</label>
+                        <select class="form-select" th:field="*{type}" id="typeField">
+                            <option value="PERCENT">PERCENT</option>
+                            <option value="FIXED">FIXED</option>
+                        </select>
+                        <div class="field-hint" id="typeHintPercent">Giảm theo %.</div>
+                        <div class="field-hint" id="typeHintFixed" data-hidden="true">Giảm số tiền cố định.</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-section-title">Giá trị *</label>
+                        <div class="input-group">
+                            <input type="number" step="0.01" min="0.01" class="form-control" th:field="*{value}"
+                                required id="valueField">
+                            <span class="input-group-text" id="valueUnit">%</span>
+                        </div>
+                        <div class="field-hint" id="valueHintPercent">VD: 20 = giảm 20%.</div>
+                        <div class="field-hint" id="valueHintFixed" data-hidden="true">Nhập số tiền giảm.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-elevated p-4 mb-3">
+                <div class="row g-3">
+                    <div class="col-md-4" id="maxDiscountWrapper">
+                        <label class="form-section-title">Giảm tối đa</label>
+                        <input type="number" step="0.01" min="0" class="form-control" th:field="*{maxDiscount}">
+                        <div class="field-hint">Chỉ áp dụng với %.</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-section-title">Đơn tối thiểu</label>
+                        <input type="number" step="0.01" min="0" class="form-control" th:field="*{minOrderValue}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-section-title">Giới hạn tổng</label>
+                        <input type="number" min="1" class="form-control" th:field="*{usageLimit}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-section-title">Giới hạn / người</label>
+                        <input type="number" min="1" class="form-control" th:field="*{usagePerUser}">
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-elevated p-4 mb-3">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-section-title">Ngày bắt đầu</label>
+                        <input type="datetime-local" class="form-control" th:field="*{startDate}">
+                        <div class="text-danger small" th:if="${#fields.hasErrors('startDate')}"
+                            th:errors="*{startDate}"></div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-section-title">Ngày kết thúc</label>
+                        <input type="datetime-local" class="form-control" th:field="*{endDate}">
+                        <div class="text-danger small" th:if="${#fields.hasErrors('endDate')}" th:errors="*{endDate}">
+                        </div>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-center">
+                        <div class="form-check form-switch mt-3">
+                            <input class="form-check-input" type="checkbox" th:field="*{active}" id="activeSwitch">
+                            <label class="form-check-label" for="activeSwitch">Đang kích hoạt</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div th:if="${error}" class="alert alert-danger py-2 px-3 mb-3" th:text="${error}"></div>
+
+            <div class="d-flex gap-2 mt-2">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i>Cập nhật</button>
+                <a th:href="@{/admin/vouchers}" class="btn btn-soft-secondary">Hủy</a>
+            </div>
+        </form>
+    </div>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const typeField = document.getElementById('typeField');
+        const codeField = document.getElementById('codeField');
+        const maxDiscountWrapper = document.getElementById('maxDiscountWrapper');
+        const valueUnit = document.getElementById('valueUnit');
+        function syncType() {
+            const isPercent = typeField.value === 'PERCENT';
+            valueUnit.textContent = isPercent ? '%' : '₫';
+            document.getElementById('typeHintPercent').dataset.hidden = (!isPercent).toString();
+            document.getElementById('typeHintFixed').dataset.hidden = (isPercent).toString();
+            document.getElementById('valueHintPercent').dataset.hidden = (!isPercent).toString();
+            document.getElementById('valueHintFixed').dataset.hidden = (isPercent).toString();
+            maxDiscountWrapper.style.display = isPercent ? '' : 'none';
+        }
+        typeField.addEventListener('change', syncType); syncType();
+        codeField.addEventListener('input', () => codeField.value = codeField.value.toUpperCase().replace(/\s+/g, '').replace(/[^A-Z0-9_-]/g, ''));
+        /*]]>*/
+    </script>
+
+    <style>
+        .container-narrow {
+            max-width: 960px;
+        }
+
+        html.dark .field-hint {
+            color: var(--color-muted-text, #adb5bd);
+        }
+    </style>
+
+</body>
+
+</html>

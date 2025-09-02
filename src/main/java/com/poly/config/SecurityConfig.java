@@ -15,7 +15,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.poly.filter.JwtAuthenticationFilter;
 import com.poly.security.AccessDeniedHandlerImpl;
+import com.poly.filter.SecurityDiagnosticsFilter;
 import com.poly.security.JwtAuthEntryPoint;
+import com.poly.filter.SessionUserPromotionFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -23,20 +25,23 @@ import com.poly.security.JwtAuthEntryPoint;
 public class SecurityConfig {
 
     private final JwtAuthEntryPoint jwtAuthEntryPoint;
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AccessDeniedHandlerImpl accessDeniedHandler;
+    private final SecurityDiagnosticsFilter securityDiagnosticsFilter;
+    private final SessionUserPromotionFilter sessionUserPromotionFilter;
 
     public SecurityConfig(
-            JwtAuthEntryPoint jwtAuthEntryPoint, 
-            JwtAuthenticationFilter jwtAuthenticationFilter,
-            AccessDeniedHandlerImpl accessDeniedHandler) {
+            JwtAuthEntryPoint jwtAuthEntryPoint,
+            AccessDeniedHandlerImpl accessDeniedHandler,
+            SecurityDiagnosticsFilter securityDiagnosticsFilter,
+            SessionUserPromotionFilter sessionUserPromotionFilter) {
         this.jwtAuthEntryPoint = jwtAuthEntryPoint;
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.accessDeniedHandler = accessDeniedHandler;
+        this.securityDiagnosticsFilter = securityDiagnosticsFilter;
+        this.sessionUserPromotionFilter = sessionUserPromotionFilter;
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
             .exceptionHandling(exception -> exception
@@ -44,14 +49,17 @@ public class SecurityConfig {
                 .accessDeniedHandler(accessDeniedHandler))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> 
-                auth.requestMatchers("/", "/signup", "/signin", "/active-account", "/forgot-password", 
-                                    "/reset-password", "/access-denied", "/api/auth/refresh", "/css/**", "/js/**", "/img/**", "/image/**")
+    auth.requestMatchers("/", "/signup", "/signin", "/active-account", "/forgot-password", 
+            "/reset-password", "/access-denied", "/error", "/api/auth/refresh", "/css/**", "/js/**", "/img/**", "/image/**", "/fragment/**")
                     .permitAll()
                     .requestMatchers("/admin/**").hasRole("ADMIN")
                     .anyRequest().authenticated()
             );
         
-        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+    // Order: JWT auth first (before UsernamePasswordAuthenticationFilter), then session promotion, then diagnostics
+    http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+    http.addFilterAfter(sessionUserPromotionFilter, UsernamePasswordAuthenticationFilter.class);
+    http.addFilterAfter(securityDiagnosticsFilter, SessionUserPromotionFilter.class);
         
         return http.build();
     }

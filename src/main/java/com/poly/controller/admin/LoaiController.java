@@ -12,24 +12,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.poly.entity.Loai;
-import com.poly.entity.Users;
+import org.springframework.security.access.prepost.PreAuthorize;
 import com.poly.service.LoaiService;
-
-import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class LoaiController {
 	@Autowired
 	LoaiService loaiService;
-	@Autowired
-	private HttpSession session;
 
 	@GetMapping("/admin/loai")
+	@PreAuthorize("hasRole('ADMIN')")
 	public String loaiManager(Model model, @RequestParam(defaultValue = "0", name = "page") int page) {
-		Users currentUser = (Users) session.getAttribute("currentUser");
-		if (currentUser == null || !currentUser.isVaitro()) {
-			return "redirect:/";
-		}
 
 		Page<Loai> loaiPage = loaiService.getAllLoai(page, 8);
 
@@ -40,21 +33,15 @@ public class LoaiController {
 	}
 
 	@GetMapping("/admin/loai/create")
+	@PreAuthorize("hasRole('ADMIN')")
 	public String userCreate(Model model, @ModelAttribute("loai") Loai loai) {
-		Users currentUser = (Users) session.getAttribute("currentUser");
-		if (currentUser == null || !currentUser.isVaitro()) {
-			return "redirect:/";
-		}
 		return "admin/loai/createLoai";
 	}
 
 	@PostMapping("/admin/loai/create")
+	@PreAuthorize("hasRole('ADMIN')")
 	public String userInsert(Model model, @ModelAttribute("loai") Loai loai) {
 		try {
-			Users currentUser = (Users) session.getAttribute("currentUser");
-			if (currentUser == null || !currentUser.isVaitro()) {
-				return "redirect:/";
-			}
 			loaiService.create(loai);
 			model.addAttribute("successMessage", "Tạo loại hàng thành công");
 		} catch (Exception e) {
@@ -64,11 +51,8 @@ public class LoaiController {
 	}
 
 	@GetMapping("/admin/loai/edit/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
 	public String showUpdateForm(@PathVariable("id") Integer id, Model model) {
-		Users currentUser = (Users) session.getAttribute("currentUser");
-		if (currentUser == null || !currentUser.isVaitro()) {
-			return "redirect:/";
-		}
 		try {
 			Loai loai = loaiService.getLoaiById(id);
 			model.addAttribute("loai", loai);
@@ -79,12 +63,9 @@ public class LoaiController {
 	}
 
 	@PostMapping("/admin/loai/update/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
 	public String updateUser(Model model, @PathVariable("id") Integer id, @ModelAttribute("loai") Loai updatedLoai) {
 		try {
-			Users currentUser = (Users) session.getAttribute("currentUser");
-			if (currentUser == null || !currentUser.isVaitro()) {
-				return "redirect:/";
-			}
 			loaiService.updateUser(id, updatedLoai);
 			model.addAttribute("successMessage", "Cập nhật loại hàng thành công");
 		} catch (Exception e) {
@@ -94,6 +75,7 @@ public class LoaiController {
 	}
 
 	@GetMapping("/admin/loai/delete/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
 	public String deleteUser(RedirectAttributes redirectAttributes, @PathVariable("id") Integer id) {
 		try {
 			loaiService.deleteLoai(id);

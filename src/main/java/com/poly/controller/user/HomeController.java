@@ -29,8 +29,7 @@ import com.poly.service.HoaDonService;
 import com.poly.service.LoaiService;
 import com.poly.service.SanPhamService;
 import com.poly.service.UserService;
-
-import jakarta.servlet.http.HttpSession;
+import com.poly.service.CurrentUserService;
 
 @Controller
 public class HomeController {
@@ -41,7 +40,7 @@ public class HomeController {
 	@Autowired
 	SanPhamService sanPhamService;
 	@Autowired
-	HttpSession session;
+	CurrentUserService currentUserService;
 	@Autowired
 	HoaDonService hoaDonService;
 
@@ -61,8 +60,7 @@ public class HomeController {
 
 	@GetMapping("/signin")
 	public String signin(@ModelAttribute("user") Users user, Model model) {
-		Users currentUser = (Users) session.getAttribute("currentUser");
-		if (currentUser != null) {
+		if (currentUserService.getCurrentUser().isPresent()) {
 			return "redirect:/banhangtaiquay";
 		}
 		model.addAttribute("loais", loaiService.getAllLoai(0, 5));
@@ -83,8 +81,7 @@ public class HomeController {
 
 	@GetMapping("/signup")
 	public String signup(@ModelAttribute("user") Users user, Model model) {
-		Users currentUser = (Users) session.getAttribute("currentUser");
-		if (currentUser != null) {
+		if (currentUserService.getCurrentUser().isPresent()) {
 			return "redirect:/";
 		}
 		model.addAttribute("loais", loaiService.getAllLoai(0, 5));
@@ -126,20 +123,21 @@ public class HomeController {
 	@GetMapping("/image/{filename:.+}")
 	public ResponseEntity<Object> downloadFile(@PathVariable(name = "filename") String filename) {
 		File file = new File("c:/var/java5/images/" + filename);
-		if (!file.exists()) {
-			throw new RuntimeException("File không tồn tại!");
+		if (!file.exists() || !file.isFile()) {
+			return ResponseEntity.status(404).body("File khong ton tai");
 		}
 
-		UrlResource resource;
 		try {
-			resource = new UrlResource(file.toURI());
+			UrlResource resource = new UrlResource(file.toURI());
+			if (!resource.exists() || !resource.isReadable()) {
+				return ResponseEntity.status(404).body("File khong ton tai");
+			}
+			return ResponseEntity.ok()
+					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getName() + "\"")
+					.body(resource);
 		} catch (MalformedURLException ex) {
-			throw new RuntimeException("File không tồn tại!");
+			return ResponseEntity.status(404).body("File khong ton tai");
 		}
-
-		return ResponseEntity.ok()
-				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getName() + "\"")
-				.body(resource);
 	}
 
 	@GetMapping("/sanpham")
@@ -159,25 +157,19 @@ public class HomeController {
 
 	@GetMapping("/order")
 	public String order(@RequestParam(defaultValue = "0", name = "page") int page, Model model) {
-		Users currentUser = (Users) session.getAttribute("currentUser");
-		if (currentUser == null) {
-			return "redirect:/";
-		}
-		Page<HoaDon> hoaDonPage = hoaDonService.getAllHoaDonByIdUser(currentUser.getIdUser(), page, 4);
-		model.addAttribute("loais", loaiService.getAllLoai(0, 5));
-		model.addAttribute("orders", hoaDonPage.getContent()); // Danh sách user
-		model.addAttribute("currentPage", page); // Trang hiện tại
-		model.addAttribute("totalPages", hoaDonPage.getTotalPages());
-		return "user/orderView";
+		return currentUserService.getCurrentUser().map(u -> {
+			Page<HoaDon> hoaDonPage = hoaDonService.getAllHoaDonByIdUser(u.getIdUser(), page, 4);
+			model.addAttribute("loais", loaiService.getAllLoai(0, 5));
+			model.addAttribute("orders", hoaDonPage.getContent());
+			model.addAttribute("currentPage", page);
+			model.addAttribute("totalPages", hoaDonPage.getTotalPages());
+			return "user/orderView";
+		}).orElse("redirect:/");
 	}
 
 	@GetMapping("/orderDetail")
 	public String orderDetail(@RequestParam(name = "id") String id, Model model) {
 		try {
-			Users currentUser = (Users) session.getAttribute("currentUser");
-			if (currentUser == null) {
-				return "redirect:/";
-			}
 			AtomicReference<Double> tempPrice = new AtomicReference<>(0.0);
 			List<SanPham> listSanPham = new ArrayList<>();
 			HoaDon hoaDon = hoaDonService.getHoaDonById(Integer.valueOf(id));
@@ -205,10 +197,6 @@ public class HomeController {
 	@PostMapping("/orderDetail")
 	public String huyOrderDetail(@RequestParam(name = "id") String id, Model model) {
 		try {
-			Users currentUser = (Users) session.getAttribute("currentUser");
-			if (currentUser == null) {
-				return "redirect:/";
-			}
 			hoaDonService.cancelOrder(Integer.valueOf(id));
 			return "redirect:/order";
 		} catch (Exception e) {
@@ -218,50 +206,42 @@ public class HomeController {
 
 	@GetMapping("/setting")
 	public String setting(Model model) {
-		Users currentUser = (Users) session.getAttribute("currentUser");
-		if (currentUser == null) {
-			return "redirect:/";
-		}
-		model.addAttribute("user", userService.getUserById(currentUser.getIdUser()));
-		model.addAttribute("loais", loaiService.getAllLoai(0, 5));
-		return "user/settingView";
+		return currentUserService.getCurrentUser().map(u -> {
+			model.addAttribute("user", userService.getUserById(u.getIdUser()));
+			model.addAttribute("loais", loaiService.getAllLoai(0, 5));
+			return "user/settingView";
+		}).orElse("redirect:/");
 	}
 
 	@PostMapping("/setting")
 	public String setting(@RequestParam(name = "image", required = false) MultipartFile image,
 			@ModelAttribute("user") Users updateUser, Model model) {
-		Users currentUser = (Users) session.getAttribute("currentUser");
-		try {
-			if (currentUser == null) {
-				return "redirect:/";
+		return currentUserService.getCurrentUser().map(u -> {
+			try {
+				model.addAttribute("user", userService.updateProfile(u.getIdUser(), updateUser, image));
+				model.addAttribute("loais", loaiService.getAllLoai(0, 5));
+				model.addAttribute("successMessage", "Cập nhật tài khoản thành công");
+			} catch (Exception e) {
+				model.addAttribute("errorMessage", e.getMessage());
 			}
-			model.addAttribute("user", userService.updateProfile(currentUser.getIdUser(), updateUser, image));
-			model.addAttribute("loais", loaiService.getAllLoai(0, 5));
-			model.addAttribute("successMessage", "Cập nhật tài khoản thành công");
-		} catch (Exception e) {
-			model.addAttribute("errorMessage", e.getMessage());
-		}
-		return "user/settingView";
+			return "user/settingView";
+		}).orElse("redirect:/");
 	}
 
 	@GetMapping("/changePassword")
 	public String changePassword(Model model) {
-		Users currentUser = (Users) session.getAttribute("currentUser");
-		if (currentUser == null) {
-			return "redirect:/";
-		}
-		model.addAttribute("loais", loaiService.getAllLoai(0, 5));
-		return "user/changePasswordView";
+		return currentUserService.getCurrentUser().map(u -> {
+			model.addAttribute("loais", loaiService.getAllLoai(0, 5));
+			return "user/changePasswordView";
+		}).orElse("redirect:/");
 	}
 
 	@PostMapping("/changePassword")
 	public String changePassword(@RequestParam(name = "currentPassword") String currentPassword,
 			@RequestParam(name = "newPassword") String newPassword,
 			@RequestParam(name = "newPasswordAgain") String newPasswordAgain, Model model) {
-		Users currentUser = (Users) session.getAttribute("currentUser");
-		if (currentUser == null) {
-			return "redirect:/";
-		}
+		Users currentUser = currentUserService.getCurrentUser().orElse(null);
+		if (currentUser == null) return "redirect:/";
 		
 		boolean newPasswordEqualsNewPasswordAgain = newPassword.equals(newPasswordAgain);
 		if (!newPasswordEqualsNewPasswordAgain) {
@@ -313,11 +293,9 @@ public class HomeController {
 
 	@PostMapping("/cance-account")
 	public String canceAccount(@RequestParam(name = "idUser") String idUser, Model model) {
-		Users currentUser = (Users) session.getAttribute("currentUser");
-		if (currentUser == null) {
+		if (currentUserService.getCurrentUser().isEmpty()) {
 			return "redirect:/";
 		}
-
 		try {
 			userService.canceAccount(idUser);
 		} catch (Exception e) {
@@ -329,15 +307,13 @@ public class HomeController {
 
 	@GetMapping("/history")
 	public String history(@RequestParam(defaultValue = "0", name = "page") int page, Model model) {
-		Users currentUser = (Users) session.getAttribute("currentUser");
-		if (currentUser == null) {
-			return "redirect:/";
-		}
-		Page<SanPham> sanphamPage = sanPhamService.findSanPhamByUser(currentUser.getIdUser(), page, 4);
-		model.addAttribute("sanphams", sanphamPage.getContent());
-		model.addAttribute("loais", loaiService.getAllLoai(0, 5));
-		model.addAttribute("currentPage", page); // Trang hiện tại
-		model.addAttribute("totalPages", sanphamPage.getTotalPages());
-		return "user/history";
+		return currentUserService.getCurrentUser().map(u -> {
+			Page<SanPham> sanphamPage = sanPhamService.findSanPhamByUser(u.getIdUser(), page, 4);
+			model.addAttribute("sanphams", sanphamPage.getContent());
+			model.addAttribute("loais", loaiService.getAllLoai(0, 5));
+			model.addAttribute("currentPage", page);
+			model.addAttribute("totalPages", sanphamPage.getTotalPages());
+			return "user/history";
+		}).orElse("redirect:/");
 	}
 }

@@ -1,19 +1,26 @@
 // STATIC DATA
-const currentUserIdMetaTag = document.querySelector("meta[name='currentUserId']");
+const currentUserIdMetaTag = document.querySelector(
+  "meta[name='currentUserId']"
+);
 
 // ROOTS/ELEMENTS
-const totalCartItemsQuantityRootElement = document.querySelector("#total-cart-items-quantity");
+const totalCartItemsQuantityRootElement =
+  document.querySelector("#total-cart-items-quantity") ||
+  document.querySelector("#cartBadge");
 
 // UTILS
 async function _fetchGetCart() {
-  const response = await fetch("/cartItem?userId=" + currentUserIdMetaTag.content, {
-    method: "GET",
-    headers: {
-      "Accept": "application/json",
-      "Content-Type": "application/json",
-    },
-    credentials: 'same-origin'
-  });
+  const response = await fetch(
+    "/cartItem?userId=" + currentUserIdMetaTag.content,
+    {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      credentials: "same-origin",
+    }
+  );
   return [response.status, await response.json()];
 }
 
@@ -26,7 +33,10 @@ const state = {
     } else {
       state.totalCartItemsQuantity = value.cartItems
         .map((cartItem) => cartItem.quantity)
-        .reduce((partialSum, cartItemQuantity) => partialSum + cartItemQuantity, 0);
+        .reduce(
+          (partialSum, cartItemQuantity) => partialSum + cartItemQuantity,
+          0
+        );
     }
     render();
   },
@@ -36,13 +46,19 @@ const state = {
       state.setTotalCartItemsQuantity(data);
     }
   },
-}
+};
 
 // RENDER
 function render() {
   if (totalCartItemsQuantityRootElement) {
-    totalCartItemsQuantityRootElement.innerHTML = state.totalCartItemsQuantity;
+    totalCartItemsQuantityRootElement.textContent =
+      state.totalCartItemsQuantity;
   }
+  document.dispatchEvent(
+    new CustomEvent("cart:badgeUpdated", {
+      detail: { count: state.totalCartItemsQuantity },
+    })
+  );
 }
 
 // MAIN
